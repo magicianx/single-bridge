@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.support;
 
+import com.gaea.single.bridge.error.ErrorCode;
 import lombok.Getter;
 
 @Getter

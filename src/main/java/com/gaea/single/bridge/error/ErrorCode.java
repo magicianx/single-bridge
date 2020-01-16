@@ -1,5 +1,6 @@
-package com.gaea.single.bridge.support;
+package com.gaea.single.bridge.error;
 
+import com.gaea.single.bridge.support.BusinessException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

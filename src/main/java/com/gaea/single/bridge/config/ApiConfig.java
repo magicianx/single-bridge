@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.config;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,15 +10,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
+import reactor.core.publisher.Mono;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.*;
+
+import java.util.Arrays;
 
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
@@ -40,13 +47,13 @@ public class ApiConfig {
         .paths(PathSelectors.any())
         .build()
         .pathMapping("/")
-        .genericModelSubstitutes(ResponseEntity.class)
-        .alternateTypeRules(
-            newRule(
-                typeResolver.resolve(
-                    DeferredResult.class,
-                    typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
-                typeResolver.resolve(WildcardType.class)))
+        .genericModelSubstitutes(Mono.class)
+        //        .alternateTypeRules(
+        //            newRule(
+        //                typeResolver.resolve(
+        //                    DeferredResult.class,
+        //                    typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
+        //                typeResolver.resolve(WildcardType.class)))
         .useDefaultResponseMessages(false)
         .forCodeGeneration(true)
         //        .globalResponseMessage(
@@ -57,18 +64,24 @@ public class ApiConfig {
         //                    .message("500 message")
         //                    .responseModel(new ModelRef("Error"))
         //                    .build()))
-        //        .enableUrlTemplating(true)s
-        .apiInfo(apiInfo);
-    //        .globalOperationParameters(
-    //            singletonList(
-    //                new ParameterBuilder()
-    //                    .name("someGlobalParameter")
-    //                    .description("Description of someGlobalParameter")
-    //                    .modelRef(new ModelRef("string"))
-    //                    .parameterType("query")
-    //                    .required(true)
-    //                    .build()))
+        //        .enableUrlTemplating(true)
+        .apiInfo(apiInfo)
+        .globalOperationParameters(
+            Arrays.asList(
+                getHeaderParameter("User-Id", "用户id", false),
+                getHeaderParameter("Session", "用户session", false),
+                getHeaderParameter("App-Id", "应用id", true)));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
+  }
+
+  private Parameter getHeaderParameter(String name, String desc, boolean required) {
+    return new ParameterBuilder()
+        .name(name)
+        .description(desc)
+        .modelRef(new ModelRef("string"))
+        .parameterType("header")
+        .required(required)
+        .build();
   }
 
   @Bean

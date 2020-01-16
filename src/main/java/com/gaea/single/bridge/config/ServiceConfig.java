@@ -39,8 +39,7 @@ public class ServiceConfig {
   @Bean
   //  @DependsOn("configAgent")
   public WebClient webClient() {
-    //    String host = DictionaryProperties.get().getLoboHost();
-    String host = "http://mgr.vchat.club:19001";
+    String host = DictionaryProperties.get().getLobo().getHost();
     return WebClient.builder().baseUrl(host).build();
   }
 

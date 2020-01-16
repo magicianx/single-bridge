@@ -1,6 +1,7 @@
-package com.gaea.single.bridge.controller;
+package com.gaea.single.bridge.controller.platform;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
+import com.gaea.single.bridge.controller.BaseContoller;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
 import com.gaea.single.bridge.enums.BannerType;
@@ -16,24 +17,28 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/platform", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "平台服务")
 @Validated
-public class PlatformController {
+public class PlatformController extends BaseContoller {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/banners.net")
   @ApiOperation(value = "获取广告列表")
-  public Mono<Result<BannerRes>> getBanners(
+  public Mono<Result<List<BannerRes>>> getBanners(
       @ApiParam(value = "deviceType", required = true) @NotNull @RequestParam("deviceType")
-          DeviceType deviceType) {
+          DeviceType deviceType,
+      @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
@@ -41,13 +46,12 @@ public class PlatformController {
             put("type", 2);
           }
         };
-    return loboClient.postForm(
+    return loboClient.postFormForList(
+        exchange,
         LoboPathConst.BANNER_LIST,
         data,
-        (loboResult) ->
+        (result) ->
             new BannerRes(
-                loboResult.getString("imgUrl"),
-                loboResult.getString("linkToUrl"),
-                BannerType.INNER));
+                result.getString("imgUrl"), result.getString("linkToUrl"), BannerType.INNER));
   }
 }

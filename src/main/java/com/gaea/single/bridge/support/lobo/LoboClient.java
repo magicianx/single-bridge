@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.support.lobo;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.ErrorCodes;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.Result;
@@ -11,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -38,8 +40,11 @@ public class LoboClient {
    * @return {@link Mono<Result<R>>}
    */
   public <R> Mono<Result<R>> postForm(
-      String path, Map<String, Object> data, Converter<JSONObject, R> resConverter) {
-    return this.doPostForm(path, data)
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<JSONObject, R> resConverter) {
+    return this.doPostForm(exchange, path, data)
         .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
   }
 
@@ -53,20 +58,32 @@ public class LoboClient {
    * @return {@link Mono<Result<R>>}
    */
   public <R> Mono<Result<List<R>>> postFormForList(
-      String path, Map<String, Object> data, Converter<JSONObject, R> resConverter) {
-    return this.doPostForm(path, data)
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<JSONObject, R> resConverter) {
+    return this.doPostForm(exchange, path, data)
         .transform(mono -> loboResultExchanger.exchangeForList(mono, resConverter));
   }
 
-  public Mono<LoboResult> doPostForm(String path, Map<String, Object> data) {
+  public Mono<LoboResult> doPostForm(
+      ServerWebExchange exchange, String path, Map<String, Object> data) {
     log.info("正在请求lobo服务 {}", path);
+    String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
+    String session = exchange.getAttribute(CommonHeaderConst.SESSION);
+
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>(data.size());
-    data.forEach((k, v) -> formData.put(k, Collections.singletonList(v.toString())));
+    data.forEach(
+        (k, v) ->
+            formData.put(
+                k, v == null ? Collections.emptyList() : Collections.singletonList(v.toString())));
 
     return webClient
         .post()
         .uri(path)
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .header("userId", userId)
+        .header("session", session)
         .body(BodyInserters.fromFormData(formData))
         .retrieve()
         .bodyToMono(LoboResult.class)
@@ -74,7 +91,7 @@ public class LoboClient {
             res -> {
               if (res.getResultCode() != SUCCESS_CODE) {
                 log.error(String.format("请求lobo服务%s 失败: %s", path, res.getResultCode()));
-                return Mono.error(ErrorCodes.INNER.newBusinessException());
+                return Mono.error(ErrorCodes.INNER_ERROR.newBusinessException());
               }
               log.info("请求lobo服务 {} 成功", path);
               return Mono.just(res);
