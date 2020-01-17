@@ -6,5 +6,7 @@ service:
     module: Single
     branch: DEV
   api.enable: true
-
+logging:
+  level:
+    org.springframework: debug
 #lobo.host: "http://mgr.vchat.club:19001"

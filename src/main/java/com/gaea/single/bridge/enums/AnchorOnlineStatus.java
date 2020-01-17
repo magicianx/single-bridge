@@ -3,6 +3,7 @@ package com.gaea.single.bridge.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/** 主播在线状态 */
 @AllArgsConstructor
 @Getter
 public enum AnchorOnlineStatus implements Metadata {

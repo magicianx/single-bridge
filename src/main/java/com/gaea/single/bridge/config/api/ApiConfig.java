@@ -1,8 +1,9 @@
-package com.gaea.single.bridge.config;
+package com.gaea.single.bridge.config.api;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -47,7 +49,7 @@ public class ApiConfig {
         .paths(PathSelectors.any())
         .build()
         .pathMapping("/")
-        .genericModelSubstitutes(Mono.class)
+        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class)
         //        .alternateTypeRules(
         //            newRule(
         //                typeResolver.resolve(

@@ -1,25 +1,20 @@
 package com.gaea.single.bridge.error;
 
-import com.gaea.single.bridge.support.BusinessException;
-import lombok.AccessLevel;
+import com.gaea.single.bridge.core.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
-public class ErrorCode {
-  public final int code;
-  public final String massage;
+public enum ErrorCode {
+  SUCCESS(20, "成功"),
+  INNER_ERROR(9999, "系统内部错误"),
+  DUPLICATE_REPORT(1001, "已有投诉正在处理，不可重复投诉");
 
-  public static ErrorCode of(int code, String message) {
-    return new ErrorCode(code, message);
-  }
-
-  public void throwBusinessException() {
-    throw newBusinessException();
-  }
+  private int code;
+  private String message;
 
   public BusinessException newBusinessException() {
-    return new BusinessException(this);
+    return new BusinessException(this.code, this.message);
   }
 }

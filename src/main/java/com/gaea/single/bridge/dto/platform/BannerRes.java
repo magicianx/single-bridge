@@ -15,10 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BannerRes {
   @ApiModelProperty(value = "广告图片连接", required = true)
-  private String imgUrl;
+  private String img;
 
   @ApiModelProperty(value = "跳转连接", required = true)
-  private String linkUrl;
+  private String link;
 
+  @ApiModelProperty(value = "广告类型", required = true)
   private BannerType type;
 }

@@ -1,6 +1,5 @@
 package com.gaea.single.bridge.error;
 
-import com.gaea.single.bridge.constant.ErrorCodes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,8 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
     log.error("系统异常: " + error.get("trace"));
 
     Map<String, Object> result = new HashMap<>();
-    result.put("code", ErrorCodes.INNER_ERROR.getCode());
-    result.put("message", ErrorCodes.INNER_ERROR.getMassage());
+    result.put("code", ErrorCode.INNER_ERROR.getCode());
+    result.put("message", ErrorCode.INNER_ERROR.getMessage());
     result.put("data", null);
 
     return ServerResponse.status(HttpStatus.OK)

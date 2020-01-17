@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.support.lobo;
+package com.gaea.single.bridge.core.lobo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.LoboResult;

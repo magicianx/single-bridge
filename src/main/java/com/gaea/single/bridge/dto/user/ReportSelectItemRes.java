@@ -7,15 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@ApiModel("主播栏目信息")
+@ApiModel("举报选项")
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class AnchorColumnRes {
-  @ApiModelProperty(value = "栏目id", required = true)
-  private Long id;
+public class ReportSelectItemRes {
+  @ApiModelProperty(value = "举报原因", required = true)
+  private String reason;
 
-  @ApiModelProperty(value = "栏目名称", required = true)
-  private String name;
+  @ApiModelProperty(value = "是否被默认选中", required = true)
+  private String isChecked;
 }

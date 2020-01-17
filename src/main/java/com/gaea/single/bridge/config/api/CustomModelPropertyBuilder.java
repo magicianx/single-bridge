@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.config;
+package com.gaea.single.bridge.config.api;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;

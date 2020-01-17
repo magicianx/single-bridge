@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class AnchorItemRes {
   @ApiModelProperty(value = "主播ID", required = true)
-  private String userId;
+  private Long userId;
 
   @ApiModelProperty(value = "主播昵称", required = true)
   private String nickName;
@@ -26,8 +26,8 @@ public class AnchorItemRes {
   private AnchorOnlineStatus onlineStatus;
 
   @ApiModelProperty(value = "封面图片", required = true)
-  private String coverUrl;
+  private String cover;
 
-  @ApiModelProperty(value = "个性签名", required = true)
+  @ApiModelProperty(value = "个性签名")
   private String signature;
 }

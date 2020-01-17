@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.config;
 
-import com.gaea.single.bridge.support.lobo.LoboClient;
-import com.gaea.single.bridge.support.lobo.DefaultLoboResultExchanger;
+import com.gaea.single.bridge.core.lobo.DefaultLoboResultExchanger;
+import com.gaea.single.bridge.core.lobo.LoboClient;
 import org.platform.config.ConfigAgent;
 import org.platform.config.ConfigBuilder;
 import org.platform.config.ConfigManager;
