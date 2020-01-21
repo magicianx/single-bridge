@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
-import com.gaea.single.bridge.enums.AnchorOnlineStatus;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -20,13 +20,13 @@ public class AnchorItemRes {
   private Integer grade;
 
   @ApiModelProperty(value = "系统等级图标", required = true)
-  private String gradeIcon;
+  private String gradeIconUrl;
 
   @ApiModelProperty(value = "在线状态", required = true)
-  private AnchorOnlineStatus onlineStatus;
+  private UserOnlineStatus onlineStatus;
 
   @ApiModelProperty(value = "封面图片", required = true)
-  private String cover;
+  private String coverUrl;
 
   @ApiModelProperty(value = "个性签名")
   private String signature;

@@ -17,14 +17,16 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class DefaultLoboResultExchanger implements LoboResultExchanger {
-  public <R> Mono<Result<R>> exchange(
-      Mono<LoboResult> mono, Converter<JSONObject, R> resConverter) {
+  public <R> Mono<Result<R>> exchange(Mono<LoboResult> mono, Converter<Object, R> resConverter) {
     return mono.map(
             res -> {
-              R result =
-                  res.getDataCollection() != null
-                      ? resConverter.convert(JsonUtils.toJsonObject(res.getDataCollection()))
-                      : null;
+              R result = null;
+              if (res.getDataCollection() != null) {
+                result =
+                    res.getDataCollection() instanceof JSONObject
+                        ? resConverter.convert(JsonUtils.toJsonObject(res.getDataCollection()))
+                        : resConverter.convert(res.getDataCollection());
+              }
               return Result.success(result);
             })
         .onErrorResume(
@@ -39,16 +41,13 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
   }
 
   public <R> Mono<Result<List<R>>> exchangeForList(
-      Mono<LoboResult> mono, Converter<JSONObject, R> resConverter) {
+      Mono<LoboResult> mono, Converter<Object, R> resConverter) {
     return mono.map(
             res -> {
               List<R> result = new ArrayList<>();
               if (res.getDataCollection() != null) {
                 JSONArray array = JsonUtils.toJsonArray(res.getDataCollection());
-                result =
-                    array.stream()
-                        .map(item -> resConverter.convert((JSONObject) item))
-                        .collect(Collectors.toList());
+                result = array.stream().map(resConverter::convert).collect(Collectors.toList());
               }
               return Result.success(result);
             })

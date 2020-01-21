@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.controller.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseContoller;
 import com.gaea.single.bridge.converter.AnchorConverter;
@@ -98,8 +99,10 @@ public class AnchorController extends BaseContoller {
         exchange,
         LoboPathConst.REPORT_SELECT_ITEMS,
         data,
-        (result ->
-            new ReportSelectItemRes(result.getString("reason"), result.getString("isChecked"))));
+        (obj -> {
+          JSONObject result = (JSONObject) obj;
+          return new ReportSelectItemRes(result.getString("reason"), result.getString("isChecked"));
+        }));
   }
 
   @PostMapping(value = "/v1/report.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

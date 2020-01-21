@@ -3,10 +3,10 @@ package com.gaea.single.bridge.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 主播在线状态 */
+/** 用户在线状态 */
 @AllArgsConstructor
 @Getter
-public enum AnchorOnlineStatus implements Metadata {
+public enum UserOnlineStatus implements Metadata {
   FREE(1, "空闲"),
   CHATTING(2, "空闲"),
   UN_DISTURB(3, "勿扰");
@@ -14,8 +14,8 @@ public enum AnchorOnlineStatus implements Metadata {
   private int code;
   private String desc;
 
-  public static AnchorOnlineStatus ofCode(int code) {
-    for (AnchorOnlineStatus status : AnchorOnlineStatus.values()) {
+  public static UserOnlineStatus ofCode(int code) {
+    for (UserOnlineStatus status : UserOnlineStatus.values()) {
       if (status.code == code) {
         return status;
       }

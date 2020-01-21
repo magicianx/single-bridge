@@ -1,6 +1,5 @@
 package com.gaea.single.bridge.core.lobo;
 
-import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.Result;
 import org.springframework.core.convert.converter.Converter;
@@ -17,7 +16,7 @@ public interface LoboResultExchanger {
    * @param <R> 响应类型
    * @return {@link Mono< Result <R>>}
    */
-  <R> Mono<Result<R>> exchange(Mono<LoboResult> mono, Converter<JSONObject, R> resConverter);
+  <R> Mono<Result<R>> exchange(Mono<LoboResult> mono, Converter<Object, R> resConverter);
 
   /**
    * 将{@link LoboResult} 转化为业务响应对象列表
@@ -28,5 +27,5 @@ public interface LoboResultExchanger {
    * @return {@link Mono<Result< List <R>>>}
    */
   <R> Mono<Result<List<R>>> exchangeForList(
-      Mono<LoboResult> mono, Converter<JSONObject, R> resConverter);
+      Mono<LoboResult> mono, Converter<Object, R> resConverter);
 }

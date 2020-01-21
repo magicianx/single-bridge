@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.platform.config.core.CheckException;
 import org.platform.config.core.data.DataPool;
 import org.platform.config.core.data.set.PropertyData;
-import org.platform.config.core.kernel.ConfigPool;
 import org.platform.config.core.kernel.IConfig;
 import org.platform.config.core.kernel.set.CFile;
 import org.platform.config.core.kernel.set.SingleConfigSet;

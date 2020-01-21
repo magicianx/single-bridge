@@ -1,12 +1,13 @@
 package com.gaea.single.bridge.controller.platform;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
 import com.gaea.single.bridge.enums.BannerType;
 import com.gaea.single.bridge.enums.DeviceType;
-import com.gaea.single.bridge.core.lobo.LoboClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -50,8 +51,10 @@ public class PlatformController extends BaseContoller {
         exchange,
         LoboPathConst.BANNER_LIST,
         data,
-        (result) ->
-            new BannerRes(
-                result.getString("imgUrl"), result.getString("linkToUrl"), BannerType.INNER));
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new BannerRes(
+              result.getString("imgUrl"), result.getString("linkToUrl"), BannerType.INNER);
+        });
   }
 }

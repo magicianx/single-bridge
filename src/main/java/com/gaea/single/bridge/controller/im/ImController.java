@@ -29,7 +29,7 @@ public class ImController extends BaseContoller {
   @Autowired private LoboClient loboClient;
 
   @PostMapping(value = "/v1/order.net")
-  @ApiOperation(value = "创建IM订单")
+//  @ApiOperation(value = "创建IM订单")
   @Deprecated
   public Mono<Result<Object>> createImOrder(
       @ApiParam(value = "卖家id", required = true) @NotNull Long sellerId,

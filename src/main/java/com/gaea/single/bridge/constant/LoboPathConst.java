@@ -17,4 +17,8 @@ public interface LoboPathConst {
   String REPORT_SELECT_ITEMS = "/postsales/complaint/getComplaintConfig.do";
   /** 获取打赏礼物列表 */
   String GRATUITY_GIFT_LIST = "/gratuity/gratuity/findAllGratuity";
+  /** 获取账户余额 */
+  String ACCOUNT_BALANCE = "/user/userCenter/getUserMoney.do";
+  /** 获取用户信息 */
+  String GER_USER_INFO = " /user/userCenter/getUserInfo.do";
 }

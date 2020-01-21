@@ -6,17 +6,18 @@ import com.gaea.single.bridge.enums.GiftType;
 import org.springframework.core.convert.converter.Converter;
 
 public class AccountConverter {
-  public static final Converter<JSONObject, GratuityGiftItemRes> toGratuityGiftItemRes =
-      (result) -> {
+  public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
         GratuityGiftItemRes res = new GratuityGiftItemRes();
         res.setId(result.getLong("id"));
         res.setAmount(result.getLong("money"));
         res.setName(result.getString("pictureName"));
-        res.setImg(result.getString("pictureUrl"));
-        res.setSmallImg(result.getString("smallPictureUrl"));
+        res.setImgUrl(result.getString("pictureUrl"));
+        res.setSmallImgUrl(result.getString("smallPictureUrl"));
         res.setType(GiftType.ofCode(result.getInteger("type")));
         res.setMinGrade(result.getInteger("minGrade"));
-        res.setSvg(result.getString("svgFileUrl"));
+        res.setSvgUrl(result.getString("svgFileUrl"));
         return res;
       };
 }

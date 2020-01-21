@@ -20,16 +20,16 @@ public class GratuityGiftItemRes {
   private String name;
 
   @ApiModelProperty(value = "礼物大图", required = true)
-  private String img;
+  private String imgUrl;
 
   @ApiModelProperty(value = "礼物小图", required = true)
-  private String smallImg;
+  private String smallImgUrl;
 
   @ApiModelProperty(value = "用户最小等级限制", required = true)
   private Integer minGrade;
 
   @ApiModelProperty("svg动画文件, 当此字段有值时出现动画")
-  private String svg;
+  private String svgUrl;
 
   @ApiModelProperty(value = "礼物类型", required = true)
   private GiftType type;

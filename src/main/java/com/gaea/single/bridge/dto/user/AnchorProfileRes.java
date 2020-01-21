@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
-import com.gaea.single.bridge.enums.AnchorOnlineStatus;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.GenderType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,22 +18,22 @@ public class AnchorProfileRes {
   private Long userId;
 
   @ApiModelProperty(value = "显示Id", required = true)
-  private Long showId;
+  private String showId;
 
   @ApiModelProperty(value = "云信id", required = true)
   private String yunXinId;
 
   @ApiModelProperty(value = "在线状态", required = true)
-  private AnchorOnlineStatus onlineStatus;
+  private UserOnlineStatus onlineStatus;
 
   @ApiModelProperty(value = "昵称", required = true)
   private String nickName;
 
   @ApiModelProperty(value = "头像", required = true)
-  private String portrait;
+  private String portraitUrl;
 
   @ApiModelProperty(value = "等级图标链接", required = true)
-  private String gradeIcon;
+  private String gradeIconUrl;
 
   @ApiModelProperty(value = "价格", required = true)
   private Integer price;

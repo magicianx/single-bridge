@@ -6,8 +6,8 @@ import com.gaea.single.bridge.dto.user.AnchorColumnRes;
 import com.gaea.single.bridge.dto.user.AnchorItemRes;
 import com.gaea.single.bridge.dto.user.AnchorLabelRes;
 import com.gaea.single.bridge.dto.user.AnchorProfileRes;
-import com.gaea.single.bridge.enums.AnchorOnlineStatus;
 import com.gaea.single.bridge.enums.GenderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.Comparator;
@@ -16,42 +16,46 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AnchorConverter {
-  public static final Converter<JSONObject, List<AnchorColumnRes>> toAnchorColumnResList =
-      (result) -> {
+  public static final Converter<Object, List<AnchorColumnRes>> toAnchorColumnResList =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
         JSONArray array = result.getJSONArray("menuList");
         return array.stream()
             .sorted(Comparator.comparingInt(item -> ((JSONObject) item).getInteger("orderNumber")))
             .map(
-                obj -> {
-                  JSONObject item = ((JSONObject) obj);
+                i -> {
+                  JSONObject item = ((JSONObject) i);
                   return new AnchorColumnRes(item.getLong("id"), item.getString("name"));
                 })
             .collect(Collectors.toList());
       };
 
-  public static final Converter<JSONObject, AnchorItemRes> toAnchorItemRes =
-      (result) -> {
+  public static final Converter<Object, AnchorItemRes> toAnchorItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
         AnchorItemRes res = new AnchorItemRes();
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setGrade(result.getInteger("grade"));
-        res.setGradeIcon(result.getString("gradeIcon"));
-        res.setOnlineStatus(AnchorOnlineStatus.ofCode(result.getInteger("status")));
+        res.setGradeIconUrl(result.getString("gradeIcon"));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setSignature(result.getString("comment"));
-        res.setCover(result.getString("cover"));
+        res.setCoverUrl(result.getString("cover"));
         return res;
       };
 
-  public static final Converter<JSONObject, AnchorProfileRes> toAnchorProfileRes =
-      (result) -> {
+  public static final Converter<Object, AnchorProfileRes> toAnchorProfileRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+
         AnchorProfileRes res = new AnchorProfileRes();
         res.setUserId(result.getLong("id"));
-        res.setShowId(result.getLong("showId"));
+        res.setShowId(result.getString("showId"));
         res.setYunXinId(result.getString("yunxinId"));
-        res.setOnlineStatus(AnchorOnlineStatus.ofCode(result.getInteger("status")));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setNickName(result.getString("nickName"));
-        res.setPortrait(result.getString("portrait"));
-        res.setGradeIcon(result.getString("gradeIcon"));
+        res.setPortraitUrl(result.getString("portrait"));
+        res.setGradeIconUrl(result.getString("gradeIcon"));
         res.setPrice(result.getInteger("price"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
         res.setAge(result.getInteger("age"));
