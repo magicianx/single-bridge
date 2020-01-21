@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.controller.account;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
-import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.AccountConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping(value = "/account/gratuity", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "打赏服务")
 @Validated
-public class GratuityController extends BaseContoller {
+public class GratuityController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/gifts.net")

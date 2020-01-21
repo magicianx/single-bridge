@@ -19,7 +19,6 @@ public class CommonHeaderFilter implements WebFilter {
     HttpHeaders headers = exchange.getRequest().getHeaders();
     putAttribute(exchange, headers, CommonHeaderConst.USER_ID, "User-Id");
     putAttribute(exchange, headers, CommonHeaderConst.SESSION, "Session");
-    putAttribute(exchange, headers, CommonHeaderConst.APP_ID, "App-Id");
     return chain.filter(exchange);
   }
 

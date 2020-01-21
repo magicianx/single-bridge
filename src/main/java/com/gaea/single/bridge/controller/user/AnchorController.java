@@ -2,9 +2,11 @@ package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
-import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.AnchorConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
+import com.gaea.single.bridge.dto.PageReq;
+import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.ReportType;
@@ -30,7 +32,7 @@ import java.util.Map;
 @RequestMapping(value = "/user/anchor", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "主播服务")
 @Validated
-public class AnchorController extends BaseContoller {
+public class AnchorController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/columns.net")
@@ -50,21 +52,15 @@ public class AnchorController extends BaseContoller {
 
   @GetMapping(value = "/v1/list.net")
   @ApiOperation(value = "获取主播列表")
-  public Mono<Result<List<AnchorItemRes>>> getAnchorList(
+  public Mono<Result<PageRes<AnchorItemRes>>> getAnchorList(
       @ApiParam(value = "栏目id", required = true) @NotNull @RequestParam Long columnId,
-      @ApiParam(value = "第几页, 从1开始", required = true) @NotNull @RequestParam Integer pageNum,
-      @ApiParam(value = "每页条数", required = true) @NotNull @RequestParam Integer pageSize,
+      @Valid PageReq pageReq,
       @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("appId", getAppId(exchange));
-            put("menuId", columnId);
-            put("pageNo", pageNum);
-            put("pageSize", pageSize);
-          }
-        };
-    return loboClient.postFormForList(
+    Map<String, Object> data = getPageData(pageReq);
+    data.put("appId", getAppId(exchange));
+    data.put("menuId", columnId);
+    ;
+    return loboClient.postFormForPage(
         exchange, LoboPathConst.ANCHOR_LIST, data, AnchorConverter.toAnchorItemRes);
   }
 

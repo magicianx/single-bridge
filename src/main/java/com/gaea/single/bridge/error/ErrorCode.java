@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
-  SUCCESS(20, "成功"),
+  SUCCESS(200, "成功"),
   INNER_ERROR(9999, "系统内部错误"),
   DUPLICATE_REPORT(1001, "已有投诉正在处理，不可重复投诉");
 

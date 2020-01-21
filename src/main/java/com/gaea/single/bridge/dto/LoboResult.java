@@ -8,4 +8,7 @@ import lombok.Setter;
 public class LoboResult {
   private Integer resultCode;
   private Object dataCollection;
+  private Integer totalPage;
+  private Integer totalRow;
+  private Integer currentPage;
 }

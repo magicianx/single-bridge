@@ -71,8 +71,7 @@ public class ApiConfig {
         .globalOperationParameters(
             Arrays.asList(
                 getHeaderParameter("User-Id", "用户id", false),
-                getHeaderParameter("Session", "用户session", false),
-                getHeaderParameter("App-Id", "应用id", true)));
+                getHeaderParameter("Session", "用户session", false)));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 

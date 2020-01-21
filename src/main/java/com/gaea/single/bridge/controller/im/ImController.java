@@ -1,11 +1,10 @@
 package com.gaea.single.bridge.controller.im;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
-import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,7 +24,7 @@ import java.util.Map;
 @RequestMapping(value = "/im", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "IM服务")
 @Validated
-public class ImController extends BaseContoller {
+public class ImController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @PostMapping(value = "/v1/order.net")

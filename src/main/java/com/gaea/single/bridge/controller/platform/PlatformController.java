@@ -2,7 +2,7 @@ package com.gaea.single.bridge.controller.platform;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
-import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
@@ -31,7 +31,7 @@ import java.util.Map;
 @RequestMapping(value = "/platform", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "平台服务")
 @Validated
-public class PlatformController extends BaseContoller {
+public class PlatformController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/banners.net")

@@ -4,5 +4,4 @@ package com.gaea.single.bridge.constant;
 public interface CommonHeaderConst {
   String USER_ID = "userId";
   String SESSION = "session";
-  String APP_ID = "appId";
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
+import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.util.JsonUtils;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,9 +23,9 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
     return mono.map(
             res -> {
               R result = null;
-              if (res.getDataCollection() != null) {
+              if (res.getDataCollection() != null && resConverter != null) {
                 result =
-                    res.getDataCollection() instanceof JSONObject
+                    isOriginalType(res)
                         ? resConverter.convert(JsonUtils.toJsonObject(res.getDataCollection()))
                         : resConverter.convert(res.getDataCollection());
               }
@@ -40,15 +42,30 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
             });
   }
 
+  @Override
+  public <R> Mono<Result<PageRes<R>>> exchangeForPage(
+      Mono<LoboResult> mono, Converter<Object, R> resConverter) {
+    return mono.map(
+            res -> {
+              List<R> result = getResultList(res, resConverter);
+              return Result.success(PageRes.from(res, result));
+            })
+        .onErrorResume(
+            (ex) -> {
+              if (ex instanceof BusinessException) {
+                log.info("业务异常 {}, {}", ((BusinessException) ex).getCode(), ex.getMessage());
+                return Mono.just(Result.error(((BusinessException) ex).getCode(), ex.getMessage()));
+              }
+              log.info("系统内部错误", ex);
+              return Mono.just(Result.error(ErrorCode.INNER_ERROR));
+            });
+  }
+
   public <R> Mono<Result<List<R>>> exchangeForList(
       Mono<LoboResult> mono, Converter<Object, R> resConverter) {
     return mono.map(
             res -> {
-              List<R> result = new ArrayList<>();
-              if (res.getDataCollection() != null) {
-                JSONArray array = JsonUtils.toJsonArray(res.getDataCollection());
-                result = array.stream().map(resConverter::convert).collect(Collectors.toList());
-              }
+              List<R> result = getResultList(res, resConverter);
               return Result.success(result);
             })
         .onErrorResume(
@@ -60,5 +77,18 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
               log.info("系统内部错误", ex);
               return Mono.just(Result.error(ErrorCode.INNER_ERROR));
             });
+  }
+
+  private <R> List<R> getResultList(LoboResult res, Converter<Object, R> resConverter) {
+    List<R> result = new ArrayList<>();
+    if (res.getDataCollection() != null && resConverter != null) {
+      JSONArray array = JsonUtils.toJsonArray(res.getDataCollection());
+      result = array.stream().map(resConverter::convert).collect(Collectors.toList());
+    }
+    return result;
+  }
+
+  private boolean isOriginalType(LoboResult res) {
+    return res.getDataCollection() instanceof JSONObject || res.getDataCollection() instanceof Map;
   }
 }

@@ -3,6 +3,7 @@ package com.gaea.single.bridge.core.lobo;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
+import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
@@ -53,6 +54,24 @@ public class LoboClient {
   }
 
   /**
+   * 发送分页表单请求
+   *
+   * @param path 请求路径
+   * @param data 表单数据
+   * @param resConverter lobo响应转化为{@link Result}
+   * @param <R> 业务响应类型
+   * @return {@link Mono<Result<R>>}
+   */
+  public <R> Mono<Result<PageRes<R>>> postFormForPage(
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<Object, R> resConverter) {
+    return this.request(HttpMethod.POST, exchange, path, data)
+        .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
+  }
+
+  /**
    * 发送表单请求
    *
    * @param path 请求路径
@@ -70,7 +89,7 @@ public class LoboClient {
         .transform(mono -> loboResultExchanger.exchangeForList(mono, resConverter));
   }
   /**
-   * 发送get请求，返回值为单个基本数据类型的值,例如:Long,Integer
+   * 发送get请求
    *
    * @param path 请求路径
    * @param data 请求参数
@@ -85,6 +104,24 @@ public class LoboClient {
       Converter<Object, R> resConverter) {
     return this.request(HttpMethod.GET, exchange, path, data)
         .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
+  }
+
+  /**
+   * 发送get分页请求
+   *
+   * @param path 请求路径
+   * @param data 请求参数
+   * @param resConverter lobo响应转化为{@link Result}
+   * @param <R> 业务响应类型
+   * @return {@link Mono<Result<R>>}
+   */
+  public <R> Mono<Result<PageRes<R>>> getForPage(
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<Object, R> resConverter) {
+    return this.request(HttpMethod.GET, exchange, path, data)
+        .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
   }
 
   private Mono<LoboResult> request(

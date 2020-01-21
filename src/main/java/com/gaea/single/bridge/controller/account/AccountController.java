@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.controller.account;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
-import com.gaea.single.bridge.controller.BaseContoller;
+import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.Api;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RequestMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "账户服务")
 @Validated
-public class AccountController extends BaseContoller {
+public class AccountController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/balance.do")
