@@ -20,17 +20,20 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/user",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 @Api(tags = "用户服务")
 @Validated
 public class UserController extends BaseController {
@@ -72,10 +75,9 @@ public class UserController extends BaseController {
     return loboClient.postForm(exchange, LoboPathConst.REMOVE_BLACK_USER, data, null);
   }
 
-  @PostMapping(value = "/v1/login.do")
+  @PostMapping(value = "/v1/login.net")
   @ApiOperation(value = "用户登录")
-  public Mono<Result<LoginRes>> login(
-      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
+  public Mono<Result<LoginRes>> login(@ApiIgnore ServerWebExchange exchange, @Valid LoginReq req) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
@@ -144,5 +146,40 @@ public class UserController extends BaseController {
 
     return loboClient.postFormForList(
         exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
+  }
+
+  @PostMapping(value = "/v1/info.do")
+  @ApiOperation(value = "编辑用户资料")
+  public Mono<Result<Object>> modifyUserInfo(
+      @ApiParam(value = "参数名称", allowableValues = "nickName,intro,gender,birthday", required = true)
+          @NotBlank
+          String name,
+      @ApiParam(value = "参数值", required = true) @NotBlank String value,
+      @ApiIgnore ServerWebExchange exchange) {
+    int key;
+    int type;
+    String paramName = name;
+    if (name.equals("nickName")) {
+      key = 1;
+      type = 1;
+    } else if (name.equals("intro")) {
+      key = 2;
+      type = 2;
+    } else if (name.equals("gender")) {
+      key = 3;
+      type = 3;
+      paramName = "sex";
+    } else if (name.equals("birthday")) {
+      key = 4;
+      type = 4;
+    } else {
+      return Mono.just(Result.error(ErrorCode.BAD_REQUEST));
+    }
+
+    Map<String, Object> data = new HashMap<>();
+    data.put(paramName, value);
+    data.put("type", type);
+    data.put("key", key);
+    return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null);
   }
 }

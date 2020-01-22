@@ -31,4 +31,6 @@ public interface LoboPathConst {
   String USER_ALBUM = "/user/userCenter/getAlbum";
   /** 获取用户完善信息情况 */
   String PERFECT_INFO = "/user/userCenter/getIsPerfect.do";
+  /** 编辑用户资料 */
+  String EDIT_USER_INFO = "/user/userCenter/editData.do";
 }
