@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum UserOnlineStatus implements Metadata {
   FREE(1, "空闲"),
-  CHATTING(2, "空闲"),
+  CHATTING(2, "忙碌"),
   UN_DISTURB(3, "勿扰");
 
   private int code;

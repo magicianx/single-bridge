@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.config.api;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
 import org.reactivestreams.Publisher;
@@ -70,8 +71,12 @@ public class ApiConfig {
         .apiInfo(apiInfo)
         .globalOperationParameters(
             Arrays.asList(
-                getHeaderParameter("User-Id", "用户id", false),
-                getHeaderParameter("Session", "用户session", false)));
+                getHeaderParameter(CommonHeaderConst.USER_ID, "用户id", false),
+                getHeaderParameter(CommonHeaderConst.SESSION, "用户session", false),
+                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true),
+                getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true),
+                getHeaderParameter(CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true),
+                getHeaderParameter(CommonHeaderConst.OS_TYPE, "操作系统类型", true)));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 

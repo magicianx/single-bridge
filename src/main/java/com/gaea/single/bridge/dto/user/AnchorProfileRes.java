@@ -44,8 +44,8 @@ public class AnchorProfileRes {
   @ApiModelProperty(value = "年龄", required = true)
   private Integer age;
 
-  @ApiModelProperty(value = "地址", required = true)
-  private String address;
+  @ApiModelProperty(value = "城市", required = true)
+  private String city;
 
   @ApiModelProperty("简介")
   private String intro;

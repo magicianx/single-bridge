@@ -1,7 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
 import com.gaea.single.bridge.enums.LoginType;
-import com.gaea.single.bridge.enums.OsType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -35,14 +34,6 @@ public class LoginReq {
 
   @ApiModelProperty("密码, 手机号密码登录必填")
   private String password;
-
-  @ApiModelProperty(value = "操作系统", required = true)
-  @NotNull
-  private OsType os;
-
-  @ApiModelProperty(value = "设备号", required = true)
-  @NotBlank
-  private String deviceNo;
 
   @ApiModelProperty(value = "包名", required = true)
   @NotBlank

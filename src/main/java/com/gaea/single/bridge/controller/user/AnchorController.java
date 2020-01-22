@@ -42,7 +42,7 @@ public class AnchorController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("appId", getAppId(exchange));
+            put("appId", getAppId());
             put("userId", getUserId(exchange));
           }
         };
@@ -57,7 +57,7 @@ public class AnchorController extends BaseController {
       @Valid PageReq pageReq,
       @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data = getPageData(pageReq);
-    data.put("appId", getAppId(exchange));
+    data.put("appId", getAppId());
     data.put("menuId", columnId);
     ;
     return loboClient.postFormForPage(
@@ -72,7 +72,7 @@ public class AnchorController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("appId", getAppId(exchange));
+            put("appId", getAppId());
             put("profileId", userId);
           }
         };

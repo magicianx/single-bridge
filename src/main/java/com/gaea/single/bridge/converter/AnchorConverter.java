@@ -41,6 +41,7 @@ public class AnchorConverter {
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setSignature(result.getString("comment"));
         res.setCoverUrl(result.getString("cover"));
+        res.setPrice(result.getInteger("price"));
         return res;
       };
 
@@ -59,7 +60,7 @@ public class AnchorConverter {
         res.setPrice(result.getInteger("price"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
         res.setAge(result.getInteger("age"));
-        res.setAddress(result.getString("address"));
+        res.setCity(result.getString("address"));
         res.setIntro(result.getString("intro"));
         Optional.ofNullable(result.getJSONArray("photos"))
             .map(

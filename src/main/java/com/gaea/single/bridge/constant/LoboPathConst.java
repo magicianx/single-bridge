@@ -20,11 +20,15 @@ public interface LoboPathConst {
   /** 获取账户余额 */
   String ACCOUNT_BALANCE = "/user/userCenter/getUserMoney.do";
   /** 获取用户信息 */
-  String USER_INFO = " /user/userCenter/getUserInfo.do";
+  String USER_INFO = "/user/userCenter/getUserInfo.do";
   /** 获取黑名单列表 */
   String BLACK_LIST = "/relationship/blackCenter/getBlacks.do";
   /** 移除黑名单用户 */
   String REMOVE_BLACK_USER = "/relationship/blackCenter/black.do";
   /** 用户登录 */
   String USER_LOGIN = "/user/userLogin/login";
+  /** 获取用户相册 */
+  String USER_ALBUM = "/user/userCenter/getAlbum";
+  /** 获取用户完善信息情况 */
+  String PERFECT_INFO = "/user/userCenter/getIsPerfect.do";
 }

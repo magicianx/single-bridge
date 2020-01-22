@@ -11,7 +11,7 @@ public class AccountConverter {
         JSONObject result = (JSONObject) obj;
         GratuityGiftItemRes res = new GratuityGiftItemRes();
         res.setId(result.getLong("id"));
-        res.setAmount(result.getLong("money"));
+        res.setPrice(result.getLong("money"));
         res.setName(result.getString("pictureName"));
         res.setImgUrl(result.getString("pictureUrl"));
         res.setSmallImgUrl(result.getString("smallPictureUrl"));

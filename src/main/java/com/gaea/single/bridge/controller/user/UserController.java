@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
@@ -8,10 +9,8 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.dto.user.BlackUserRes;
-import com.gaea.single.bridge.dto.user.LoginReq;
-import com.gaea.single.bridge.dto.user.LoginRes;
-import com.gaea.single.bridge.dto.user.UserRes;
+import com.gaea.single.bridge.dto.user.*;
+import com.gaea.single.bridge.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,11 +20,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,8 +37,8 @@ public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/info.do")
-  @ApiOperation(value = "获取当前登录用户信息")
-  public Mono<Result<UserRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
+  //  @ApiOperation(value = "获取当前登录用户信息")
+  public Mono<Result<UserProfileRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
     return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
   }
 
@@ -74,30 +75,74 @@ public class UserController extends BaseController {
   @PostMapping(value = "/v1/login.do")
   @ApiOperation(value = "用户登录")
   public Mono<Result<LoginRes>> login(
-      @ApiIgnore ServerWebExchange exchange, @RequestBody @Valid LoginReq req) {
+      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
             put("type", req.getType().getCode());
-            put("os", req.getOs().getCode());
+            put("os", getOsType(exchange));
             put("openId", req.getOpenId());
             put("imageUrl", req.getPortraitUrl());
             put("appId", getAppId());
             put("channel", getChannelId());
-            put("deviceNo", req.getDeviceNo());
+            put("deviceNo", getDeviceNo(exchange));
             put("packageName", req.getPackageName());
             put("accessToken", req.getAccessToken());
             put("userName", req.getNickName());
-            put("version", req.getNickName()); // @TODO
+            put("version", getAppVersion(exchange));
           }
         };
-    return loboClient.postForm(
-        exchange,
-        LoboPathConst.USER_LOGIN,
-        data,
-        (obj) -> {
-          JSONObject result = (JSONObject) obj;
-          return new LoginRes(result.getString("userId"), result.getString("session"));
-        });
+    return loboClient
+        .postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes)
+        .flatMap(
+            result -> {
+              if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
+                LoginRes res = result.getData();
+                exchange.getAttributes().put(CommonHeaderConst.SESSION, res.getSession());
+                exchange.getAttributes().put(CommonHeaderConst.USER_ID, res.getId().toString());
+
+                Mono<Result<UserProfileRes>> userProfileMono = getUserInfo(exchange);
+                Mono<Result<JSONObject>> perfectInoMono =
+                    loboClient.postForm(
+                        exchange,
+                        LoboPathConst.PERFECT_INFO,
+                        null,
+                        perfectResult -> (JSONObject) perfectResult);
+
+                return Mono.zip(userProfileMono, perfectInoMono)
+                    .map(
+                        tuple2 -> {
+                          Result<UserProfileRes> userProfile = tuple2.getT1();
+                          Result<JSONObject> perfectInfo = tuple2.getT2();
+                          if (userProfile.getCode() == ErrorCode.SUCCESS.getCode()) {
+                            res.setIsPerfectBirthday(userProfile.getData().getIsPerfectBirthday());
+                            res.setIsPerfectGender(userProfile.getData().getIsPerfectGender());
+                            res.setBalance(userProfile.getData().getBalance());
+                          }
+                          if (perfectInfo.getCode() == ErrorCode.SUCCESS.getCode()) {
+                            res.setIsVideoPerfect(
+                                perfectInfo.getData().getInteger("isVideoPerfect") == 1);
+                            res.setIsAlbumPerfect(
+                                perfectInfo.getData().getInteger("isPhotoPerfect") == 1);
+                          }
+                          return result;
+                        });
+              }
+              return Mono.just(Result.error(ErrorCode.INNER_ERROR));
+            });
+  }
+
+  @GetMapping(value = "/v1/album.do")
+  @ApiOperation(value = "获取用户相册")
+  public Mono<Result<List<AlbumItemRes>>> getUserAlbum(@ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("profileId", getUserId(exchange));
+          }
+        };
+
+    return loboClient.postFormForList(
+        exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
   }
 }

@@ -21,6 +21,22 @@ public abstract class BaseController {
     return DictionaryProperties.get().getLobo().getChannelId();
   }
 
+  protected String getAppVersion(ServerWebExchange exchange) {
+    return exchange.getAttribute(CommonHeaderConst.APP_VERSION);
+  }
+
+  protected String getDeviceType(ServerWebExchange exchange) {
+    return exchange.getAttribute(CommonHeaderConst.DEVICE_TYPE);
+  }
+
+  protected String getOsType(ServerWebExchange exchange) {
+    return exchange.getAttribute(CommonHeaderConst.OS_TYPE);
+  }
+
+  protected String getDeviceNo(ServerWebExchange exchange) {
+    return exchange.getAttribute(CommonHeaderConst.DEVICE_NO);
+  }
+
   protected Map<String, Object> getPageData(PageReq pageReq) {
     return new HashMap<String, Object>() {
       {

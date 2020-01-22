@@ -54,7 +54,7 @@ public class PlatformController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new BannerRes(
-              result.getString("imgUrl"), result.getString("linkToUrl"), BannerType.INNER);
+              result.getString("imgUrl"), result.getString("linkToUrl"),  result.getString("title"), BannerType.INNER);
         });
   }
 }

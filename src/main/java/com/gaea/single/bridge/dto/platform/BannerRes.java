@@ -20,6 +20,9 @@ public class BannerRes {
   @ApiModelProperty(value = "跳转连接", required = true)
   private String link;
 
+  @ApiModelProperty(value = "广告标题", required = true)
+  private String title;
+
   @ApiModelProperty(value = "广告类型", required = true)
   private BannerType type;
 }

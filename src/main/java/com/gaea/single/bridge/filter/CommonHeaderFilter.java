@@ -17,14 +17,17 @@ public class CommonHeaderFilter implements WebFilter {
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     HttpHeaders headers = exchange.getRequest().getHeaders();
-    putAttribute(exchange, headers, CommonHeaderConst.USER_ID, "User-Id");
-    putAttribute(exchange, headers, CommonHeaderConst.SESSION, "Session");
+    putAttribute(exchange, headers, CommonHeaderConst.USER_ID);
+    putAttribute(exchange, headers, CommonHeaderConst.SESSION);
+    putAttribute(exchange, headers, CommonHeaderConst.APP_VERSION);
+    putAttribute(exchange, headers, CommonHeaderConst.DEVICE_TYPE);
+    putAttribute(exchange, headers, CommonHeaderConst.DEVICE_NO);
+    putAttribute(exchange, headers, CommonHeaderConst.OS_TYPE);
     return chain.filter(exchange);
   }
 
-  private void putAttribute(
-      ServerWebExchange exchange, HttpHeaders headers, String key, String headerName) {
-    List<String> values = headers.get(headerName);
+  private void putAttribute(ServerWebExchange exchange, HttpHeaders headers, String key) {
+    List<String> values = headers.get(key);
     if (values != null && !values.isEmpty()) {
       exchange.getAttributes().put(key, values.get(0));
     }

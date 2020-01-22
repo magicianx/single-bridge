@@ -14,7 +14,7 @@ public class GratuityGiftItemRes {
   private Long id;
 
   @ApiModelProperty(value = "礼物金额", required = true)
-  private Long amount;
+  private Long price;
 
   @ApiModelProperty(value = "礼物名称", required = true)
   private String name;

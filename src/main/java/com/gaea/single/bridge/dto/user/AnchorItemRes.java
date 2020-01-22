@@ -30,4 +30,7 @@ public class AnchorItemRes {
 
   @ApiModelProperty(value = "个性签名")
   private String signature;
+
+  @ApiModelProperty(value = "每分钟价格", required = true)
+  private Integer price;
 }

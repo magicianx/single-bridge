@@ -28,7 +28,7 @@ public class ImController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @PostMapping(value = "/v1/order.net")
-//  @ApiOperation(value = "创建IM订单")
+  //  @ApiOperation(value = "创建IM订单")
   @Deprecated
   public Mono<Result<Object>> createImOrder(
       @ApiParam(value = "卖家id", required = true) @NotNull Long sellerId,
@@ -44,7 +44,7 @@ public class ImController extends BaseController {
             put("buyerId", buyerId);
             put("sellerInitiative", sellerInitiative);
             put("key", "key");
-            put("appId", getAppId(exchange));
+            put("appId", getAppId());
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.GRATUITY_GIFT_LIST, data, null);

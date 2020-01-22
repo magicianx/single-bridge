@@ -8,7 +8,7 @@ import lombok.Setter;
 @ApiModel("用户信息")
 @Getter
 @Setter
-public class UserRes {
+public class UserProfileRes {
   @ApiModelProperty(value = "用户id", required = true)
   private Long id;
 
@@ -33,9 +33,12 @@ public class UserRes {
   @ApiModelProperty(value = "手机号", notes = "被*遮盖后的手机号")
   private String mobilePhone;
 
-  @ApiModelProperty(value = "是否已完善资料", required = true)
-  private Boolean isPerfect;
-
   @ApiModelProperty(value = "账户余额", required = true)
-  private Long amount;
+  private Long balance;
+
+  @ApiModelProperty(value = "是否完善生日", required = true)
+  private Boolean isPerfectBirthday;
+
+  @ApiModelProperty(value = "是否完善性别", required = true)
+  private Boolean isPerfectGender;
 }

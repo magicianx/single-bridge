@@ -6,6 +6,8 @@ import com.gaea.single.bridge.converter.AccountConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
+import com.gaea.single.bridge.enums.GiftType;
+import com.gaea.single.bridge.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/account/gratuity", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,7 +34,22 @@ public class GratuityController extends BaseController {
   @ApiOperation(value = "获取打赏礼物列表")
   public Mono<Result<List<GratuityGiftItemRes>>> getGratuityGiftList(
       @ApiIgnore ServerWebExchange exchange) {
-    return loboClient.postFormForList(
-        exchange, LoboPathConst.GRATUITY_GIFT_LIST, null, AccountConverter.toGratuityGiftItemRes);
+    return loboClient
+        .postFormForList(
+            exchange,
+            LoboPathConst.GRATUITY_GIFT_LIST,
+            null,
+            AccountConverter.toGratuityGiftItemRes)
+        .map(
+            result -> {
+              if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
+                List<GratuityGiftItemRes> gifts =
+                    result.getData().stream()
+                        .filter(item -> item.getType() == GiftType.GENERAL)
+                        .collect(Collectors.toList());
+                result.setData(gifts);
+              }
+              return result;
+            });
   }
 }
