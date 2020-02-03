@@ -35,6 +35,9 @@ public class LoginReq {
   @ApiModelProperty("密码, 手机号密码登录必填")
   private String password;
 
+  @ApiModelProperty("验证码, 验证码登录必填")
+  private String smsCode;
+
   @ApiModelProperty(value = "包名", required = true)
   @NotBlank
   private String packageName;

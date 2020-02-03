@@ -92,6 +92,9 @@ public class UserController extends BaseController {
             put("accessToken", req.getAccessToken());
             put("userName", req.getNickName());
             put("version", getAppVersion(exchange));
+            put("userMobile", req.getPhoneNum());
+            put("password", req.getPassword());
+            put("smsCode", req.getSmsCode());
           }
         };
     return loboClient
