@@ -33,4 +33,6 @@ public interface LoboPathConst {
   String PERFECT_INFO = "/user/userCenter/getIsPerfect.do";
   /** 编辑用户资料 */
   String EDIT_USER_INFO = "/user/userCenter/editData.do";
+  /** 发送验证码 */
+  String SEND_SMS_CODE = "/user/userLogin/sendSmsCode";
 }

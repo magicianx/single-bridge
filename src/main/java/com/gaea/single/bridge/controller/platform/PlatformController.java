@@ -6,6 +6,7 @@ import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
+import com.gaea.single.bridge.dto.platform.SendSmsReq;
 import com.gaea.single.bridge.enums.BannerType;
 import com.gaea.single.bridge.enums.DeviceType;
 import io.swagger.annotations.Api;
@@ -14,14 +15,12 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,24 @@ public class PlatformController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new BannerRes(
-              result.getString("imgUrl"), result.getString("linkToUrl"),  result.getString("title"), BannerType.INNER);
+              result.getString("imgUrl"),
+              result.getString("linkToUrl"),
+              result.getString("title"),
+              BannerType.INNER);
         });
+  }
+
+  @PostMapping(value = "/v1/sms_code.net")
+  @ApiOperation(value = "发送验证码")
+  public Mono<Result<Object>> sendSmsCode(
+      @Valid SendSmsReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("type", req.getType().getCode());
+            put("userMobile", req.getPhoneNum());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.SEND_SMS_CODE, data, null);
   }
 }
