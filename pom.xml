@@ -22,6 +22,7 @@
         <springfox.version>3.0.0-SNAPSHOT</springfox.version>
         <platform.version>1.2.3</platform.version>
         <tsixi.httptool.version>0.1.1</tsixi.httptool.version>
+        <start-class>com.gaea.single.bridge.SingleBridgeApplication</start-class>
     </properties>
 
     <repositories>
@@ -99,4 +100,13 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
