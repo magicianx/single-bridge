@@ -17,5 +17,5 @@ public class ReportSelectItemRes {
   private String reason;
 
   @ApiModelProperty(value = "是否被默认选中", required = true)
-  private String isChecked;
+  private Boolean isChecked;
 }

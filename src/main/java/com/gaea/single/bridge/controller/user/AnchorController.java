@@ -97,7 +97,8 @@ public class AnchorController extends BaseController {
         data,
         (obj -> {
           JSONObject result = (JSONObject) obj;
-          return new ReportSelectItemRes(result.getString("reason"), result.getString("isChecked"));
+          return new ReportSelectItemRes(
+              result.getString("reason"), result.getBoolean("isChecked"));
         }));
   }
 
