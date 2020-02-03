@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.config.api;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import springfox.documentation.spi.DocumentationType;
@@ -9,6 +10,7 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
 import static springfox.documentation.swagger.common.SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER;
 
+@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "prod")
 @Component
 @Order(SWAGGER_PLUGIN_ORDER + 1)
 public class CustomApiParamBuilder extends AbstractEnumTypeBuilder

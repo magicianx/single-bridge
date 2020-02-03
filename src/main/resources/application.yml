@@ -10,3 +10,6 @@ logging:
   level:
     org.springframework: debug
 #lobo.host: "http://mgr.vchat.club:19001"
+spring:
+  profiles:
+    active: prod
