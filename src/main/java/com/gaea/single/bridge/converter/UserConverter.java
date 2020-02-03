@@ -34,6 +34,7 @@ public class UserConverter {
         res.setId(result.getLong("userId"));
         res.setSession(result.getString("session"));
         res.setShowId(result.getString("showId"));
+        res.setYunXinId(result.getString("yunxinAccid"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
         res.setIntro(result.getString("intro"));

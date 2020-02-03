@@ -1,7 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
 import com.gaea.single.bridge.enums.GenderType;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -20,6 +19,9 @@ public class LoginRes {
 
   @ApiModelProperty(value = "显示id", required = true)
   private String showId;
+
+  @ApiModelProperty(value = "云信id", required = true)
+  private String yunXinId;
 
   @ApiModelProperty(value = "昵称", required = true)
   private String nickName;
