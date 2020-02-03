@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @ApiModel("登录类型")
@@ -37,8 +36,4 @@ public class LoginReq {
 
   @ApiModelProperty("验证码, 验证码登录必填")
   private String smsCode;
-
-  @ApiModelProperty(value = "包名", required = true)
-  @NotBlank
-  private String packageName;
 }

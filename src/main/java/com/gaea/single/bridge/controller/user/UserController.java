@@ -88,7 +88,6 @@ public class UserController extends BaseController {
             put("appId", getAppId());
             put("channel", getChannelId());
             put("deviceNo", getDeviceNo(exchange));
-            put("packageName", req.getPackageName());
             put("accessToken", req.getAccessToken());
             put("userName", req.getNickName());
             put("version", getAppVersion(exchange));
