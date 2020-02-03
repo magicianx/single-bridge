@@ -27,7 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/platform", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/platform",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 @Api(tags = "平台服务")
 @Validated
 public class PlatformController extends BaseController {
