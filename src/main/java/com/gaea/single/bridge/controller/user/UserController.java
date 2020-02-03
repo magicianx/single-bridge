@@ -133,7 +133,7 @@ public class UserController extends BaseController {
                           return result;
                         });
               }
-              return Mono.just(Result.error(ErrorCode.INNER_ERROR));
+              return Mono.just(Result.error(result.getCode(), result.getMessage()));
             });
   }
 
