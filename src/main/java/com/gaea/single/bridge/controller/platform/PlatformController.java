@@ -30,7 +30,7 @@ import java.util.Map;
 @RequestMapping(
     value = "/platform",
     produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "平台服务")
 @Validated
 public class PlatformController extends BaseController {
@@ -66,7 +66,7 @@ public class PlatformController extends BaseController {
   @PostMapping(value = "/v1/sms_code.net")
   @ApiOperation(value = "发送验证码")
   public Mono<Result<Object>> sendSmsCode(
-      @Valid SendSmsReq req, @ApiIgnore ServerWebExchange exchange) {
+      @Valid @RequestBody SendSmsReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {

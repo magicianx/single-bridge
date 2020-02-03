@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/account/gratuity", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/account/gratuity",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "打赏服务")
 @Validated
 public class GratuityController extends BaseController {

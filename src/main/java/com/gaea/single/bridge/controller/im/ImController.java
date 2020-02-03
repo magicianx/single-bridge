@@ -21,7 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/im", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/im",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "IM服务")
 @Validated
 public class ImController extends BaseController {

@@ -29,7 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/user/anchor", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/user/anchor",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "主播服务")
 @Validated
 public class AnchorController extends BaseController {

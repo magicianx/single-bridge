@@ -20,7 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(
+    value = "/account",
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "账户服务")
 @Validated
 public class AccountController extends BaseController {
