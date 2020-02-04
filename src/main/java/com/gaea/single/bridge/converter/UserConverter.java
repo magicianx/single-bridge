@@ -6,6 +6,7 @@ import com.gaea.single.bridge.dto.user.LoginRes;
 import com.gaea.single.bridge.dto.user.UserProfileRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.GenderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserConverter {
@@ -40,6 +41,7 @@ public class UserConverter {
         res.setIntro(result.getString("intro"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
         res.setBirthday(result.getString("birthday"));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         return res;
       };
 

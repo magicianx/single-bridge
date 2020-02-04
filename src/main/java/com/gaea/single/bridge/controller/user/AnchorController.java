@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -105,18 +106,18 @@ public class AnchorController extends BaseController {
         }));
   }
 
-  @PostMapping(value = "/v1/report.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/v1/report.do")
   @ApiOperation(value = "举报或拉黑主播")
   public Mono<Result<?>> reportAnchor(
-      @Valid ReportAnchorReq req, @ApiIgnore ServerWebExchange exchange) {
+      @Valid @RequestBody ReportAnchorReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("complainUserId", req.getReportUserId());
+            put("complainUserId", getUserId(exchange));
             put("complainedUserId", req.getReportedUserId());
             put("reason", req.getReason());
             put("key", " ---- ");
-            put("file", req.getImg());
+            put("file", new ClassPathResource("report.jpg"));
           }
         };
 

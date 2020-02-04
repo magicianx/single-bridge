@@ -7,6 +7,7 @@ import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpRequest;
@@ -189,7 +190,7 @@ public class LoboClient {
     MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED;
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
     if (data != null) {
-      boolean multipartForm = data.values().stream().anyMatch(v -> v instanceof FilePart);
+      boolean multipartForm = data.values().stream().anyMatch(v -> v instanceof Resource);
       mediaType =
           multipartForm ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_FORM_URLENCODED;
 

@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.dto.user;
 
 import com.gaea.single.bridge.enums.GenderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -55,4 +56,7 @@ public class LoginRes {
 
   @ApiModelProperty(value = "是否完善视频", required = true)
   private Boolean isVideoPerfect;
+
+  @ApiModelProperty(value = "在线状态", required = true)
+  private UserOnlineStatus onlineStatus;
 }

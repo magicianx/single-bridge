@@ -14,11 +14,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class ReportAnchorReq {
-  @ApiModelProperty(value = "举报人id", required = true)
-  @NotNull
-  private Long reportUserId;
-
-  @ApiModelProperty(value = "被举报人id", required = true)
+  @ApiModelProperty(value = "被举报用户id", required = true)
   @NotNull
   private Long reportedUserId;
 
@@ -26,9 +22,9 @@ public class ReportAnchorReq {
   @NotBlank
   private String reason;
 
-  @ApiModelProperty(value = "举报图片", required = true)
-  @NotNull
-  private MultipartFile img;
+//  @ApiModelProperty(value = "举报图片", required = true)
+//  @NotNull
+//  private FilePart img;
 
   @ApiModelProperty(value = "是否拉黑", required = true)
   @NotNull
