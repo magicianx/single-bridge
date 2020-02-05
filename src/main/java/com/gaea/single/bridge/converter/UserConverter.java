@@ -7,6 +7,7 @@ import com.gaea.single.bridge.dto.user.UserProfileRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserType;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserConverter {
@@ -25,6 +26,7 @@ public class UserConverter {
         res.setBalance(result.getLong("money"));
         res.setIsPerfectBirthday(result.getInteger("isPerfectAge") == 1);
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
+        res.setUserType(UserType.ofCode(result.getInteger("userType")));
         return res;
       };
 

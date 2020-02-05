@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -41,4 +42,7 @@ public class UserProfileRes {
 
   @ApiModelProperty(value = "是否完善性别", required = true)
   private Boolean isPerfectGender;
+
+  @ApiModelProperty(value = "用户类型", required = true)
+  private UserType userType;
 }

@@ -21,4 +21,7 @@ public class BlackUserRes {
 
   @ApiModelProperty(value = "头像链接", required = true)
   private String portraitUrl;
+
+  @ApiModelProperty(value = "云信id", required = true)
+  private String yunXinId;
 }

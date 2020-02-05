@@ -1,7 +1,6 @@
 package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
@@ -10,12 +9,12 @@ import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
-import com.gaea.single.bridge.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
@@ -24,22 +23,20 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(
-    value = "/user",
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "用户服务")
 @Validated
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/info.do")
-  //  @ApiOperation(value = "获取当前登录用户信息")
+  @ApiOperation(value = "获取当前登录用户信息")
   public Mono<Result<UserProfileRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
     return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
   }
@@ -55,7 +52,10 @@ public class UserController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new BlackUserRes(
-              result.getLong("userId"), result.getString("nickName"), result.getString("portrait"));
+              result.getLong("userId"),
+              result.getString("nickName"),
+              result.getString("portrait"),
+              result.getString("yunxinId"));
         });
   }
 
@@ -96,44 +96,7 @@ public class UserController extends BaseController {
             put("smsCode", req.getSmsCode());
           }
         };
-    return loboClient
-        .postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes)
-        .flatMap(
-            result -> {
-              if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
-                LoginRes res = result.getData();
-                exchange.getAttributes().put(CommonHeaderConst.SESSION, res.getSession());
-                exchange.getAttributes().put(CommonHeaderConst.USER_ID, res.getId().toString());
-
-                Mono<Result<UserProfileRes>> userProfileMono = getUserInfo(exchange);
-                Mono<Result<JSONObject>> perfectInoMono =
-                    loboClient.postForm(
-                        exchange,
-                        LoboPathConst.PERFECT_INFO,
-                        null,
-                        perfectResult -> (JSONObject) perfectResult);
-
-                return Mono.zip(userProfileMono, perfectInoMono)
-                    .map(
-                        tuple2 -> {
-                          Result<UserProfileRes> userProfile = tuple2.getT1();
-                          Result<JSONObject> perfectInfo = tuple2.getT2();
-                          if (userProfile.getCode() == ErrorCode.SUCCESS.getCode()) {
-                            res.setIsPerfectBirthday(userProfile.getData().getIsPerfectBirthday());
-                            res.setIsPerfectGender(userProfile.getData().getIsPerfectGender());
-                            res.setBalance(userProfile.getData().getBalance());
-                          }
-                          if (perfectInfo.getCode() == ErrorCode.SUCCESS.getCode()) {
-                            res.setIsVideoPerfect(
-                                perfectInfo.getData().getInteger("isVideoPerfect") == 1);
-                            res.setIsAlbumPerfect(
-                                perfectInfo.getData().getInteger("isPhotoPerfect") == 1);
-                          }
-                          return result;
-                        });
-              }
-              return Mono.just(Result.error(result.getCode(), result.getMessage()));
-            });
+    return loboClient.postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
   }
 
   @GetMapping(value = "/v1/album.do")
@@ -154,30 +117,36 @@ public class UserController extends BaseController {
   @ApiOperation(value = "编辑用户资料")
   public Mono<Result<Object>> modifyUserInfo(
       @Valid @RequestBody UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
-    int key;
-    int type;
-    String paramName = req.getName();
-    if (req.getName().equals("nickName")) {
-      key = 1;
-      type = 1;
-    } else if (req.getName().equals("intro")) {
-      key = 2;
-      type = 2;
-    } else if (req.getName().equals("gender")) {
-      key = 3;
-      type = 3;
-      paramName = "sex";
-    } else if (req.getName().equals("birthday")) {
-      key = 4;
-      type = 4;
-    } else {
-      return Mono.just(Result.error(ErrorCode.BAD_REQUEST));
+    List<Mono<Result<Object>>> monos = new ArrayList<>();
+    if (req.getNickName() != null) {
+      monos.add(callUpdateUserInfo(exchange, 1, "nickName", req.getNickName()));
+    } else if (req.getIntro() != null) {
+      monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro()));
+    } else if (req.getGender() != null) {
+      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender()));
+    } else if (req.getBirthday() != null) {
+      monos.add(callUpdateUserInfo(exchange, 4, "birthday", req.getBirthday()));
     }
 
+    if (!monos.isEmpty()) {
+      return Mono.zip(monos, (objs) -> objs).map(result -> Result.success());
+    }
+    return Mono.just(Result.success());
+  }
+
+  private Mono<Result<Object>> callUpdateUserInfo(
+      ServerWebExchange exchange, int type, String name, String value) {
     Map<String, Object> data = new HashMap<>();
-    data.put(paramName, req.getValue());
+    data.put(name, value);
     data.put("type", type);
-    data.put("key", key);
+    data.put("key", type); // key和type的值相同
     return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null);
+  }
+
+  private Mono<Result<String>> callUpdateUserPortrait(
+      ServerWebExchange exchange, FilePart portrait) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("file", portrait); // key和type的值相同
+    return loboClient.postForm(exchange, LoboPathConst.UPDATE_USER_PORTRAIT, data, null);
   }
 }

@@ -6,9 +6,12 @@ import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
+import com.gaea.single.bridge.dto.platform.CheckVersionRes;
 import com.gaea.single.bridge.dto.platform.SendSmsReq;
 import com.gaea.single.bridge.enums.BannerType;
 import com.gaea.single.bridge.enums.DeviceType;
+import com.gaea.single.bridge.enums.OsType;
+import com.gaea.single.bridge.enums.VersionUpdateType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -75,5 +78,28 @@ public class PlatformController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.SEND_SMS_CODE, data, null);
+  }
+
+  @GetMapping(value = "/v1/checkVersion.net")
+  @ApiOperation(value = "检查版本号")
+  public Mono<Result<CheckVersionRes>> checkVersion(
+      @Valid @RequestParam("osType") OsType osType, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("type", osType.getCode());
+          }
+        };
+    return loboClient.postForm(
+        exchange,
+        LoboPathConst.CHECK_VERSION,
+        data,
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new CheckVersionRes(
+              result.getInteger("versionCode"),
+              result.getString("versionNum"),
+              VersionUpdateType.ofCode(result.getInteger("updateType")));
+        });
   }
 }

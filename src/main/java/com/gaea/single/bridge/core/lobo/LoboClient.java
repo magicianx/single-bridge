@@ -190,7 +190,8 @@ public class LoboClient {
     MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED;
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
     if (data != null) {
-      boolean multipartForm = data.values().stream().anyMatch(v -> v instanceof Resource);
+      boolean multipartForm =
+          data.values().stream().anyMatch(v -> v instanceof Resource || v instanceof FilePart);
       mediaType =
           multipartForm ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_FORM_URLENCODED;
 

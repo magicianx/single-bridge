@@ -35,4 +35,8 @@ public interface LoboPathConst {
   String EDIT_USER_INFO = "/user/userCenter/editData.do";
   /** 发送验证码 */
   String SEND_SMS_CODE = "/user/userLogin/sendSmsCode";
+  /** 检查版本 */
+  String CHECK_VERSION = "/basic/version/checkVersion";
+  /** 修改用户头像 */
+  String UPDATE_USER_PORTRAIT = "/user/userCenter/uploadPortrait.do";
 }

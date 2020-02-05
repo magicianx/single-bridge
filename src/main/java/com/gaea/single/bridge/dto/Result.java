@@ -20,8 +20,11 @@ public class Result<T> {
   @ApiModelProperty(value = "响应信息", example = "成功")
   private String message;
 
-  public static <T> Result<T> success(T data) {
+  public static <T> Result<T> success() {
+    return new Result<>(ErrorCode.SUCCESS.getCode(), null, ErrorCode.SUCCESS.getMessage());
+  }
 
+  public static <T> Result<T> success(T data) {
     return new Result<>(ErrorCode.SUCCESS.getCode(), data, ErrorCode.SUCCESS.getMessage());
   }
 
