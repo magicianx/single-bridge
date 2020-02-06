@@ -19,4 +19,7 @@ public class AlbumItemRes {
 
   @ApiModelProperty(value = "审核状态", required = true)
   private AuditStatus status;
+
+  @ApiModelProperty(value = "是否为封面", required = true)
+  private Boolean isCover;
 }

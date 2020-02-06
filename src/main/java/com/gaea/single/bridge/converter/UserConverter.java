@@ -8,6 +8,7 @@ import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserType;
+import com.gaea.single.bridge.util.DateUtil;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserConverter {
@@ -15,7 +16,7 @@ public class UserConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         UserProfileRes res = new UserProfileRes();
-        res.setId(result.getLong("id"));
+        res.setId(result.getLong("userId"));
         res.setShowId(result.getString("showId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
@@ -38,7 +39,7 @@ public class UserConverter {
         res.setSession(result.getString("session"));
         res.setYunXinId(result.getString("yunxinAccid"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
-        res.setBirthday(result.getString("birthday"));
+        res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         return res;
       };
@@ -49,6 +50,7 @@ public class UserConverter {
         AlbumItemRes res = new AlbumItemRes();
         res.setImgUrl(result.getString("url"));
         res.setStatus(AuditStatus.ofCode(result.getInteger("status")));
+        res.setIsCover(false);
         return res;
       };
 }

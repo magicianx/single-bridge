@@ -5,15 +5,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
+import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.core.lobo.LoboClient;
+import com.gaea.single.bridge.core.lobo.LoboCode;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.util.DateUtil;
+import com.gaea.single.bridge.util.JsonUtils;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -125,9 +128,16 @@ public class UserController extends BaseController {
   }
 
   @PostMapping(value = "/v1/album.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ApiImplicitParams(
+      @ApiImplicitParam(
+          name = "img",
+          value = "图片",
+          paramType = "form",
+          dataType = "__file",
+          required = true))
   @ApiOperation(value = "上传相册图片")
   public Mono<Result<List<AlbumItemRes>>> uploadAlbumImg(
-      UploadAlbumReq req, @ApiIgnore ServerWebExchange exchange) {
+      @Valid UploadAlbumReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
@@ -146,7 +156,9 @@ public class UserController extends BaseController {
                   i -> {
                     JSONObject item = (JSONObject) i;
                     return new AlbumItemRes(
-                        item.getString("url"), AuditStatus.ofCode(item.getInteger("status")));
+                        item.getString("url"),
+                        AuditStatus.ofCode(item.getInteger("status")),
+                        false);
                   })
               .collect(Collectors.toList());
         });
@@ -156,10 +168,19 @@ public class UserController extends BaseController {
   @ApiOperation(value = "删除相册图片")
   public Mono<Result<Object>> removeAlbumImg(
       @ApiIgnore ServerWebExchange exchange, @RequestBody @Valid DeleteAlbumReq req) {
+    String urls =
+        JsonUtils.toJsonString(
+            Collections.singletonList(
+                new HashMap<String, Object>() {
+                  {
+                    put("url", req.getImgUrl());
+                    put("status", req.getStatus().getCode());
+                  }
+                }));
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("urls", Collections.singletonList(req));
+            put("urls", urls);
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.DELETE_ALBUM_IMG, data, null);
@@ -179,34 +200,58 @@ public class UserController extends BaseController {
           }
         };
     Mono<Result<Object>> uploadMono =
-        loboClient.postForm(exchange, LoboPathConst.UPLOAD_ALBUM_IMG, data, (obj) -> null);
+        loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_PORTRAIT, data, (obj) -> null);
     return Mono.zip(removeAlbumMono, uploadMono).map((v) -> Result.success());
   }
 
   @PostMapping(value = "/v1/info.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ApiImplicitParams(
+      @ApiImplicitParam(name = "portrait", value = "头像", paramType = "form", dataType = "__file"))
   @ApiOperation(value = "编辑用户资料", notes = "普通用户需要上传头像")
   public Mono<Result<UpdateUserRes>> modifyUserInfo(
       @Valid UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
     if (req.getNickName() != null) {
       monos.add(callUpdateUserInfo(exchange, 1, "nickName", req.getNickName()));
-    } else if (req.getIntro() != null) {
+    }
+    if (req.getIntro() != null) {
       monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro()));
-    } else if (req.getGender() != null) {
-      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender()));
-    } else if (req.getBirthday() != null) {
-      monos.add(callUpdateUserInfo(exchange, 4, "birthday", req.getBirthday()));
-    } else if (req.getPortrait() != null) {
+    }
+    if (req.getGender() != null) {
+      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender().getCode()));
+    }
+    if (req.getBirthday() != null) {
+      monos.add(
+          callUpdateUserInfo(exchange, 4, "birthday", DateUtil.toLoboDate(req.getBirthday())));
+    }
+    if (req.getPortrait() != null) {
       monos.add(callUploadUserPortrait(exchange, req.getPortrait()));
     }
     if (!monos.isEmpty()) {
       return Mono.zip(
               monos,
               (objs) -> {
-                Result<String> result = (Result<String>) objs[4];
-                return new UpdateUserRes(result.getData());
+                for (Object obj : objs) {
+                  Result<Object> result = (Result<Object>) obj;
+                  if (LoboCode.isErrorCode(result.getCode())) {
+                    throw new BusinessException(
+                        result.getCode(), LoboCode.getErrorMessage(result.getCode()));
+                  }
+                }
+                Result<String> result = (Result<String>) objs[monos.size() - 1];
+                return new UpdateUserRes(result.getData(), AuditStatus.AUDITING);
               })
-          .map(Result::success);
+          .map(Result::success)
+          .onErrorResume(
+              ex -> {
+                if (ex instanceof BusinessException) {
+                  return Mono.just(
+                      Result.error(((BusinessException) ex).getCode(), ex.getMessage()));
+                }
+                return Mono.just(
+                    Result.error(
+                        ErrorCode.INNER_ERROR.getCode(), ErrorCode.INNER_ERROR.getMessage()));
+              });
     }
     return Mono.just(Result.success());
   }
@@ -221,12 +266,12 @@ public class UserController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new AlbumItemRes(
-              result.getString("url"), AuditStatus.ofCode(result.getInteger("status")));
+              result.getString("url"), AuditStatus.ofCode(result.getInteger("status")), true);
         });
   }
 
   private Mono<Result<Object>> callUpdateUserInfo(
-      ServerWebExchange exchange, int type, String name, String value) {
+      ServerWebExchange exchange, int type, String name, Object value) {
     Map<String, Object> data = new HashMap<>();
     data.put(name, value);
     data.put("type", type);
@@ -238,6 +283,6 @@ public class UserController extends BaseController {
       ServerWebExchange exchange, FilePart portrait) {
     Map<String, Object> data = new HashMap<>();
     data.put("file", portrait); // key和type的值相同
-    return loboClient.postForm(exchange, LoboPathConst.UPDATE_USER_PORTRAIT, data, null);
+    return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_PORTRAIT, data, url -> url);
   }
 }
