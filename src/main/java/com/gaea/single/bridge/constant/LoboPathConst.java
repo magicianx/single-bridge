@@ -27,6 +27,8 @@ public interface LoboPathConst {
   String REMOVE_BLACK_USER = "/relationship/blackCenter/black.do";
   /** 用户登录 */
   String USER_LOGIN = "/user/userLogin/login";
+  /** 一键登录 */
+  String ONE_LOGIN = "/user/userLogin/login";
   /** 获取用户相册 */
   String USER_ALBUM = "/user/userCenter/getAlbum";
   /** 获取用户完善信息情况 */

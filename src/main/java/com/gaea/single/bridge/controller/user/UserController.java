@@ -13,6 +13,7 @@ import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
+import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
@@ -83,25 +84,40 @@ public class UserController extends BaseController {
   @ApiOperation(value = "用户登录")
   public Mono<Result<LoginRes>> login(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("type", req.getType().getCode());
-            put("os", getOsType(exchange));
-            put("openId", req.getOpenId());
-            put("imageUrl", req.getPortraitUrl());
-            put("appId", getAppId());
-            put("channel", getChannelId());
-            put("deviceNo", getDeviceNo(exchange));
-            put("accessToken", req.getAccessToken());
-            put("userName", req.getNickName());
-            put("version", getAppVersion(exchange));
-            put("userMobile", req.getPhoneNum());
-            put("password", req.getPassword());
-            put("smsCode", req.getSmsCode());
-          }
-        };
-    return loboClient.postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
+    if (req.getType() == LoginType.PHONE_DIRECT) {
+      Map<String, Object> data =
+          new HashMap<String, Object>() {
+            {
+              put("type", req.getType().getCode());
+              put("os", getOsType(exchange));
+              put("openId", req.getOpenId());
+              put("imageUrl", req.getPortraitUrl());
+              put("appId", getAppId());
+              put("channel", getChannelId());
+              put("deviceNo", getDeviceNo(exchange));
+              put("accessToken", req.getAccessToken());
+              put("userName", req.getNickName());
+              put("version", getAppVersion(exchange));
+              put("userMobile", req.getPhoneNum());
+              put("password", req.getPassword());
+              put("smsCode", req.getSmsCode());
+            }
+          };
+      return loboClient.postForm(
+          exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
+    } else {
+      Map<String, Object> data =
+          new HashMap<String, Object>() {
+            {
+              put("os", getOsType(exchange));
+              put("appId", getAppId());
+              put("channel", getChannelId());
+              put("deviceNo", getDeviceNo(exchange));
+              put("token", req.getAccessToken());
+            }
+          };
+      return loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
+    }
   }
 
   @GetMapping(value = "/v1/album.do")

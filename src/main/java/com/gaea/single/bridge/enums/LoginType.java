@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum LoginType implements Metadata {
   WECHAT(2, "微信登录"),
   PHONE_SMS_CODE(3, "手机号验证码登录"),
-  PHONE_PASSWORD(4, "手机号密码登录");
+  PHONE_PASSWORD(4, "手机号密码登录"),
+  PHONE_DIRECT(5, "一键登录");
 
   private int code;
   private String desc;

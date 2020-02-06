@@ -25,7 +25,7 @@ public class LoginReq {
   @ApiModelProperty("第三方头像链接, 第三方登录时必填")
   private String portraitUrl;
 
-  @ApiModelProperty("第三方accessToken, 第三方登录时必填")
+  @ApiModelProperty("第三方accessToken, 第三方登录和一键登录时必填")
   private String accessToken;
 
   @ApiModelProperty("手机号, 手机号登录必填")
