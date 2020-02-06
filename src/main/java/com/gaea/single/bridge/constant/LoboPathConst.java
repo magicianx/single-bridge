@@ -39,4 +39,10 @@ public interface LoboPathConst {
   String CHECK_VERSION = "/basic/version/checkVersion";
   /** 修改用户头像 */
   String UPDATE_USER_PORTRAIT = "/user/userCenter/uploadPortrait.do";
+  /** 获取用户头像 */
+  String GET_USER_PORTRAIT = "/user/userCenter/getPortrait.do";
+  /** 上传相册图片 */
+  String UPLOAD_ALBUM_IMG = "/user/userCenter/uploadPhotos.do";
+  /** 删除相册图片 */
+  String DELETE_ALBUM_IMG = "/user/userCenter/deletePhotos.do";
 }

@@ -36,11 +36,7 @@ public class UserConverter {
         LoginRes res = new LoginRes();
         res.setId(result.getLong("userId"));
         res.setSession(result.getString("session"));
-        res.setShowId(result.getString("showId"));
         res.setYunXinId(result.getString("yunxinAccid"));
-        res.setNickName(result.getString("nickName"));
-        res.setPortraitUrl(result.getString("portrait"));
-        res.setIntro(result.getString("intro"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
         res.setBirthday(result.getString("birthday"));
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
