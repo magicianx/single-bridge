@@ -124,14 +124,14 @@ public class UserController extends BaseController {
             });
   }
 
-  @PostMapping("/v1/album.do")
-  @ApiOperation(value = "上传相册图片", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/v1/album.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ApiOperation(value = "上传相册图片")
   public Mono<Result<List<AlbumItemRes>>> uploadAlbumImg(
-      @RequestPart FilePart img, @ApiIgnore ServerWebExchange exchange) {
+      UploadAlbumReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("file", img);
+            put("file", req.getImg());
           }
         };
     return loboClient.postForm(
