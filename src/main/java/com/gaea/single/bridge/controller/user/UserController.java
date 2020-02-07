@@ -88,6 +88,18 @@ public class UserController extends BaseController {
       Map<String, Object> data =
           new HashMap<String, Object>() {
             {
+              put("os", getOsType(exchange).getCode());
+              put("appId", getAppId());
+              put("channel", getChannelId());
+              put("deviceNo", getDeviceNo(exchange));
+              put("token", req.getAccessToken());
+            }
+          };
+      return loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
+    } else {
+      Map<String, Object> data =
+          new HashMap<String, Object>() {
+            {
               put("type", req.getType().getCode());
               put("os", getOsType(exchange).getCode());
               put("openId", req.getOpenId());
@@ -105,18 +117,6 @@ public class UserController extends BaseController {
           };
       return loboClient.postForm(
           exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
-    } else {
-      Map<String, Object> data =
-          new HashMap<String, Object>() {
-            {
-              put("os", getOsType(exchange).getCode());
-              put("appId", getAppId());
-              put("channel", getChannelId());
-              put("deviceNo", getDeviceNo(exchange));
-              put("token", req.getAccessToken());
-            }
-          };
-      return loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
     }
   }
 

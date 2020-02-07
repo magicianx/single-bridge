@@ -47,4 +47,6 @@ public interface LoboPathConst {
   String UPLOAD_ALBUM_IMG = "/user/userCenter/uploadPhotos.do";
   /** 删除相册图片 */
   String DELETE_ALBUM_IMG = "/user/userCenter/deletePhotos.do";
+  /** 主播认证 */
+  String ANCHOR_AUTH = "/zuul/user/sellerCenter/uploadVideo.do?videoNumber=%s&key=-----";
 }

@@ -11,9 +11,7 @@ import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.ReportType;
 import com.gaea.single.bridge.error.ErrorCode;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -30,10 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(
-    value = "/user/anchor",
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user/anchor", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "主播服务")
 @Validated
 public class AnchorController extends BaseController {
@@ -84,6 +79,25 @@ public class AnchorController extends BaseController {
         exchange, LoboPathConst.ANCHOR_PROFILE, data, AnchorConverter.toAnchorProfileRes);
   }
 
+  @PostMapping(value = "/v1/auth.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ApiOperation(value = "主播认证")
+  @ApiImplicitParams({
+    @ApiImplicitParam(name = "portrait", value = "头像", paramType = "form", dataType = "__file"),
+    @ApiImplicitParam(name = "video", value = "认证视频", paramType = "form", dataType = "__file")
+  })
+  public Mono<Result<AnchorProfileRes>> anchorAuth(
+      @Valid AnchorAuthReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("portraitFile", req.getPortrait());
+            put("videoFile", req.getVideo());
+          }
+        };
+    String path = String.format(LoboPathConst.ANCHOR_AUTH, req.getNumber());
+    return loboClient.postForm(exchange, path, data, null);
+  }
+
   @GetMapping(value = "/v1/report_items.do")
   @ApiOperation(value = "获取举报选项列表")
   public Mono<Result<List<ReportSelectItemRes>>> getReportSelectItems(
@@ -106,7 +120,7 @@ public class AnchorController extends BaseController {
         }));
   }
 
-  @PostMapping(value = "/v1/report.do")
+  @PostMapping(value = "/v1/report.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "举报或拉黑主播")
   public Mono<Result<?>> reportAnchor(
       @Valid @RequestBody ReportAnchorReq req, @ApiIgnore ServerWebExchange exchange) {
