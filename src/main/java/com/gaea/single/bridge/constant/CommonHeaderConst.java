@@ -8,4 +8,5 @@ public interface CommonHeaderConst {
   String DEVICE_TYPE = "Device-Type"; // 设备型号
   String DEVICE_NO = "Device-No"; // 设备号, ios: IDFV, android: IMEI
   String OS_TYPE = "OS-Type"; // 操作系统类型
+  String PACKAGE_NAME = "Package-Name"; // 包名
 }

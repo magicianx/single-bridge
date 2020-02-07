@@ -31,7 +31,7 @@ public abstract class BaseController {
   }
 
   protected String getPacketName(ServerWebExchange exchange) {
-    return "company.newchat.coquettish.android";
+    return exchange.getAttribute(CommonHeaderConst.PACKAGE_NAME);
   }
 
   protected OsType getOsType(ServerWebExchange exchange) {

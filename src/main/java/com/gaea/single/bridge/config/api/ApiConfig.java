@@ -76,7 +76,8 @@ public class ApiConfig {
                 getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true),
                 getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true),
                 getHeaderParameter(CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true),
-                getHeaderParameter(CommonHeaderConst.OS_TYPE, "操作系统类型", true)));
+                getHeaderParameter(CommonHeaderConst.OS_TYPE, "操作系统类型", true),
+                getHeaderParameter(CommonHeaderConst.PACKAGE_NAME, "包名", true)));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 
