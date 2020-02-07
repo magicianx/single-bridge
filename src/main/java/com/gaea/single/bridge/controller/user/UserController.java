@@ -89,7 +89,7 @@ public class UserController extends BaseController {
           new HashMap<String, Object>() {
             {
               put("type", req.getType().getCode());
-              put("os", getOsType(exchange));
+              put("os", getOsType(exchange).getCode());
               put("openId", req.getOpenId());
               put("imageUrl", req.getPortraitUrl());
               put("appId", getAppId());
@@ -109,7 +109,7 @@ public class UserController extends BaseController {
       Map<String, Object> data =
           new HashMap<String, Object>() {
             {
-              put("os", getOsType(exchange));
+              put("os", getOsType(exchange).getCode());
               put("appId", getAppId());
               put("channel", getChannelId());
               put("deviceNo", getDeviceNo(exchange));
@@ -223,22 +223,24 @@ public class UserController extends BaseController {
   @PostMapping(value = "/v1/info.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ApiImplicitParams(
       @ApiImplicitParam(name = "portrait", value = "头像", paramType = "form", dataType = "__file"))
-  @ApiOperation(value = "编辑用户资料", notes = "普通用户需要上传头像")
-  public Mono<Result<UpdateUserRes>> modifyUserInfo(
+  @ApiOperation(value = "编辑用户资料", notes = "只传值发生变化的字段，普通用户需要上传头像, 性别和生日不可重复修改，昵称和个人简介修改后需要进行审核")
+  public Mono<Result<Object>> modifyUserInfo(
       @Valid UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
+    List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
-      monos.add(callUpdateUserInfo(exchange, 1, "nickName", req.getNickName()));
+      monos.add(callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes));
     }
     if (req.getIntro() != null) {
-      monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro()));
+      monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro(), loboErrorCodes));
     }
     if (req.getGender() != null) {
-      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender().getCode()));
+      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender().getCode(), null));
     }
     if (req.getBirthday() != null) {
       monos.add(
-          callUpdateUserInfo(exchange, 4, "birthday", DateUtil.toLoboDate(req.getBirthday())));
+          callUpdateUserInfo(
+              exchange, 4, "birthday", DateUtil.toLoboDate(req.getBirthday()), null));
     }
     if (req.getPortrait() != null) {
       monos.add(callUploadUserPortrait(exchange, req.getPortrait()));
@@ -247,12 +249,10 @@ public class UserController extends BaseController {
       return Mono.zip(
               monos,
               (objs) -> {
+                boolean auditing = false;
                 for (Object obj : objs) {
                   Result<Object> result = (Result<Object>) obj;
-                  // 忽略重复修改和生日性别不能再次判断
-                  if (result.getCode() != 10024
-                      && result.getCode() != 10038
-                      && LoboCode.isErrorCode(result.getCode())) {
+                  if (LoboCode.isErrorCode(result.getCode())) {
                     throw new BusinessException(
                         result.getCode(), LoboCode.getErrorMessage(result.getCode()));
                   }
@@ -260,9 +260,15 @@ public class UserController extends BaseController {
                   if (result.getCode() == ErrorCode.INNER_ERROR.getCode()) {
                     throw ErrorCode.INNER_ERROR.newBusinessException();
                   }
+
+                  if (!auditing && result.getCode() == 1005) {
+                    auditing = true;
+                  }
                 }
-                Result<String> result = (Result<String>) objs[monos.size() - 1];
-                return new UpdateUserRes(result.getData(), AuditStatus.AUDITING);
+                if (auditing) {
+                  throw ErrorCode.USER_INFO_AUDITING.newBusinessException();
+                }
+                return new Object();
               })
           .map(Result::success)
           .onErrorResume(
@@ -294,12 +300,16 @@ public class UserController extends BaseController {
   }
 
   private Mono<Result<Object>> callUpdateUserInfo(
-      ServerWebExchange exchange, int type, String name, Object value) {
+      ServerWebExchange exchange,
+      int type,
+      String name,
+      Object value,
+      List<Integer> loboErrorCodes) {
     Map<String, Object> data = new HashMap<>();
     data.put(name, value);
     data.put("type", type);
     data.put("key", type); // key和type的值相同
-    return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null);
+    return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null, loboErrorCodes);
   }
 
   private Mono<Result<Object>> callUploadUserPortrait(

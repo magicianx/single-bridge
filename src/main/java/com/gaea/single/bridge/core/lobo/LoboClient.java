@@ -50,7 +50,27 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       Converter<Object, R> resConverter) {
-    return this.request(HttpMethod.POST, exchange, path, data)
+    return this.request(HttpMethod.POST, exchange, path, data, null)
+        .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
+  }
+
+  /**
+   * 发送表单请求
+   *
+   * @param path 请求路径
+   * @param data 表单数据
+   * @param resConverter lobo响应转化为{@link Result}
+   * @param <R> 业务响应类型
+   * @param loboErrorCodes lobo业务错误码
+   * @return {@link Mono<Result<R>>}
+   */
+  public <R> Mono<Result<R>> postForm(
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<Object, R> resConverter,
+      List<Integer> loboErrorCodes) {
+    return this.request(HttpMethod.POST, exchange, path, data, loboErrorCodes)
         .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
   }
 
@@ -68,7 +88,7 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       Converter<Object, R> resConverter) {
-    return this.request(HttpMethod.POST, exchange, path, data)
+    return this.request(HttpMethod.POST, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
   }
 
@@ -86,7 +106,7 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       Converter<Object, R> resConverter) {
-    return request(HttpMethod.POST, exchange, path, data)
+    return request(HttpMethod.POST, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchangeForList(mono, resConverter));
   }
   /**
@@ -103,7 +123,7 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       Converter<Object, R> resConverter) {
-    return this.request(HttpMethod.GET, exchange, path, data)
+    return this.request(HttpMethod.GET, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
   }
 
@@ -121,12 +141,16 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       Converter<Object, R> resConverter) {
-    return this.request(HttpMethod.GET, exchange, path, data)
+    return this.request(HttpMethod.GET, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
   }
 
   private Mono<LoboResult> request(
-      HttpMethod method, ServerWebExchange exchange, String path, Map<String, Object> data) {
+      HttpMethod method,
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      List<Integer> loboErrorCodes) {
     log.info("正在请求lobo服务 {}", path);
 
     Mono<LoboResult> mono;
@@ -152,11 +176,12 @@ public class LoboClient {
                 new BusinessException(
                     res.getResultCode(), Optional.ofNullable(message).orElse("请求失败，请稍候重试")));
           }
-          log.info(
-              "请求lobo服务 {} 成功: {}, {}",
-              path,
-              res.getResultCode(),
-              LoboCode.getSuccessMessage(res.getResultCode()));
+          String message = LoboCode.getSuccessMessage(res.getResultCode());
+          log.info("请求lobo服务 {} 成功: {}, {}", path, res.getResultCode(), message);
+
+          if (loboErrorCodes != null && loboErrorCodes.contains(code)) {
+            return Mono.error(new BusinessException(code, message));
+          }
           return Mono.just(res);
         });
   }

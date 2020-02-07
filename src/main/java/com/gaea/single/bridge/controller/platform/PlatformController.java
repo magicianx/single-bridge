@@ -76,13 +76,14 @@ public class PlatformController extends BaseController {
     return loboClient.postForm(exchange, LoboPathConst.SEND_SMS_CODE, data, null);
   }
 
-  @GetMapping(value = "/v1/checkVersion.net")
+  @GetMapping(value = "/v1/check_version.net")
   @ApiOperation(value = "检查版本号")
   public Mono<Result<CheckVersionRes>> checkVersion(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("type", getOsType(exchange));
+            put("type", getOsType(exchange).getCode());
+            put("packageName", getPacketName(exchange));
           }
         };
     return loboClient.postForm(

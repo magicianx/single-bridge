@@ -1,5 +1,8 @@
 package com.gaea.single.bridge.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gaea.single.bridge.core.lobo.DefaultLoboResultExchanger;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import org.platform.config.ConfigAgent;
@@ -46,5 +49,12 @@ public class ServiceConfig {
   @Bean
   public LoboClient loboClient(WebClient webClients) {
     return new LoboClient(webClients, new DefaultLoboResultExchanger());
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper()
+        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }
 }

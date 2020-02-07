@@ -3,6 +3,7 @@ package com.gaea.single.bridge.controller;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.dto.PageReq;
+import com.gaea.single.bridge.enums.OsType;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.HashMap;
@@ -29,8 +30,12 @@ public abstract class BaseController {
     return exchange.getAttribute(CommonHeaderConst.DEVICE_TYPE);
   }
 
-  protected String getOsType(ServerWebExchange exchange) {
-    return exchange.getAttribute(CommonHeaderConst.OS_TYPE);
+  protected String getPacketName(ServerWebExchange exchange) {
+    return "company.newchat.coquettish.android";
+  }
+
+  protected OsType getOsType(ServerWebExchange exchange) {
+    return OsType.valueOf(exchange.getAttribute(CommonHeaderConst.OS_TYPE));
   }
 
   protected String getDeviceNo(ServerWebExchange exchange) {
