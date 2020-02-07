@@ -249,9 +249,16 @@ public class UserController extends BaseController {
               (objs) -> {
                 for (Object obj : objs) {
                   Result<Object> result = (Result<Object>) obj;
-                  if (LoboCode.isErrorCode(result.getCode())) {
+                  // 忽略重复修改和生日性别不能再次判断
+                  if (result.getCode() != 10024
+                      && result.getCode() != 10038
+                      && LoboCode.isErrorCode(result.getCode())) {
                     throw new BusinessException(
                         result.getCode(), LoboCode.getErrorMessage(result.getCode()));
+                  }
+
+                  if (result.getCode() == ErrorCode.INNER_ERROR.getCode()) {
+                    throw ErrorCode.INNER_ERROR.newBusinessException();
                   }
                 }
                 Result<String> result = (Result<String>) objs[monos.size() - 1];

@@ -3,6 +3,7 @@ package com.gaea.single.bridge.controller.platform;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.converter.PlatformConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.platform.BannerRes;
@@ -10,8 +11,6 @@ import com.gaea.single.bridge.dto.platform.CheckVersionRes;
 import com.gaea.single.bridge.dto.platform.SendSmsReq;
 import com.gaea.single.bridge.enums.BannerType;
 import com.gaea.single.bridge.enums.DeviceType;
-import com.gaea.single.bridge.enums.OsType;
-import com.gaea.single.bridge.enums.VersionUpdateType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,10 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(
-    value = "/platform",
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/platform", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "平台服务")
 @Validated
 public class PlatformController extends BaseController {
@@ -66,7 +62,7 @@ public class PlatformController extends BaseController {
         });
   }
 
-  @PostMapping(value = "/v1/sms_code.net")
+  @PostMapping(value = "/v1/sms_code.net", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "发送验证码")
   public Mono<Result<Object>> sendSmsCode(
       @Valid @RequestBody SendSmsReq req, @ApiIgnore ServerWebExchange exchange) {
@@ -82,24 +78,14 @@ public class PlatformController extends BaseController {
 
   @GetMapping(value = "/v1/checkVersion.net")
   @ApiOperation(value = "检查版本号")
-  public Mono<Result<CheckVersionRes>> checkVersion(
-      @Valid @RequestParam("osType") OsType osType, @ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<CheckVersionRes>> checkVersion(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("type", osType.getCode());
+            put("type", getOsType(exchange));
           }
         };
     return loboClient.postForm(
-        exchange,
-        LoboPathConst.CHECK_VERSION,
-        data,
-        (obj) -> {
-          JSONObject result = (JSONObject) obj;
-          return new CheckVersionRes(
-              result.getInteger("versionCode"),
-              result.getString("versionNum"),
-              VersionUpdateType.ofCode(result.getInteger("updateType")));
-        });
+        exchange, LoboPathConst.CHECK_VERSION, data, PlatformConverter.toCheckVersionRes);
   }
 }
