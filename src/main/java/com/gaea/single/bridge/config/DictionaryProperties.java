@@ -26,7 +26,8 @@ public class DictionaryProperties implements IConfig {
   public static DictionaryProperties get() {
     Lobo lobo = new Lobo();
     lobo.setAppId("1");
-    lobo.setHost("http://mgr.vchat.club:19001");
+    lobo.setMainHost("http://mgr.vchat.club:19001");
+    lobo.setOtherHost("http://mgr.vchat.club:8020");
     lobo.setChannelId("1000");
     return new DictionaryProperties(lobo);
   }
@@ -62,7 +63,8 @@ public class DictionaryProperties implements IConfig {
   @Getter
   @Setter
   public static class Lobo {
-    private String host;
+    private String mainHost;
+    private String otherHost;
     private String appId;
     private String channelId;
   }

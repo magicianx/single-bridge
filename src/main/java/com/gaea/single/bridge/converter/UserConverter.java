@@ -9,6 +9,7 @@ import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
 public class UserConverter {
@@ -39,7 +40,9 @@ public class UserConverter {
         res.setSession(result.getString("session"));
         res.setYunXinId(result.getString("yunxinAccid"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
-        res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
+        if (StringUtils.isNotBlank(result.getString("birthday"))) {
+          res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
+        }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         return res;
       };

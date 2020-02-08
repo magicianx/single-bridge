@@ -49,4 +49,12 @@ public interface LoboPathConst {
   String DELETE_ALBUM_IMG = "/user/userCenter/deletePhotos.do";
   /** 主播认证 */
   String ANCHOR_AUTH = "/zuul/user/sellerCenter/uploadVideo.do?videoNumber=%s&key=-----";
+  /** 分享奖励排行 */
+  String SHARE_RANKING = "/webapi/order/orderShare/findShareRanking";
+  /** 分销信息 */
+  String SHARE_INFO = "/webapi/user/shareCenter/findShareInfo.do";
+  /** 我的收益 */
+  String INCOME = " /webapi/user/sellerCenter/getMyIncome.do";
+  /** 创建媒体订单 */
+  String CREATE_MEDIA_ORDER = "order/createOrder.do";
 }

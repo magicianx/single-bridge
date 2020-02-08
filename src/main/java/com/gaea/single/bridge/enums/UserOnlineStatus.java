@@ -11,18 +11,19 @@ public enum UserOnlineStatus implements Metadata {
   UN_DISTURB(1, "勿扰"),
   FREE(2, "空闲"),
   CHATTING(3, "忙碌"),
-  ONLINE(4, "上线"),
-  UNKNOWN(99, "未知");
+  ONLINE(4, "上线");
 
   private int code;
   private String desc;
 
   public static UserOnlineStatus ofCode(int code) {
+    UserOnlineStatus onlineStatus = UserOnlineStatus.UN_DISTURB;
     for (UserOnlineStatus status : UserOnlineStatus.values()) {
       if (status.code == code) {
-        return status;
+        onlineStatus = status;
+        break;
       }
     }
-    return null;
+    return onlineStatus;
   }
 }

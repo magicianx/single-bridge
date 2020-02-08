@@ -2,8 +2,10 @@ package com.gaea.single.bridge.controller.account;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.converter.AccountConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
+import com.gaea.single.bridge.dto.account.IncomeRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(
-    value = "/account",
-    produces = MediaType.APPLICATION_JSON_VALUE,
-    consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "账户服务")
 @Validated
 public class AccountController extends BaseController {
@@ -40,5 +39,11 @@ public class AccountController extends BaseController {
         };
     return loboClient.get(
         exchange, LoboPathConst.ACCOUNT_BALANCE, data, (result) -> Long.valueOf(result.toString()));
+  }
+
+  @GetMapping(value = "/v1/income.do")
+  @ApiOperation(value = "获取个人收益")
+  public Mono<Result<IncomeRes>> getIncome(@ApiIgnore ServerWebExchange exchange) {
+    return loboClient.get(exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
   }
 }

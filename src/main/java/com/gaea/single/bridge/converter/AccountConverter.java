@@ -2,8 +2,11 @@ package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
+import com.gaea.single.bridge.dto.account.IncomeRes;
 import com.gaea.single.bridge.enums.GiftType;
 import org.springframework.core.convert.converter.Converter;
+
+import java.math.BigDecimal;
 
 public class AccountConverter {
   public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
@@ -18,6 +21,22 @@ public class AccountConverter {
         res.setType(GiftType.ofCode(result.getInteger("type")));
         res.setMinGrade(result.getInteger("minGrade"));
         res.setSvgUrl(result.getString("svgFileUrl"));
+        return res;
+      };
+
+  public static final Converter<Object, IncomeRes> toIncomeRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        IncomeRes res = new IncomeRes();
+        res.setIncomeAmount(result.getBigDecimal("money").divide(new BigDecimal("100")));
+        res.setDiamonds(result.getLong("diamonds"));
+        res.setAlipayAccount(result.getString("alipayNick"));
+        res.setWithdrawable(result.getInteger("isCanWithdraw") == 1);
+        res.setIsBindAlipay(result.getInteger("isBindAlipay") == 1);
+        res.setIsFrozen(result.getInteger("isFrozen") == 1);
+        res.setWithdrawLeastAmount(
+            result.getBigDecimal("lowerLimit").divide(new BigDecimal("100")));
+        res.setWithdrawDay(result.getInteger("withdrawalDay"));
         return res;
       };
 }

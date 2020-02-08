@@ -183,7 +183,7 @@ public class UserController extends BaseController {
   @DeleteMapping(value = "/v1/album.do")
   @ApiOperation(value = "删除相册图片")
   public Mono<Result<Object>> removeAlbumImg(
-      @ApiIgnore ServerWebExchange exchange, @RequestBody @Valid DeleteAlbumReq req) {
+      @ApiIgnore ServerWebExchange exchange, @Valid DeleteAlbumReq req) {
     String urls =
         JsonUtils.toJsonString(
             Collections.singletonList(
@@ -203,10 +203,10 @@ public class UserController extends BaseController {
   }
 
   /** 封面即用户头像 */
-  @PostMapping(value = "/v1/album/cover.do")
-  @ApiOperation(value = "设置相册封面", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/v1/album/cover.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "设置相册封面")
   public Mono<Result<Object>> setAlbumCover(
-      @ApiIgnore ServerWebExchange exchange, @Valid SetAlbumCoverReq req)
+      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody SetAlbumCoverReq req)
       throws MalformedURLException {
     Mono<Result<Object>> removeAlbumMono = this.removeAlbumImg(exchange, req);
     Map<String, Object> data =
