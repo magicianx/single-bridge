@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/account/alipay", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "账户服务")
+@Api(tags = "支付宝服务")
 @Validated
 public class AlipayController extends BaseController {
   @Autowired private LoboClient loboClient;
@@ -37,6 +37,7 @@ public class AlipayController extends BaseController {
           {
             put("userMobile", req.getPhoneNum());
             put("smsCode", req.getSmsCode());
+            put("key", "------");
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.UNBIND_ALIPAY_ACCOUNT, data, null);
@@ -66,7 +67,6 @@ public class AlipayController extends BaseController {
             put("key", "-----");
           }
         };
-    return loboClient.get(
-        exchange, LoboPathConst.UNBIND_ALIPAY_ACCOUNT, data, (obj) -> (String) obj);
+    return loboClient.get(exchange, LoboPathConst.ALIPAY_BIND_SIGN, data, (obj) -> (String) obj);
   }
 }
