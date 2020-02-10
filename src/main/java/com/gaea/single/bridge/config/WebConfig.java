@@ -11,7 +11,7 @@ public class WebConfig implements WebFluxConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry
         .addResourceHandler("/html/**")
-        .addResourceLocations("file:///data/app/single/html")
+        .addResourceLocations("file:///data/app/single/html/")
         .resourceChain(true)
         .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"));
   }
