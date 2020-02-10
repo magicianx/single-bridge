@@ -56,5 +56,7 @@ public interface LoboPathConst {
   /** 我的收益 */
   String INCOME = " /webapi/user/sellerCenter/getMyIncome.do";
   /** 创建媒体订单 */
-  String CREATE_MEDIA_ORDER = "order/createOrder.do";
+  String CREATE_MEDIA_ORDER = "/order/createOrder.do";
+  /** 验证媒体订单 */
+  String VALIDATE_MEDIA_ORDER = "/order/validOrder.do";
 }

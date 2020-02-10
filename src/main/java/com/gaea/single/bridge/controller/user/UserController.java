@@ -19,7 +19,6 @@ import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +29,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -129,18 +127,8 @@ public class UserController extends BaseController {
             put("profileId", getUserId(exchange));
           }
         };
-    Mono<Result<AlbumItemRes>> portraitMono = this.getUserPortrait(exchange);
-    Mono<Result<List<AlbumItemRes>>> albumMono =
-        loboClient.postFormForList(
-            exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
-    return Mono.zip(portraitMono, albumMono)
-        .map(
-            tuple2 -> {
-              List<AlbumItemRes> items = new ArrayList<>();
-              items.add(tuple2.getT1().getData());
-              items.addAll(tuple2.getT2().getData());
-              return Result.success(items);
-            });
+    return loboClient.postFormForList(
+        exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
   }
 
   @PostMapping(value = "/v1/album.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -200,24 +188,6 @@ public class UserController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.DELETE_ALBUM_IMG, data, null);
-  }
-
-  /** 封面即用户头像 */
-  @PostMapping(value = "/v1/album/cover.do", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "设置相册封面")
-  public Mono<Result<Object>> setAlbumCover(
-      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody SetAlbumCoverReq req)
-      throws MalformedURLException {
-    Mono<Result<Object>> removeAlbumMono = this.removeAlbumImg(exchange, req);
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("file", new UrlResource(req.getImgUrl()));
-          }
-        };
-    Mono<Result<Object>> uploadMono =
-        loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_PORTRAIT, data, (obj) -> null);
-    return Mono.zip(removeAlbumMono, uploadMono).map((v) -> Result.success());
   }
 
   @PostMapping(value = "/v1/info.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
