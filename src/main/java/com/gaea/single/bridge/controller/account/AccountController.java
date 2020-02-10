@@ -9,6 +9,7 @@ import com.gaea.single.bridge.dto.account.IncomeRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,10 @@ import java.util.Map;
 public class AccountController extends BaseController {
   @Autowired private LoboClient loboClient;
 
+  @Autowired
+  @Qualifier("loboOtherClient")
+  private LoboClient loboOtherClient;
+
   @GetMapping(value = "/v1/balance.do")
   @ApiOperation(value = "获取账户余额")
   public Mono<Result<Long>> getAccountBalance(@ApiIgnore ServerWebExchange exchange) {
@@ -44,6 +49,7 @@ public class AccountController extends BaseController {
   @GetMapping(value = "/v1/income.do")
   @ApiOperation(value = "获取个人收益")
   public Mono<Result<IncomeRes>> getIncome(@ApiIgnore ServerWebExchange exchange) {
-    return loboClient.get(exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
+    return loboOtherClient.postForm(
+        exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
   }
 }

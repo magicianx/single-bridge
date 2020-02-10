@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
 import com.gaea.single.bridge.dto.account.IncomeRes;
 import com.gaea.single.bridge.enums.GiftType;
+import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
 import java.math.BigDecimal;
@@ -31,9 +32,9 @@ public class AccountConverter {
         res.setIncomeAmount(result.getBigDecimal("money").divide(new BigDecimal("100")));
         res.setDiamonds(result.getLong("diamonds"));
         res.setAlipayAccount(result.getString("alipayNick"));
-        res.setWithdrawable(result.getInteger("isCanWithdraw") == 1);
-        res.setIsBindAlipay(result.getInteger("isBindAlipay") == 1);
-        res.setIsFrozen(result.getInteger("isFrozen") == 1);
+        res.setWithdrawable(LoboUtil.toBoolean(result.getInteger("isCanWithdraw")));
+        res.setIsBindAlipay(LoboUtil.toBoolean(result.getInteger("isBindAlipay")));
+        res.setIsFrozen(LoboUtil.toBoolean(result.getInteger("isFrozen")));
         res.setWithdrawLeastAmount(
             result.getBigDecimal("lowerLimit").divide(new BigDecimal("100")));
         res.setWithdrawDay(result.getInteger("withdrawalDay"));

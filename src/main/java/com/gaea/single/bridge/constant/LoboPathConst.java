@@ -54,7 +54,7 @@ public interface LoboPathConst {
   /** 分销信息 */
   String SHARE_INFO = "/webapi/user/shareCenter/findShareInfo.do";
   /** 我的收益 */
-  String INCOME = " /webapi/user/sellerCenter/getMyIncome.do";
+  String INCOME = "/webapi/user/sellerCenter/getMyIncome.do";
   /** 创建媒体订单 */
   String CREATE_MEDIA_ORDER = "/order/createOrder.do";
   /** 验证媒体订单 */
