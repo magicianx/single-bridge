@@ -59,4 +59,10 @@ public interface LoboPathConst {
   String CREATE_MEDIA_ORDER = "/order/createOrder.do";
   /** 验证媒体订单 */
   String VALIDATE_MEDIA_ORDER = "/order/validOrder.do";
+  /** 支付宝账号解绑 */
+  String UNBIND_ALIPAY_ACCOUNT = "/user/alipayCenter/unbindAlipay.do";
+  /** 支付宝账号解绑 */
+  String BIND_ALIPAY_ACCOUNT = "/user/alipayCenter/bindAlipay.do";
+  /** 获取支付绑定授权签名 */
+  String ALIPAY_BIND_SIGN = "/user/alipayCenter/getLoginSign.do";
 }
