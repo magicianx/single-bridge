@@ -118,6 +118,18 @@ public class UserController extends BaseController {
     }
   }
 
+  @PostMapping(value = "/v1/cancel.do")
+  @ApiOperation(value = "用户注销")
+  public Mono<Result<Object>> cancel(@ApiIgnore ServerWebExchange exchange) {
+    return Mono.just(Result.success());
+  }
+
+  @PostMapping(value = "/v1/logout.do")
+  @ApiOperation(value = "用户退出登录")
+  public Mono<Result<LoginRes>> logout(@ApiIgnore ServerWebExchange exchange) {
+    return Mono.just(Result.success());
+  }
+
   @GetMapping(value = "/v1/album.do")
   @ApiOperation(value = "获取用户相册列表")
   public Mono<Result<List<AlbumItemRes>>> getUserAlbum(@ApiIgnore ServerWebExchange exchange) {
