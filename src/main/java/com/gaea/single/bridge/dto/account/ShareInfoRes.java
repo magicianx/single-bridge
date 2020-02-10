@@ -29,6 +29,6 @@ public class ShareInfoRes {
   @ApiModelProperty(value = "收入提成百分比", required = true)
   private Float incomePercentage;
 
-  @ApiModelProperty(value = "收益持续天数ø", required = true)
+  @ApiModelProperty(value = "收益持续天数", required = true)
   private Integer profitDurationDays;
 }
