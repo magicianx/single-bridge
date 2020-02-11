@@ -75,4 +75,8 @@ public interface LoboPathConst {
   String SHARE_INVITE_RECORD = "/webapi/user/shareCenter/findTotalInvite.do";
   /** 分享奖励记录 */
   String SHARE_REWARD_RECORD = "/webapi/order/orderShare/findOrderShares.do";
+  /** 分销提现 */
+  String SHARE_WITHDRAW = "/webapi/user/shareCenter/withdraw.do";
+  /** 收益提现 */
+  String INCOME_WITHDRAW = "/webapi/user/sellerCenter/withdraw.d";
 }

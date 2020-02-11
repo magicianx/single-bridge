@@ -8,19 +8,14 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.dto.account.ShareInfoRes;
-import com.gaea.single.bridge.dto.account.ShareInviteRecordRes;
-import com.gaea.single.bridge.dto.account.ShareRankingRes;
-import com.gaea.single.bridge.dto.account.ShareRewardRecordRes;
+import com.gaea.single.bridge.dto.account.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
@@ -109,5 +104,20 @@ public class ShareController extends BaseController {
         };
     return loboClient.postFormForPage(
         exchange, LoboPathConst.SHARE_INVITE_RECORD, data, ShareConverter.toShareInviteRecordRes);
+  }
+
+  /** 请求中钻石数量下个阶段删除 */
+  @PostMapping(value = "/v1/withdraw.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "分销提现")
+  public Mono<Result<Object>> withdraw(
+      @Valid @RequestBody WithdrawReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("key", "key");
+            put("money", req.getDiamonds());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.SHARE_WITHDRAW, data, null);
   }
 }

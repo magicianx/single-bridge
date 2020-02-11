@@ -229,6 +229,7 @@ public class LoboClient {
         .uri(path)
         .contentType(mediaType)
         .header("userId", userId)
+        .header("userid", userId) // 8020使用的是userid
         .header("session", session)
         .body(bodyInserter)
         .retrieve()
