@@ -5,7 +5,9 @@ import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.BindAlipayReq;
+import com.gaea.single.bridge.dto.account.GetPaySignReq;
 import com.gaea.single.bridge.dto.account.UnbindAlipayReq;
+import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,26 @@ public class AlipayController extends BaseController {
             put("key", "-----");
           }
         };
-    return loboClient.get(exchange, LoboPathConst.ALIPAY_BIND_SIGN, data, (obj) -> (String) obj);
+    return loboClient.get(exchange, LoboPathConst.ALIPAY_AUTH_SIGN, data, (obj) -> (String) obj);
+  }
+
+  /** id先传过来，二阶段使用 */
+  @GetMapping(value = "/v1/pay_sign.do")
+  @ApiOperation(value = "获取支付宝支付签名")
+  public Mono<Result<String>> getAlipayPaySign(
+      @Valid GetPaySignReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("money", req.getDiamonds());
+            put("os", getOsType(exchange).getCode());
+            put("packageName", "company.chat.coquettish.android");
+            put("type", req.getScene().getCode());
+            put("version", "5.0.5");
+            put("key", Md5Utils.encrypt("huoaquazhifubaoachongz" + req.getDiamonds()));
+            put("configId", "");
+          }
+        };
+    return loboClient.get(exchange, LoboPathConst.ALIPAY_PAY_SIGN, data, (obj) -> (String) obj);
   }
 }

@@ -71,23 +71,35 @@ public class ApiConfig {
         .apiInfo(apiInfo)
         .globalOperationParameters(
             Arrays.asList(
-                getHeaderParameter(CommonHeaderConst.USER_ID, "用户id", false),
-                getHeaderParameter(CommonHeaderConst.SESSION, "用户session", false),
-                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true),
-                getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true),
-                getHeaderParameter(CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true),
-                getHeaderParameter(CommonHeaderConst.OS_TYPE, "操作系统类型, ios: IOS, android: ANDROID", true),
-                getHeaderParameter(CommonHeaderConst.PACKAGE_NAME, "包名", true)));
+                getHeaderParameter(CommonHeaderConst.USER_ID, "用户id", false, "734123"),
+                getHeaderParameter(
+                    CommonHeaderConst.SESSION,
+                    "用户session",
+                    false,
+                    "9538255118ac4cc2a1cc56d86bf0c54f"),
+                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true, "1.0.0"),
+                getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
+                getHeaderParameter(
+                    CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true, ""),
+                getHeaderParameter(
+                    CommonHeaderConst.OS_TYPE,
+                    "操作系统类型, ios: IOS, android: ANDROID",
+                    true,
+                    "ANDROID"),
+                getHeaderParameter(
+                    CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.Christopher.SingleLady")));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 
-  private Parameter getHeaderParameter(String name, String desc, boolean required) {
+  private Parameter getHeaderParameter(
+      String name, String desc, boolean required, String defaultValue) {
     return new ParameterBuilder()
         .name(name)
         .description(desc)
         .modelRef(new ModelRef("string"))
         .parameterType("header")
         .required(required)
+        .defaultValue(defaultValue)
         .build();
   }
 

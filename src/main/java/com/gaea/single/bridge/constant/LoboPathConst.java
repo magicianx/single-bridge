@@ -64,5 +64,11 @@ public interface LoboPathConst {
   /** 支付宝账号解绑 */
   String BIND_ALIPAY_ACCOUNT = "/user/alipayCenter/bindAlipay.do";
   /** 获取支付绑定授权签名 */
-  String ALIPAY_BIND_SIGN = "/user/alipayCenter/getLoginSign.do";
+  String ALIPAY_AUTH_SIGN = "/user/alipayCenter/getLoginSign.do";
+  /** 获取支付方式列表 */
+  String PAY_WAYS = "/basic/payEnable/findByType.do";
+  /** 获取支付金额选项 */
+  String PAY_AMOUNT_OPTIONS = "/basic/recharge/findMoneyList.do";
+  /** 获取支付宝支付签名 */
+  String ALIPAY_PAY_SIGN = "/finance/sign/getAlipaySignAll.do";
 }

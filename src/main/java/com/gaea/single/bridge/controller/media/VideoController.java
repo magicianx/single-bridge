@@ -42,7 +42,6 @@ public class VideoController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("appId", getAppId());
             put("buyerId", getUserId(exchange));
             put("sellerId", req.getCalledId());
             put("callType", MediaCallType.DIRECT.getCode());
@@ -56,7 +55,7 @@ public class VideoController extends BaseController {
 
   @PostMapping(value = "/v1/order/validate.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "验证视频订单")
-  public Mono<Result<ValidateVideoOrderRes>> crateMediaOrder(
+  public Mono<Result<ValidateVideoOrderRes>> validateMediaOrder(
       @Valid @RequestBody ValidateVideoOrderReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {

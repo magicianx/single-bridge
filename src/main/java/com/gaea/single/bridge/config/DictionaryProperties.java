@@ -29,6 +29,7 @@ public class DictionaryProperties implements IConfig {
     lobo.setMainHost("http://mgr.vchat.club:19001");
     lobo.setOtherHost("http://mgr.vchat.club:8020");
     lobo.setChannelId("1000");
+
     return new DictionaryProperties(lobo);
   }
 
