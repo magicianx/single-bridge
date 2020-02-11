@@ -78,5 +78,7 @@ public interface LoboPathConst {
   /** 分销提现 */
   String SHARE_WITHDRAW = "/webapi/user/shareCenter/withdraw.do";
   /** 收益提现 */
-  String INCOME_WITHDRAW = "/webapi/user/sellerCenter/withdraw.d";
+  String INCOME_WITHDRAW = "/webapi/user/sellerCenter/withdraw.do";
+  /** 最后一笔订单的通话时长 */
+  String LAST_ORDER_DURATION_TIME = "/order/getDurationByUserId.do";
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel("视频订单创建响应")
-public class CreateMediaOrderRes {
+public class CreateVideoOrderRes {
   @ApiModelProperty(value = "订单id", required = true)
   private String orderId;
 

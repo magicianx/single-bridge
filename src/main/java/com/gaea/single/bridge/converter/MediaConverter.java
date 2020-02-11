@@ -1,15 +1,15 @@
 package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.dto.media.CreateMediaOrderRes;
+import com.gaea.single.bridge.dto.media.CreateVideoOrderRes;
 import com.gaea.single.bridge.dto.media.ValidateVideoOrderRes;
 import org.springframework.core.convert.converter.Converter;
 
 public class MediaConverter {
-  public static final Converter<Object, CreateMediaOrderRes> toCreateMediaOrderRes =
+  public static final Converter<Object, CreateVideoOrderRes> toCreateMediaOrderRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
-        CreateMediaOrderRes res = new CreateMediaOrderRes();
+        CreateVideoOrderRes res = new CreateVideoOrderRes();
         res.setOrderId(result.getString("orderRedisId"));
         res.setCallerNickName(result.getString("callingNickName"));
         res.setCallerGradeUrl(result.getString("orderRedisId"));
