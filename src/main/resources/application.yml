@@ -12,4 +12,4 @@ logging:
 #lobo.host: "http://mgr.vchat.club:19001"
 spring:
   profiles:
-    active: debug
+    active: prod
