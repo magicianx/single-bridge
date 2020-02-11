@@ -2,6 +2,9 @@ package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.account.ShareInfoRes;
+import com.gaea.single.bridge.dto.account.ShareInviteRecordRes;
+import com.gaea.single.bridge.dto.account.ShareRewardRecordRes;
+import com.gaea.single.bridge.enums.ShareRewardType;
 import org.springframework.core.convert.converter.Converter;
 
 import java.math.BigDecimal;
@@ -14,7 +17,8 @@ public class ShareConverter {
         ShareInfoRes res = new ShareInfoRes();
         BigDecimal withdrawableAmount = result.getBigDecimal("money");
         res.setWithdrawableAmount(withdrawableAmount);
-        res.setRewardAmount(Optional.ofNullable(result.getBigDecimal("totalMoney")).orElse(BigDecimal.ZERO));
+        res.setRewardAmount(
+            Optional.ofNullable(result.getBigDecimal("totalMoney")).orElse(BigDecimal.ZERO));
         res.setInviteCount(result.getInteger("shareNum"));
 
         boolean isBindAlipay = result.getInteger("isBindAlipay") == 1;
@@ -24,6 +28,29 @@ public class ShareConverter {
         res.setRechargePercentage(result.getFloat("payPercentage"));
         res.setIncomePercentage(result.getFloat("incomePercentage"));
         res.setProfitDurationDays(result.getInteger("days"));
+        return res;
+      };
+
+  public static final Converter<Object, ShareRewardRecordRes> toShareRewardRecordRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        ShareRewardRecordRes res = new ShareRewardRecordRes();
+        res.setUserId(result.getLong("userId"));
+        res.setNickName(result.getString("nickName"));
+        res.setType(ShareRewardType.ofCode(result.getInteger("type")));
+        res.setMoney(result.getLong("money"));
+        res.setCreateTime(result.getLong("createTime"));
+        return res;
+      };
+
+  public static final Converter<Object, ShareInviteRecordRes> toShareInviteRecordRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        ShareInviteRecordRes res = new ShareInviteRecordRes();
+        res.setUserId(result.getLong("userId"));
+        res.setNickName(result.getString("nickName"));
+        res.setPortraitUrl(result.getString("portrait"));
+        res.setMoney(result.getLong("money"));
         return res;
       };
 }

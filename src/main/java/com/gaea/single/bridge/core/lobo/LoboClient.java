@@ -202,6 +202,7 @@ public class LoboClient {
         .get()
         .uri(path)
         .header("userId", userId)
+        .header("userid", userId) // 8020使用的是userid
         .header("session", session)
         .retrieve()
         .bodyToMono(LoboResult.class);

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel("分页请求")
 @Getter
 @Setter
-public class PageReq {
+public class  PageReq {
   @ApiModelProperty(value = "第几页, 从1开始", required = true)
   @NotNull
   private Integer pageNum;

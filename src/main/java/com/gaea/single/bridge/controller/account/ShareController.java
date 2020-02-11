@@ -5,9 +5,13 @@ import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.ShareConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
+import com.gaea.single.bridge.dto.PageReq;
+import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.ShareInfoRes;
+import com.gaea.single.bridge.dto.account.ShareInviteRecordRes;
 import com.gaea.single.bridge.dto.account.ShareRankingRes;
+import com.gaea.single.bridge.dto.account.ShareRewardRecordRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,5 +77,37 @@ public class ShareController extends BaseController {
         };
     return loboClient.postForm(
         exchange, LoboPathConst.SHARE_INFO, data, ShareConverter.toShareInfoRes);
+  }
+
+  @GetMapping(value = "/v1/reward_record.do")
+  @ApiOperation(value = "获取分享奖励记录")
+  public Mono<Result<PageRes<ShareRewardRecordRes>>> getShareRewardRecord(
+      @Valid PageReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("key", "123");
+            put("pageNo", req.getPageNum());
+            put("pageSize", req.getPageSize());
+          }
+        };
+    return loboClient.postFormForPage(
+        exchange, LoboPathConst.SHARE_REWARD_RECORD, data, ShareConverter.toShareRewardRecordRes);
+  }
+
+  @GetMapping(value = "/v1/invite_record.do")
+  @ApiOperation(value = "获取分享邀请记录")
+  public Mono<Result<PageRes<ShareInviteRecordRes>>> getShareInviteRecord(
+      @Valid PageReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("key", "123");
+            put("pageNo", req.getPageNum());
+            put("pageSize", req.getPageSize());
+          }
+        };
+    return loboClient.postFormForPage(
+        exchange, LoboPathConst.SHARE_INVITE_RECORD, data, ShareConverter.toShareInviteRecordRes);
   }
 }

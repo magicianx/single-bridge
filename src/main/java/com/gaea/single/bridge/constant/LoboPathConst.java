@@ -71,4 +71,8 @@ public interface LoboPathConst {
   String PAY_AMOUNT_OPTIONS = "/basic/recharge/findMoneyList.do";
   /** 获取支付宝支付签名 */
   String ALIPAY_PAY_SIGN = "/finance/sign/getAlipaySignAll.do";
+  /** 分享交易记录 */
+  String SHARE_INVITE_RECORD = "/webapi/user/shareCenter/findTotalInvite.do";
+  /** 分享奖励记录 */
+  String SHARE_REWARD_RECORD = "/webapi/order/orderShare/findOrderShares.do";
 }
