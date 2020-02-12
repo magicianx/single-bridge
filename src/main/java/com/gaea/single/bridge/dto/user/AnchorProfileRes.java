@@ -18,7 +18,7 @@ public class AnchorProfileRes {
   private Long userId;
 
   @ApiModelProperty(value = "显示Id", required = true)
-  private String showId;
+  private Long showId;
 
   @ApiModelProperty(value = "云信id", required = true)
   private String yunXinId;

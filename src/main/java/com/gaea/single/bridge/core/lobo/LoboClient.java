@@ -5,6 +5,7 @@ import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
+import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.Resource;
@@ -194,18 +195,23 @@ public class LoboClient {
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.joining("&"))
             : "";
-    path = path + "?" + params;
+    String url = path + "?" + params;
 
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
     return webClient
         .get()
-        .uri(path)
+        .uri(url)
         .header("userId", userId)
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
         .retrieve()
-        .bodyToMono(LoboResult.class);
+        .bodyToMono(String.class)
+        .map(
+            body -> {
+              log.info("请求 {} 成功: {}", url, body);
+              return JsonUtils.toObject(body, LoboResult.class);
+            });
   }
 
   private Mono<LoboResult> doPostForm(
@@ -233,7 +239,12 @@ public class LoboClient {
         .header("session", session)
         .body(bodyInserter)
         .retrieve()
-        .bodyToMono(LoboResult.class);
+        .bodyToMono(String.class)
+        .map(
+            body -> {
+              log.info("请求 {} 成功: {}", path, body);
+              return JsonUtils.toObject(body, LoboResult.class);
+            });
   }
 
   private BodyInserter<?, ? super ClientHttpRequest> getBody(

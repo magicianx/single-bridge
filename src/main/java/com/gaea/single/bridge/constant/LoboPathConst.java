@@ -28,7 +28,7 @@ public interface LoboPathConst {
   /** 用户登录 */
   String USER_LOGIN = "/user/userLogin/login";
   /** 一键登录 */
-  String ONE_LOGIN = "/user/userLogin/login";
+  String ONE_LOGIN = "/user/oneLogin/login";
   /** 获取用户相册 */
   String USER_ALBUM = "/user/userCenter/getAlbum";
   /** 获取用户完善信息情况 */
@@ -81,4 +81,8 @@ public interface LoboPathConst {
   String INCOME_WITHDRAW = "/webapi/user/sellerCenter/withdraw.do";
   /** 最后一笔订单的通话时长 */
   String LAST_ORDER_DURATION_TIME = "/order/getDurationByUserId.do";
+  /** 开始订单 */
+  String START_ORDER = "/order/startOrder.do";
+  /** 视频结束信息 */
+  String VIDEO_END_INFO = "/order/getVideoEndInfo.do";
 }

@@ -30,6 +30,9 @@ public class LoginRes {
   @ApiModelProperty(value = "生日")
   private String birthday;
 
+  @ApiModelProperty(value = "完整手机号")
+  private String fullPhoneNum;
+
   @ApiModelProperty(value = "在线状态", required = true)
   private UserOnlineStatus onlineStatus;
 }

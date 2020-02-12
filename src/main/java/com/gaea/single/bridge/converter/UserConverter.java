@@ -18,7 +18,7 @@ public class UserConverter {
         JSONObject result = (JSONObject) obj;
         UserProfileRes res = new UserProfileRes();
         res.setId(result.getLong("userId"));
-        res.setShowId(result.getString("showId"));
+        res.setShowId(result.getLong("showId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
         res.setIntro(result.getString("intro"));
@@ -40,6 +40,7 @@ public class UserConverter {
         res.setSession(result.getString("session"));
         res.setYunXinId(result.getString("yunxinAccid"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
+        res.setFullPhoneNum(result.getString("mobilePhone"));
         if (StringUtils.isNotBlank(result.getString("birthday"))) {
           res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
         }

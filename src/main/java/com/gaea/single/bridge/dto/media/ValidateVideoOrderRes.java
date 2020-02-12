@@ -9,9 +9,6 @@ import lombok.Setter;
 @Setter
 @ApiModel("验证视频订单响应")
 public class ValidateVideoOrderRes {
-  @ApiModelProperty(value = "订单id", required = true)
-  private String orderId;
-
   @ApiModelProperty(value = "主叫方昵称", required = true)
   private String callerNickName;
 
@@ -25,7 +22,7 @@ public class ValidateVideoOrderRes {
   private String callerPortraitUrl;
 
   @ApiModelProperty(value = "主叫方显示id", required = true)
-  private String callerShowId;
+  private Long callerShowId;
 
   @ApiModelProperty(value = "被叫方昵称", required = true)
   private String calledNickName;
@@ -40,7 +37,7 @@ public class ValidateVideoOrderRes {
   private String calledPortraitUrl;
 
   @ApiModelProperty(value = "被叫方显示id", required = true)
-  private String calledShowId;
+  private Long calledShowId;
 
   @ApiModelProperty(value = "单价，单位为砖石", required = true)
   private Integer price;

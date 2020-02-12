@@ -51,7 +51,7 @@ public class AnchorConverter {
 
         AnchorProfileRes res = new AnchorProfileRes();
         res.setUserId(result.getLong("id"));
-        res.setShowId(result.getString("showId"));
+        res.setShowId(result.getLong("showId"));
         res.setYunXinId(result.getString("yunxinId"));
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setNickName(result.getString("nickName"));

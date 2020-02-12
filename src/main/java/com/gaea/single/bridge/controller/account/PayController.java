@@ -38,7 +38,7 @@ public class PayController extends BaseController {
   private final String key = Md5Utils.encrypt("huoquchongzhijinelieb");
 
   @GetMapping(value = "/v1/options.do")
-  @ApiOperation(value = "获取支付金额选项")
+  @ApiOperation(value = "获取充值金额选项")
   public Mono<Result<List<PayAmountOptionRes>>> getPayAmountOptions(
       @RequestParam("payWay") @ApiParam(value = "支付方式", required = true) @NotNull PayWay payWay,
       @ApiIgnore ServerWebExchange exchange) {

@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SmsCodeType implements Metadata {
-  SMS_CODE_LOGIN(2, "验证码登录");
+  SMS_CODE_LOGIN(2, "验证码登录"),
+  UNBIND_ALIPAY(2, "验证码登录");
 
   private int code;
   private String desc;

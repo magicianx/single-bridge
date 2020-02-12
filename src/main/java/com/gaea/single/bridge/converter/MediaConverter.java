@@ -10,17 +10,17 @@ public class MediaConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         CreateVideoOrderRes res = new CreateVideoOrderRes();
-        res.setOrderId(result.getString("orderRedisId"));
+        res.setOrderTempId(result.getString("orderRedisId"));
         res.setCallerNickName(result.getString("callingNickName"));
         res.setCallerGradeUrl(result.getString("orderRedisId"));
         res.setCallerGrade(result.getInteger("callingGrade"));
         res.setCallerPortraitUrl(result.getString("callingPortrait"));
-        res.setCallerShowId(result.getString("callingUserShowId"));
+        res.setCallerShowId(result.getLong("callingUserShowId"));
         res.setCalledNickName(result.getString("calledNickName"));
         res.setCalledGradeUrl(result.getString("calledGradeUrl"));
         res.setCalledGrade(result.getInteger("calledGrade"));
         res.setCalledPortraitUrl(result.getString("calledPortrait"));
-        res.setCalledShowId(result.getString("calledUserShowId"));
+        res.setCalledShowId(result.getLong("calledUserShowId"));
         res.setPrice(result.getInteger("price"));
         res.setHeartTime(result.getInteger("heartTime"));
 
@@ -31,17 +31,16 @@ public class MediaConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         ValidateVideoOrderRes res = new ValidateVideoOrderRes();
-        res.setOrderId(result.getString("orderRedisId"));
         res.setCallerNickName(result.getString("callingNickName"));
         res.setCallerGradeUrl(result.getString("orderRedisId"));
         res.setCallerGrade(result.getInteger("callingGrade"));
         res.setCallerPortraitUrl(result.getString("callingPortrait"));
-        res.setCallerShowId(result.getString("callingUserShowId"));
+        res.setCallerShowId(result.getLong("callingUserShowId"));
         res.setCalledNickName(result.getString("calledNickName"));
         res.setCalledGradeUrl(result.getString("calledGradeUrl"));
         res.setCalledGrade(result.getInteger("calledGrade"));
         res.setCalledPortraitUrl(result.getString("calledPortrait"));
-        res.setCalledShowId(result.getString("calledUserShowId"));
+        res.setCalledShowId(result.getLong("calledUserShowId"));
         res.setPrice(result.getInteger("price"));
 
         return res;

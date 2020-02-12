@@ -17,6 +17,17 @@ public class JsonUtils {
   }
 
   /**
+   * 将json转化为对象
+   *
+   * @param json json字符串
+   * @param cls 实例对象cls
+   * @return 实例对象
+   */
+  public static <T> T toObject(String json, Class<T> cls) {
+    return JSONObject.parseObject(json, cls);
+  }
+
+  /**
    * 将json字符串转化为{@link JSONObject}
    *
    * @param json json字符串
