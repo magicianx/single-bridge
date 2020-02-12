@@ -3,7 +3,7 @@ package com.gaea.single.bridge.controller.media;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
-import com.gaea.single.bridge.converter.MediaConverter;
+import com.gaea.single.bridge.converter.VideoConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.media.*;
@@ -46,7 +46,7 @@ public class VideoController extends BaseController {
           }
         };
     return loboClient.postForm(
-        exchange, LoboPathConst.CREATE_MEDIA_ORDER, data, MediaConverter.toCreateVideoOrderRes);
+        exchange, LoboPathConst.CREATE_MEDIA_ORDER, data, VideoConverter.toCreateVideoOrderRes);
   }
 
   @PostMapping(value = "/v1/order/validate.do", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -62,7 +62,7 @@ public class VideoController extends BaseController {
           }
         };
     return loboClient.postForm(
-        exchange, LoboPathConst.VALIDATE_MEDIA_ORDER, data, MediaConverter.toValidateVideoOrderRes);
+        exchange, LoboPathConst.VALIDATE_MEDIA_ORDER, data, VideoConverter.toValidateVideoOrderRes);
   }
 
   @GetMapping(value = "/v1/order/duration_time.do")
@@ -105,20 +105,19 @@ public class VideoController extends BaseController {
         });
   }
 
-  //  @PostMapping(value = "/v1/end_info.do", consumes = MediaType.APPLICATION_JSON_VALUE)
-  //  @ApiOperation(value = "获取视频结束信息")
-  //  public Mono<Result<VideoEndInfoRes>> getVideoEndInfo(
-  //      @Valid @RequestBody VideoEndInfoReq req, @ApiIgnore ServerWebExchange exchange) {
-  //    Map<String, Object> data =
-  //        new HashMap<String, Object>() {
-  //          {
-  //            put("session", getSession(exchange));
-  //            put("orderRedisId", req.getOrderTempId());
-  //            put("userId", getUserId(exchange));
-  //            put("status", req.getType().getCode());
-  //          }
-  //        };
-  //    return loboClient.postForm(
-  //        exchange, LoboPathConst.VIDEO_END_INFO, data, result -> (Integer) result);
-  //  }
+  @PostMapping(value = "/v1/end_info.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "获取视频结束信息")
+  public Mono<Result<VideoEndInfoRes>> getVideoEndInfo(
+      @Valid @RequestBody VideoEndInfoReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("orderId", req.getOrderId());
+            put("orderRedisId", req.getOrderTempId());
+            put("calledUserId", req.getCalledUserId());
+          }
+        };
+    return loboClient.postForm(
+        exchange, LoboPathConst.VIDEO_END_INFO, data, VideoConverter.toVideoEndInfoRes);
+  }
 }
