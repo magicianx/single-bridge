@@ -21,4 +21,7 @@ public class PayAmountOptionRes {
 
   @ApiModelProperty(value = "花费金额(元)", required = true)
   private Integer money;
+
+  @ApiModelProperty(value = "赠送钻石数量")
+  private Integer giveDiamonds;
 }

@@ -6,7 +6,7 @@ import com.gaea.single.bridge.dto.media.ValidateVideoOrderRes;
 import org.springframework.core.convert.converter.Converter;
 
 public class MediaConverter {
-  public static final Converter<Object, CreateVideoOrderRes> toCreateMediaOrderRes =
+  public static final Converter<Object, CreateVideoOrderRes> toCreateVideoOrderRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         CreateVideoOrderRes res = new CreateVideoOrderRes();
@@ -27,7 +27,7 @@ public class MediaConverter {
         return res;
       };
 
-  public static final Converter<Object, ValidateVideoOrderRes> toValidateMediaOrderRes =
+  public static final Converter<Object, ValidateVideoOrderRes> toValidateVideoOrderRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         ValidateVideoOrderRes res = new ValidateVideoOrderRes();

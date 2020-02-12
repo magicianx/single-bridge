@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class VideoController extends BaseController {
           }
         };
     return loboClient.postForm(
-        exchange, LoboPathConst.CREATE_MEDIA_ORDER, data, MediaConverter.toCreateMediaOrderRes);
+        exchange, LoboPathConst.CREATE_MEDIA_ORDER, data, MediaConverter.toCreateVideoOrderRes);
   }
 
   @PostMapping(value = "/v1/order/validate.do", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +72,7 @@ public class VideoController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           if (result.getInteger("type") == MediaOrderType.VIDEO.getCode()) {
-            return MediaConverter.toValidateMediaOrderRes.convert(obj);
+            return MediaConverter.toValidateVideoOrderRes.convert(obj);
           }
           throw ErrorCode.INVALID_VIDEO_ORDER.newBusinessException();
         });
@@ -82,16 +81,14 @@ public class VideoController extends BaseController {
   @GetMapping(value = "/v1/order/duration_time.do")
   @ApiOperation(value = "获取最后一笔订单的通话时长", notes = "响应单位秒，呼叫用户id和被叫用户id只需要传其中之一即可")
   public Mono<Result<Integer>> getLastOrderDurationTime(
-      @ApiParam("呼叫用户id") @RequestParam(value = "callerId", required = false) Long callerId,
-      @ApiParam("被叫用户id") @RequestParam(value = "calledId", required = false) Long calledId,
-      @ApiParam("视频订单id") @RequestParam(value = "orderId") @NotBlank String orderId,
+      @ApiParam("呼叫用户id") @RequestParam(value = "callUserId", required = false) Long callUserId,
+      @ApiParam("被叫用户id") @RequestParam(value = "calledUserId", required = false) Long calledUserId,
       @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("callingUserId", callerId);
-            put("calledUserId", calledId);
-            put("orderRedisId", orderId);
+            put("callingUserId", callUserId);
+            put("calledUserId", calledUserId);
           }
         };
     return loboClient.postForm(

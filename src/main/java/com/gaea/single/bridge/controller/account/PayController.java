@@ -58,7 +58,8 @@ public class PayController extends BaseController {
           return new PayAmountOptionRes(
               result.getLong("id"),
               result.getInteger("rechargeMoney"),
-              result.getInteger("status"));
+              result.getInteger("status"),
+              result.getInteger("giftId"));
         });
   }
 
