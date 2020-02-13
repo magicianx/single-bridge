@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.user.AnchorColumnRes;
 import com.gaea.single.bridge.dto.user.AnchorItemRes;
-import com.gaea.single.bridge.dto.user.AnchorLabelRes;
 import com.gaea.single.bridge.dto.user.AnchorProfileRes;
+import com.gaea.single.bridge.dto.user.LabelRes;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import org.springframework.core.convert.converter.Converter;
@@ -73,7 +73,7 @@ public class AnchorConverter {
                         .map(
                             l -> {
                               JSONObject label = (JSONObject) l;
-                              return new AnchorLabelRes(
+                              return new LabelRes(
                                   label.getLong("id"),
                                   label.getString("name"),
                                   label.getString("color"));

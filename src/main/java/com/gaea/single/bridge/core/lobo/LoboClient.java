@@ -110,6 +110,7 @@ public class LoboClient {
     return request(HttpMethod.POST, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchangeForList(mono, resConverter));
   }
+
   /**
    * 发送get请求
    *
@@ -126,6 +127,24 @@ public class LoboClient {
       Converter<Object, R> resConverter) {
     return this.request(HttpMethod.GET, exchange, path, data, null)
         .transform(mono -> loboResultExchanger.exchange(mono, resConverter));
+  }
+
+  /**
+   * 发送get请求,响应结果为列表
+   *
+   * @param path 请求路径
+   * @param data 请求参数
+   * @param resConverter lobo响应转化为{@link Result}
+   * @param <R> 业务响应类型
+   * @return {@link Mono<Result<List<R>>>}
+   */
+  public <R> Mono<Result<List<R>>> getForList(
+      ServerWebExchange exchange,
+      String path,
+      Map<String, Object> data,
+      Converter<Object, R> resConverter) {
+    return this.request(HttpMethod.GET, exchange, path, data, null)
+        .transform(mono -> loboResultExchanger.exchangeForList(mono, resConverter));
   }
 
   /**

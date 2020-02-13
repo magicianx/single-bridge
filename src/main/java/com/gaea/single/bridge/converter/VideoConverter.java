@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.media.CreateVideoOrderRes;
 import com.gaea.single.bridge.dto.media.ValidateVideoOrderRes;
 import com.gaea.single.bridge.dto.media.VideoEndInfoRes;
+import com.gaea.single.bridge.dto.user.LabelRes;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
@@ -75,14 +76,14 @@ public class VideoConverter {
     return anchor;
   }
 
-  private static List<VideoEndInfoRes.Label> getLabels(JSONObject result) {
+  private static List<LabelRes> getLabels(JSONObject result) {
     JSONArray labels = result.getJSONArray("labels");
     if (labels != null) {
       return labels.stream()
           .map(
               obj -> {
                 JSONObject label = (JSONObject) obj;
-                return new VideoEndInfoRes.Label(
+                return new LabelRes(
                     label.getLong("id"), label.getString("name"), label.getString("color"));
               })
           .collect(Collectors.toList());

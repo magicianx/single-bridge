@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.media;
 
+import com.gaea.single.bridge.dto.user.LabelRes;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class VideoEndInfoRes {
   public Anchor anchor;
 
   @ApiModelProperty(value = "标签列表", required = true)
-  private List<Label> labels;
+  private List<LabelRes> labels;
 
   @ApiModelProperty(value = "推荐主播列表", required = true)
   private List<RecommendAnchor> recommendAnchors;
@@ -49,22 +50,6 @@ public class VideoEndInfoRes {
 
     @ApiModelProperty(value = "等级图标链接", required = true)
     private String gradeIconUrl;
-  }
-
-  @ApiModel("标签")
-  @AllArgsConstructor
-  @NoArgsConstructor
-  @Getter
-  @Setter
-  public static class Label {
-    @ApiModelProperty("标签id")
-    private Long id;
-
-    @ApiModelProperty("名称")
-    private String name;
-
-    @ApiModelProperty("颜色")
-    private String color;
   }
 
   @ApiModel("推荐主播信息")

@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.dto.user;
 
-import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.GenderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class AnchorProfileRes {
   private List<String> photos;
 
   @ApiModelProperty(value = "标签列表", notes = "不存在时为空列表")
-  private List<AnchorLabelRes> labels = new ArrayList<>();
+  private List<LabelRes> labels = new ArrayList<>();
 
   @ApiModelProperty(value = "收到礼物图片列表", notes = "不存在时为空列表")
   private List<String> giftIcons = new ArrayList<>();

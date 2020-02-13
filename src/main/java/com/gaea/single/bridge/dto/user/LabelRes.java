@@ -7,18 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+@ApiModel("标签信息")
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel("主播标签信息")
-public class AnchorLabelRes {
-  @ApiModelProperty(value = "标签id", required = true)
+@Getter
+@Setter
+public class LabelRes {
+  @ApiModelProperty("标签id")
   private Long id;
 
-  @ApiModelProperty(value = "标签名称", required = true)
+  @ApiModelProperty("名称")
   private String name;
 
-  @ApiModelProperty(value = "标签颜色", required = true)
+  @ApiModelProperty("颜色")
   private String color;
 }

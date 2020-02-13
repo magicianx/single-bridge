@@ -87,4 +87,8 @@ public interface LoboPathConst {
   String VIDEO_END_INFO = "/order/getVideoEndInfo.do";
   /** 手动绑定支付宝账号 */
   String MANUAL_BIND_ALIPAY_ACCOUNT = "/user/alipayCenter/manualBindAlipay.do";
+  /** 获取主播随机标签列表 */
+  String ANCHOR_RANDOM_LABELS = "/user/userLabelCenter/getRandomOutUserLabels.do";
+  /** 添加主播标签 */
+  String ADD_ANCHOR_LABEL = "/user/userLabelCenter/addUserLabel.do";
 }

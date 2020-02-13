@@ -155,4 +155,40 @@ public class AnchorController extends BaseController {
               return Mono.just(result);
             });
   }
+
+  @GetMapping(value = "/v1/random_label.do")
+  @ApiOperation(value = "获取主播随机标签列表")
+  public Mono<Result<List<LabelRes>>> getRandomLabels(
+      @RequestParam("anchorId") @ApiParam(value = "主播id", required = true) Long anchorId,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("userId", anchorId);
+          }
+        };
+    return loboClient.getForList(
+        exchange,
+        LoboPathConst.ANCHOR_RANDOM_LABELS,
+        data,
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new LabelRes(
+              result.getLong("id"), result.getString("name"), result.getString("color"));
+        });
+  }
+
+  @PostMapping(value = "/v1/label.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "添加主播标签")
+  public Mono<Result<Object>> addAnchorLabel(
+      @Valid @RequestBody AddAnchorLabelReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("userId", req.getAnchorId());
+            put("labelId", req.getLabelId());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.ADD_ANCHOR_LABEL, data, null);
+  }
 }
