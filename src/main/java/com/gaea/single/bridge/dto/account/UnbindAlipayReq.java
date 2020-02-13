@@ -18,5 +18,5 @@ public class UnbindAlipayReq {
 
   @ApiModelProperty(value = "验证码", required = true)
   @NonNull
-  private Integer smsCode;
+  private String smsCode;
 }
