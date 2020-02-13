@@ -230,6 +230,8 @@ public class LoboClient {
       bodyInserter = getBody(multipartForm, data);
     }
 
+    log.info("正在请求 {}: {}", path, JsonUtils.toJsonString(data));
+
     return webClient
         .post()
         .uri(path)

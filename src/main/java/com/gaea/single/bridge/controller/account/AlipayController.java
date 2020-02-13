@@ -6,6 +6,7 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.BindAlipayReq;
 import com.gaea.single.bridge.dto.account.GetPaySignReq;
+import com.gaea.single.bridge.dto.account.ManualBindAlipayReq;
 import com.gaea.single.bridge.dto.account.UnbindAlipayReq;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
@@ -90,5 +91,19 @@ public class AlipayController extends BaseController {
           }
         };
     return loboClient.get(exchange, LoboPathConst.ALIPAY_PAY_SIGN, data, (obj) -> (String) obj);
+  }
+
+  @PostMapping(value = "/v1/manual_bind.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "手动绑定支付宝账号")
+  public Mono<Result<Object>> manualBindAlipayAccount(
+      @RequestBody @Valid ManualBindAlipayReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("alipayId", req.getAlipayAccount());
+            put("key", "-----");
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.MANUAL_BIND_ALIPAY_ACCOUNT, data, null);
   }
 }

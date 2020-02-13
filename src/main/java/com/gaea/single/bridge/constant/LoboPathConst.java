@@ -85,4 +85,6 @@ public interface LoboPathConst {
   String START_ORDER = "/order/startOrder.do";
   /** 视频结束信息 */
   String VIDEO_END_INFO = "/order/getVideoEndInfo.do";
+  /** 手动绑定支付宝账号 */
+  String MANUAL_BIND_ALIPAY_ACCOUNT = "/user/alipayCenter/manualBindAlipay.do";
 }
