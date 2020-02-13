@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.controller.account;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.ShareConverter;
@@ -9,8 +10,10 @@ import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.*;
+import com.gaea.single.bridge.enums.ShareWayType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -21,6 +24,8 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,5 +124,21 @@ public class ShareController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.SHARE_WITHDRAW, data, null);
+  }
+
+  @GetMapping(value = "/v1/ways.do")
+  @ApiOperation(value = "获取分享方式")
+  public Mono<Result<List<ShareWayRes>>> getShareWays(
+      @RequestParam("inviteCode") @ApiParam(value = "邀请码", required = true) @NotBlank
+          String inviteCode) {
+    String url = String.format(DictionaryProperties.get().getLobo().getShareUrl(), inviteCode);
+    String title = DictionaryProperties.get().getLobo().getShareTitle();
+    String content = DictionaryProperties.get().getLobo().getShareContent();
+
+    List<ShareWayRes> ways = new ArrayList<>();
+    for (ShareWayType type : ShareWayType.values()) {
+      ways.add(new ShareWayRes(type, title, content, url));
+    }
+    return Mono.just(Result.success(ways));
   }
 }

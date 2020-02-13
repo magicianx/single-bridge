@@ -29,6 +29,7 @@ public class UserConverter {
         res.setIsPerfectBirthday(result.getInteger("isPerfectAge") == 1);
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
         res.setUserType(UserType.ofCode(result.getInteger("userType")));
+        res.setInviteCode(result.getString("inviteCode"));
         return res;
       };
 

@@ -45,4 +45,7 @@ public class UserProfileRes {
 
   @ApiModelProperty(value = "用户类型", required = true)
   private UserType userType;
+
+  @ApiModelProperty(value = "邀请码", required = true)
+  private String inviteCode;
 }
