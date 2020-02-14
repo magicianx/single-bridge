@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ApiModel("分享奖励奖励")
+@ApiModel("分享奖励信息")
 public class ShareRewardRecordRes {
   @ApiModelProperty(value = "用户id", required = true)
   private Long userId;
