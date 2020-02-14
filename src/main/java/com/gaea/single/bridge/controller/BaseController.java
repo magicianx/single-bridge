@@ -4,14 +4,21 @@ import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.enums.OsType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseController {
-  protected String getUserId(ServerWebExchange exchange) {
-    return exchange.getAttribute(CommonHeaderConst.USER_ID);
+  protected Long getUserId(ServerWebExchange exchange) {
+    String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
+
+    if (StringUtils.isNotBlank(userId)) {
+      return Long.valueOf(userId);
+    }
+
+    return null;
   }
 
   protected String getAppId() {

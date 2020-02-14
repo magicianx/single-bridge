@@ -91,4 +91,6 @@ public interface LoboPathConst {
   String ANCHOR_RANDOM_LABELS = "/user/userLabelCenter/getRandomOutUserLabels.do";
   /** 添加主播标签 */
   String ADD_ANCHOR_LABEL = "/user/userLabelCenter/addUserLabel.do";
+  /** 保存用户IOS PushKit的设备信息 */
+  String SAVE_IOS_PUSH_KIT_ACCOUNT = "/push/device/saveIOSPushKitAccount.do";
 }

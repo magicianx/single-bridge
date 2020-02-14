@@ -11,7 +11,8 @@ public enum ShareRewardType implements Metadata {
   RECHARGE(2, "充值分销"),
   VIDEO(3, "视频收入分销"),
   VIDEO_GRATUITY(4, "视频打赏收入分销"),
-  IM_GRATUITY(5, "IM打赏收入分销");
+  IM_GRATUITY(5, "IM打赏收入分销"),
+  IM_INCOME(6, "IM收入分销");
 
   private Integer code;
   private String desc;
