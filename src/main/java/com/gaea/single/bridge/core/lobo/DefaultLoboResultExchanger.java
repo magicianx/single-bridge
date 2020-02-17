@@ -23,7 +23,7 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
     return mono.map(
             res -> {
               R result = null;
-              if (res.getDataCollection() != null && resConverter != null) {
+              if (resConverter != null) {
                 result =
                     isOriginalType(res)
                         ? resConverter.convert(JsonUtils.toJsonObject(res.getDataCollection()))

@@ -39,13 +39,18 @@ public class AppController extends BaseController {
             put("channelId", getChannelId(exchange));
           }
         };
+
     return loboClient.postForm(
         exchange,
         LoboPathConst.CHECK_APP_AUDIT_STATUS,
         data,
         (obj) -> {
-          Integer result = (Integer) obj;
-          return new AppInfoRes(AuditStatus.ofCode(result));
+          boolean isAuditPass = true;
+          if (obj != null) {
+            Integer result = (Integer) obj;
+            isAuditPass = AuditStatus.ofCode(result) == AuditStatus.PASS;
+          }
+          return new AppInfoRes(isAuditPass);
         });
   }
 }

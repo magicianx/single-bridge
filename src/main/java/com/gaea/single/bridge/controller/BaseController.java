@@ -9,6 +9,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class BaseController {
   protected Long getUserId(ServerWebExchange exchange) {
@@ -26,7 +27,8 @@ public abstract class BaseController {
   }
 
   protected String getChannelId(ServerWebExchange exchange) {
-    return exchange.getAttribute(CommonHeaderConst.CHANNEL_ID);
+    String channelId = exchange.getAttribute(CommonHeaderConst.CHANNEL_ID);
+    return Optional.ofNullable(channelId).orElse("13");
   }
 
   protected String getAppVersion(ServerWebExchange exchange) {

@@ -1,6 +1,5 @@
 package com.gaea.single.bridge.dto.app;
 
-import com.gaea.single.bridge.enums.AuditStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -14,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppInfoRes {
-  @ApiModelProperty(value = "审核状态", required = true)
-  private AuditStatus auditStatus;
+  @ApiModelProperty(value = "是否审核通过, 默认值为true", required = true)
+  private Boolean isAuditPass;
 }
