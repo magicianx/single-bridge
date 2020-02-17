@@ -25,8 +25,8 @@ public abstract class BaseController {
     return DictionaryProperties.get().getLobo().getAppId();
   }
 
-  protected String getChannelId() {
-    return DictionaryProperties.get().getLobo().getChannelId();
+  protected String getChannelId(ServerWebExchange exchange) {
+    return exchange.getAttribute(CommonHeaderConst.CHANNEL_ID);
   }
 
   protected String getAppVersion(ServerWebExchange exchange) {

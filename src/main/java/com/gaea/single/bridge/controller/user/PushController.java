@@ -39,7 +39,7 @@ public class PushController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("userId", userId);
-            put("type", getChannelId());
+            put("type", getChannelId(exchange));
             put("token", req.getToken());
             put("key", Md5Utils.encrypt(userId + req.getToken()));
           }

@@ -31,7 +31,6 @@ public class DictionaryProperties implements IConfig {
     lobo.setShareUrl("http://mgr.vchat.club:8020/#/shareinvite3_2?code=%s");
     lobo.setShareTitle("Signle-让你不再孤单");
     lobo.setShareContent("这里有美女小姐姐陪你聊天，游戏，让你不再孤单！");
-    lobo.setChannelId("1000");
 
     return new DictionaryProperties(lobo);
   }
@@ -70,7 +69,6 @@ public class DictionaryProperties implements IConfig {
     private String mainHost;
     private String otherHost;
     private String appId;
-    private String channelId;
     private String shareUrl;
     private String shareTitle;
     private String shareContent;

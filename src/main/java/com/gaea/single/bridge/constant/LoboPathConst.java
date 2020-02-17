@@ -93,4 +93,6 @@ public interface LoboPathConst {
   String ADD_ANCHOR_LABEL = "/user/userLabelCenter/addUserLabel.do";
   /** 保存用户IOS PushKit的设备信息 */
   String SAVE_IOS_PUSH_KIT_ACCOUNT = "/push/device/saveIOSPushKitAccount.do";
+  /** 查询应用审核状态 */
+  String CHECK_APP_AUDIT_STATUS = "/basic/version/queryAuditSatus";
 }

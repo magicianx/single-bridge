@@ -88,7 +88,7 @@ public class UserController extends BaseController {
             {
               put("os", getOsType(exchange).getCode());
               put("appId", getAppId());
-              put("channel", getChannelId());
+              put("channel", getChannelId(exchange));
               put("deviceNo", getDeviceNo(exchange));
               put("token", req.getAccessToken());
             }
@@ -103,7 +103,7 @@ public class UserController extends BaseController {
               put("openId", req.getOpenId());
               put("imageUrl", req.getPortraitUrl());
               put("appId", getAppId());
-              put("channel", getChannelId());
+              put("channel", getChannelId(exchange));
               put("deviceNo", getDeviceNo(exchange));
               put("accessToken", req.getAccessToken());
               put("userName", req.getNickName());

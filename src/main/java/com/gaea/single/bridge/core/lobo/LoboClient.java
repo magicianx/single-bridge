@@ -171,7 +171,6 @@ public class LoboClient {
       String path,
       Map<String, Object> data,
       List<Integer> loboErrorCodes) {
-    log.info("正在请求lobo服务 {}", path);
 
     Mono<LoboResult> mono;
     if (HttpMethod.GET.equals(method)) {
