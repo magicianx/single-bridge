@@ -124,20 +124,26 @@ public class AnchorController extends BaseController {
   @ApiOperation(value = "举报或拉黑主播")
   public Mono<Result<?>> reportAnchor(
       @Valid @RequestBody ReportAnchorReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
+    Map<String, Object> params =
         new HashMap<String, Object>() {
           {
             put("complainUserId", getUserId(exchange));
             put("complainedUserId", req.getReportedUserId());
             put("reason", req.getReason());
-            put("key", " ---- ");
+            put("key", "----");
+          }
+        };
+
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
             put("file", new ClassPathResource("report.jpg"));
           }
         };
 
     // 举报主播
     return loboClient
-        .postForm(exchange, LoboPathConst.REPORT_ANCHOR, data, null)
+        .postForm(exchange, LoboPathConst.REPORT_ANCHOR, params, data, null)
         .flatMap(
             result -> {
               if (req.getIsPullBack() && result.getCode() == ErrorCode.SUCCESS.getCode()) {
