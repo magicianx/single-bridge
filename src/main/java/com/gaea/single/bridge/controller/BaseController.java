@@ -27,8 +27,8 @@ public abstract class BaseController {
   }
 
   protected String getChannelId(ServerWebExchange exchange) {
-    String channelId = exchange.getAttribute(CommonHeaderConst.CHANNEL_ID);
-    return Optional.ofNullable(channelId).orElse("13");
+//    String channelId = exchange.getAttribute(CommonHeaderConst.CHANNEL_ID);
+    return "13";
   }
 
   protected String getAppVersion(ServerWebExchange exchange) {

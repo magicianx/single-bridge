@@ -28,7 +28,7 @@ import java.util.Map;
 public class AppController extends BaseController {
   @Autowired private LoboClient loboClient;
 
-  @GetMapping(value = "/v1/info")
+  @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
   public Mono<Result<AppInfoRes>> getAppInfo(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
