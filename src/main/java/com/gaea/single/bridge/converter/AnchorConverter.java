@@ -10,6 +10,7 @@ import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import org.springframework.core.convert.converter.Converter;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -62,10 +63,16 @@ public class AnchorConverter {
         res.setAge(result.getInteger("age"));
         res.setCity(result.getString("address"));
         res.setIntro(result.getString("intro"));
-        Optional.ofNullable(result.getJSONArray("photos"))
-            .map(
-                photos -> photos.stream().map(photo -> (String) photo).collect(Collectors.toList()))
-            .ifPresent(res::setPhotos);
+
+        List<String> photos = new ArrayList<>();
+        if (result.getJSONArray("photos") != null) {
+          result.getJSONArray("photos").forEach(photo -> photos.add((String) photo));
+        }
+        if (result.getJSONArray("album") != null) {
+          result.getJSONArray("album").forEach(photo -> photos.add((String) photo));
+        }
+        res.setPhotos(photos);
+
         Optional.ofNullable(result.getJSONArray("labels"))
             .map(
                 labels ->
