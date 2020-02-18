@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.AnchorConverter;
@@ -13,7 +14,9 @@ import com.gaea.single.bridge.enums.ReportType;
 import com.gaea.single.bridge.error.ErrorCode;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -33,6 +37,14 @@ import java.util.Map;
 @Validated
 public class AnchorController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private ServiceProperties serviceProperties;
+
+  private FileSystemResource resource;
+
+  @PostConstruct
+  public void init() {
+    resource = new FileSystemResource(serviceProperties.getReportImgPath());
+  }
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取主播栏目列表")
@@ -124,6 +136,10 @@ public class AnchorController extends BaseController {
   @ApiOperation(value = "举报或拉黑主播")
   public Mono<Result<?>> reportAnchor(
       @Valid @RequestBody ReportAnchorReq req, @ApiIgnore ServerWebExchange exchange) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.IMAGE_JPEG);
+    HttpEntity<FileSystemResource> entity = new HttpEntity<>(resource, headers);
+
     Map<String, Object> params =
         new HashMap<String, Object>() {
           {
@@ -137,7 +153,7 @@ public class AnchorController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("file", new ClassPathResource("report.jpg"));
+            put("file", entity);
           }
         };
 

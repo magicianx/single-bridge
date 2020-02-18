@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class ServiceProperties {
   public Config config;
+  private String reportImgPath;
 
   @Getter
   @Setter

@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.config.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
  * @author wangqiu@lobochat.cn
  */
 @Component
-@ConditionalOnProperty(prefix = "spring.profiles", name = "active", havingValue = "prod")
+@ConditionalOnExpression("!'${spring.profiles.active}'.equals('dev')")
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1)
 @Slf4j
 public class CustomModelPropertyBuilder extends AbstractEnumTypeBuilder

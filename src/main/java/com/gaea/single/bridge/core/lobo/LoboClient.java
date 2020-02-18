@@ -9,6 +9,7 @@ import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpRequest;
@@ -260,14 +261,14 @@ public class LoboClient {
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
     if (data != null) {
       boolean multipartForm =
-          data.values().stream().anyMatch(v -> v instanceof Resource || v instanceof FilePart);
+          data.values().stream().anyMatch(v -> v instanceof HttpEntity || v instanceof FilePart);
       mediaType =
           multipartForm ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_FORM_URLENCODED;
 
       bodyInserter = getBody(multipartForm, data);
     }
 
-    log.info("正在请求 {}: {}", fullPath, JsonUtils.toJsonString(data));
+//    log.info("正在请求 {}: {}", fullPath, JsonUtils.toJsonString(data));
 
     return webClient
         .post()
