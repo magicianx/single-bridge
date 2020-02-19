@@ -2,11 +2,13 @@ package com.gaea.single.bridge.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.platform.config.core.CheckException;
 import org.platform.config.core.data.DataPool;
 import org.platform.config.core.data.set.PropertyData;
+import org.platform.config.core.kernel.ConfigPool;
 import org.platform.config.core.kernel.IConfig;
 import org.platform.config.core.kernel.set.CFile;
 import org.platform.config.core.kernel.set.SingleConfigSet;
@@ -19,20 +21,8 @@ import java.util.Properties;
 @Slf4j
 @AllArgsConstructor
 public class DictionaryProperties implements IConfig {
-  //  public static DictionaryProperties get() {
-  //    return ConfigPool.open(Set.class).get();
-  //  }
-
   public static DictionaryProperties get() {
-    Lobo lobo = new Lobo();
-    lobo.setAppId("1");
-    lobo.setMainHost("http://mgr.vchat.club:19001");
-    lobo.setOtherHost("http://mgr.vchat.club:8020");
-    lobo.setShareUrl("http://mgr.vchat.club:8020/#/shareinvite3_2?code=%s");
-    lobo.setShareTitle("Signle-让你不再孤单");
-    lobo.setShareContent("这里有美女小姐姐陪你聊天，游戏，让你不再孤单！");
-
-    return new DictionaryProperties(lobo);
+    return ConfigPool.open(Set.class).get();
   }
 
   private Lobo lobo;
@@ -47,7 +37,9 @@ public class DictionaryProperties implements IConfig {
       for (Field field : cls.getDeclaredFields()) {
         String fieldName = field.getName();
         Method setMethod =
-            cls.getMethod("set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1));
+            cls.getMethod(
+                "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1),
+                String.class);
         String value = properties.getProperty(prefix + "." + fieldName);
         Object arg = value;
         if (Integer.class.isAssignableFrom(field.getType())) {

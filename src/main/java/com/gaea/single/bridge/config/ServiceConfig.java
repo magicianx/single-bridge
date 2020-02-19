@@ -3,6 +3,7 @@ package com.gaea.single.bridge.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.gaea.single.bridge.SingleBridgeApplication;
 import com.gaea.single.bridge.core.lobo.DefaultLoboResultExchanger;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.core.lobo.LoboResultExchanger;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -23,7 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ServiceConfig {
   @Autowired private ServiceProperties serviceProperties;
 
-  //  @Bean
+  @Bean
   public ConfigAgent configAgent(@Value("${spring.application.name}") String name)
       throws Exception {
     ServiceProperties.Config config = serviceProperties.getConfig();
@@ -37,20 +39,21 @@ public class ServiceConfig {
             .agentId(name)
             .appendParam("delay", 10)
             .appendParam("gap", 60)
-            .addConfigSet("com.gaea.single.bridge.config");
-    ConfigManager.init(builder);
+            .addConfigSet(SingleBridgeApplication.class.getPackage().getName());
+
+    ConfigManager.init(builder.builder());
     return ConfigManager.get();
   }
 
   @Bean
-  //  @DependsOn("configAgent")
+  @DependsOn("configAgent")
   public WebClient loboMainWebClient() {
     String host = DictionaryProperties.get().getLobo().getMainHost();
     return WebClient.builder().baseUrl(host).build();
   }
 
   @Bean
-  //  @DependsOn("configAgent")
+  @DependsOn("configAgent")
   public WebClient loboOtherWebClient() {
     String host = DictionaryProperties.get().getLobo().getOtherHost();
     return WebClient.builder().baseUrl(host).build();
@@ -63,16 +66,13 @@ public class ServiceConfig {
 
   @Bean
   @Primary
-  public LoboClient loboMainClient(
-      @Autowired @Qualifier("loboMainWebClient") WebClient webClient,
-      LoboResultExchanger exchanger) {
+  public LoboClient loboMainClient(@Autowired @Qualifier("loboMainWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 
   @Bean
   public LoboClient loboOtherClient(
-      @Autowired @Qualifier("loboOtherWebClient") WebClient webClient,
-      LoboResultExchanger exchanger) {
+      @Autowired @Qualifier("loboOtherWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 
