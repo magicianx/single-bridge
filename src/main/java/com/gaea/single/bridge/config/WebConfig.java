@@ -10,8 +10,8 @@ public class WebConfig implements WebFluxConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry
-        .addResourceHandler("/html/**")
-        .addResourceLocations("file:///data/app/single/html/")
+        .addResourceHandler("/html/**,/ios/config.json,/android/config.json")
+        .addResourceLocations("file:///data/app/single/static/")
         .resourceChain(true)
         .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"));
   }
