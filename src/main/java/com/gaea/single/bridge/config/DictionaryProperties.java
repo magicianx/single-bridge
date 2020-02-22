@@ -2,7 +2,6 @@ package com.gaea.single.bridge.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.platform.config.core.CheckException;
@@ -26,9 +25,11 @@ public class DictionaryProperties implements IConfig {
   }
 
   private Lobo lobo;
+  private Share share;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
+    this.share = getProperty(Share.class, "share", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -57,13 +58,18 @@ public class DictionaryProperties implements IConfig {
 
   @Getter
   @Setter
+  public static class Share {
+    private String url;
+    private String title;
+    private String content;
+  }
+
+  @Getter
+  @Setter
   public static class Lobo {
     private String mainHost;
     private String otherHost;
     private String appId;
-    private String shareUrl;
-    private String shareTitle;
-    private String shareContent;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

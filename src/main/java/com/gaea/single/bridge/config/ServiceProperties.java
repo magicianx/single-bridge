@@ -8,8 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class ServiceProperties {
-  public Config config;
+  private Config config;
   private String reportImgPath;
+  private String appStaticHome;
 
   @Getter
   @Setter

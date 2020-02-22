@@ -33,7 +33,8 @@ service:
     secretKey: f8f661c1fe7c4be0b33405f9f47c4880
   api.enable: true
   reportImgPath: /data/app/single/report.jpg
+  appStaticHome: /data/app/single/static
 logging:
   level:
-    org.springframework: info
+    org.springframework: debug
 

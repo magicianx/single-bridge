@@ -131,9 +131,9 @@ public class ShareController extends BaseController {
   public Mono<Result<List<ShareWayRes>>> getShareWays(
       @RequestParam("inviteCode") @ApiParam(value = "邀请码", required = true) @NotBlank
           String inviteCode) {
-    String url = String.format(DictionaryProperties.get().getLobo().getShareUrl(), inviteCode);
-    String title = DictionaryProperties.get().getLobo().getShareTitle();
-    String content = DictionaryProperties.get().getLobo().getShareContent();
+    String url = String.format(DictionaryProperties.get().getShare().getUrl(), inviteCode);
+    String title = DictionaryProperties.get().getShare().getTitle();
+    String content = DictionaryProperties.get().getShare().getContent();
 
     List<ShareWayRes> ways = new ArrayList<>();
     for (ShareWayType type : ShareWayType.values()) {

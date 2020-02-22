@@ -1,18 +1,49 @@
 package com.gaea.single.bridge.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
 
+import java.util.stream.Stream;
+
 @Configuration
+@ConditionalOnProperty(value = "service.appStaticHome")
 public class WebConfig implements WebFluxConfigurer {
+
+  @Autowired private ServiceProperties properties;
+
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry
-        .addResourceHandler("/html/**,/ios/config.json,/android/config.json")
-        .addResourceLocations("file:///data/app/single/static/")
-        .resourceChain(true)
-        .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"));
+    Stream.of(
+            StaticResource.of("/html/**", "/html"),
+            StaticResource.of("/ios/**", "/ios"),
+            StaticResource.of("/android/**", "/android"))
+        .forEach(
+            resource -> {
+              String location =
+                  String.format(
+                      "file://%s%s/", properties.getAppStaticHome(), resource.getLocation());
+              registry
+                  .addResourceHandler(resource.getPath())
+                  .addResourceLocations(location)
+                  .resourceChain(true)
+                  .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"));
+            });
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class StaticResource {
+    private String path;
+    private String location;
+
+    public static StaticResource of(String path, String location) {
+      return new StaticResource(path, location);
+    }
   }
 }
