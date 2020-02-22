@@ -78,7 +78,7 @@ public class ApiConfig {
                     false,
                     "df5bdd9047ab43358079f985638fd434"),
                 getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true, "1.0.0"),
-                getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536"),
+                getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536  "),
                 getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
                 getHeaderParameter(
                     CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true, ""),

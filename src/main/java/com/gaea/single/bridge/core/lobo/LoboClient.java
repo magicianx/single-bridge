@@ -236,7 +236,7 @@ public class LoboClient {
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
 
     log.info(
-        "正在请求lobo服务 {}: header {},  params {}",
+        "正在请求lobo服务 {}: header {}, params {}",
         fullPath,
         String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
         params != null ? JsonUtils.toJsonString(params) : null);
@@ -272,8 +272,9 @@ public class LoboClient {
 
       if (!multipartForm) {
         log.info(
-            "正在请求lobo服务 {}: params {}: data {}",
+            "正在请求lobo服务 {}: header {}, params {}, data {}",
             fullPath,
+                String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
             params != null ? JsonUtils.toJsonString(params) : null,
             JsonUtils.toJsonString(data));
       }
