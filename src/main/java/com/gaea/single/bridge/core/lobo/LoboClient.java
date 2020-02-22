@@ -8,7 +8,6 @@ import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -194,7 +193,7 @@ public class LoboClient {
       Map<String, Object> data,
       List<Integer> loboErrorCodes) {
 
-    Mono<LoboResult> mono;
+    Mono<String> mono;
     if (HttpMethod.GET.equals(method)) {
       mono = doGet(exchange, path, params);
     } else if (HttpMethod.POST.equals(method)) {
@@ -204,7 +203,10 @@ public class LoboClient {
     }
 
     return mono.flatMap(
-        res -> {
+        body -> {
+          log.info("请求lobo服务 {} 完成: {}", path, body);
+          LoboResult res = JsonUtils.toObject(body, LoboResult.class);
+
           int code = res.getResultCode();
           if (LoboCode.isErrorCode(code)) {
             String message = LoboCode.getErrorMessage(res.getResultCode());
@@ -227,12 +229,18 @@ public class LoboClient {
         });
   }
 
-  private Mono<LoboResult> doGet(
-      ServerWebExchange exchange, String path, Map<String, Object> params) {
+  private Mono<String> doGet(ServerWebExchange exchange, String path, Map<String, Object> params) {
     String fullPath = getFullPath(path, params);
 
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
+
+    log.info(
+        "正在请求lobo服务 {}: header {},  params {}",
+        fullPath,
+        String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
+        params != null ? JsonUtils.toJsonString(params) : null);
+
     return webClient
         .get()
         .uri(fullPath)
@@ -240,15 +248,10 @@ public class LoboClient {
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
         .retrieve()
-        .bodyToMono(String.class)
-        .map(
-            body -> {
-              log.info("请求 {} 成功: {}", fullPath, body);
-              return JsonUtils.toObject(body, LoboResult.class);
-            });
+        .bodyToMono(String.class);
   }
 
-  private Mono<LoboResult> doPostForm(
+  private Mono<String> doPostForm(
       ServerWebExchange exchange,
       String path,
       Map<String, Object> params,
@@ -266,9 +269,15 @@ public class LoboClient {
           multipartForm ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_FORM_URLENCODED;
 
       bodyInserter = getBody(multipartForm, data);
-    }
 
-//    log.info("正在请求 {}: {}", fullPath, JsonUtils.toJsonString(data));
+      if (!multipartForm) {
+        log.info(
+            "正在请求lobo服务 {}: params {}: data {}",
+            fullPath,
+            params != null ? JsonUtils.toJsonString(params) : null,
+            JsonUtils.toJsonString(data));
+      }
+    }
 
     return webClient
         .post()
@@ -279,12 +288,7 @@ public class LoboClient {
         .header("session", session)
         .body(bodyInserter)
         .retrieve()
-        .bodyToMono(String.class)
-        .map(
-            body -> {
-              log.info("请求 {} 成功: {}", fullPath, body);
-              return JsonUtils.toObject(body, LoboResult.class);
-            });
+        .bodyToMono(String.class);
   }
 
   private BodyInserter<?, ? super ClientHttpRequest> getBody(
