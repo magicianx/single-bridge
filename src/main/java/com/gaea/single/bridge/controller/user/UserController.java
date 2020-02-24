@@ -226,10 +226,15 @@ public class UserController extends BaseController {
                 if (result.getCode() == 1005) {
                   auditing = true;
                 }
-                return modifyUserOtherInfo(exchange, req, loboErrorCodes, auditing);
+                List<Mono<Result<Object>>> monos =
+                    getUpdateOtherInfoMonos(exchange, req, loboErrorCodes);
+                if (monos.isEmpty() && auditing) {
+                  return Mono.error(ErrorCode.USER_INFO_AUDITING.newBusinessException());
+                }
+                return modifyUserOtherInfo(auditing, monos);
               });
     }
-    return modifyUserOtherInfo(exchange, req, loboErrorCodes, false);
+    return modifyUserOtherInfo(false, getUpdateOtherInfoMonos(exchange, req, loboErrorCodes));
   }
 
   @GetMapping(value = "/v1/portrait.do")
@@ -246,11 +251,8 @@ public class UserController extends BaseController {
         });
   }
 
-  private Mono<Result<Object>> modifyUserOtherInfo(
-      ServerWebExchange exchange,
-      UpdateUserReq req,
-      List<Integer> loboErrorCodes,
-      boolean nickNameAuditing) {
+  private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
+      ServerWebExchange exchange, UpdateUserReq req, List<Integer> loboErrorCodes) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
     if (req.getIntro() != null) {
       monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro(), loboErrorCodes));
@@ -266,6 +268,11 @@ public class UserController extends BaseController {
     if (req.getPortrait() != null) {
       monos.add(callUploadUserPortrait(exchange, req.getPortrait()));
     }
+    return monos;
+  }
+
+  private Mono<Result<Object>> modifyUserOtherInfo(
+      boolean nickNameAuditing, List<Mono<Result<Object>>> monos) {
     if (!monos.isEmpty()) {
       return Mono.zip(
               monos,
