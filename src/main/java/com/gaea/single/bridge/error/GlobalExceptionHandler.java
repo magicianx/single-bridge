@@ -1,5 +1,7 @@
 package com.gaea.single.bridge.error;
 
+import com.gaea.single.bridge.core.BusinessException;
+import com.gaea.single.bridge.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +50,16 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
   }
 
   protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
-    Map<String, Object> error = getErrorAttributes(request, true);
-    log.error("系统异常: " + error.get("trace"));
+    Result<Object> result;
+    Throwable ex = getError(request);
+    if (ex instanceof BusinessException) {
+      result = Result.error(((BusinessException) ex).getCode(), ex.getMessage());
+    } else {
+      Map<String, Object> error = getErrorAttributes(request, true);
+      log.error("系统异常: " + error.get("trace"));
 
-    Map<String, Object> result = new HashMap<>();
-    result.put("code", ErrorCode.INNER_ERROR.getCode());
-    result.put("message", ErrorCode.INNER_ERROR.getMessage());
-    result.put("data", null);
+      result = Result.error(ErrorCode.INNER_ERROR);
+    }
 
     return ServerResponse.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
