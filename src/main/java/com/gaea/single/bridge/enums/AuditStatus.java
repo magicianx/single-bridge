@@ -3,7 +3,7 @@ package com.gaea.single.bridge.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 广告类型 */
+/** 审核状态 */
 @Getter
 @AllArgsConstructor
 public enum AuditStatus implements Metadata {

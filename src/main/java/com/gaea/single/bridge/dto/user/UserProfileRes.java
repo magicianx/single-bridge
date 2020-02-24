@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.AnchorAuthStatus;
 import com.gaea.single.bridge.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -48,4 +49,7 @@ public class UserProfileRes {
 
   @ApiModelProperty(value = "邀请码", required = true)
   private String inviteCode;
+
+  @ApiModelProperty(value = "主播认证状态", required = true)
+  private AnchorAuthStatus authStatus;
 }

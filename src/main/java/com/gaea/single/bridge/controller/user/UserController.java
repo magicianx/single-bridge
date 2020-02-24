@@ -208,11 +208,50 @@ public class UserController extends BaseController {
   @ApiOperation(value = "编辑用户资料", notes = "只传值发生变化的字段，普通用户需要上传头像, 性别和生日不可重复修改，昵称和个人简介修改后需要进行审核")
   public Mono<Result<Object>> modifyUserInfo(
       @Valid UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
-    List<Mono<Result<Object>>> monos = new ArrayList<>();
+
     List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
-      monos.add(callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes));
+      return callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes)
+          .flatMap(
+              result -> {
+                boolean auditing = false;
+                if (LoboCode.isErrorCode(result.getCode())) {
+                  return Mono.error(
+                      new BusinessException(
+                          result.getCode(), LoboCode.getErrorMessage(result.getCode())));
+                }
+                if (result.getCode() == ErrorCode.INNER_ERROR.getCode()) {
+                  return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
+                }
+                if (result.getCode() == 1005) {
+                  auditing = true;
+                }
+                return modifyUserOtherInfo(exchange, req, loboErrorCodes, auditing);
+              });
     }
+    return modifyUserOtherInfo(exchange, req, loboErrorCodes, false);
+  }
+
+  @GetMapping(value = "/v1/portrait.do")
+  @ApiOperation(value = "获取用户头像")
+  public Mono<Result<AlbumItemRes>> getUserPortrait(@ApiIgnore ServerWebExchange exchange) {
+    return loboClient.get(
+        exchange,
+        LoboPathConst.GET_USER_PORTRAIT,
+        null,
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new AlbumItemRes(
+              result.getString("url"), AuditStatus.ofCode(result.getInteger("status")), true);
+        });
+  }
+
+  private Mono<Result<Object>> modifyUserOtherInfo(
+      ServerWebExchange exchange,
+      UpdateUserReq req,
+      List<Integer> loboErrorCodes,
+      boolean nickNameAuditing) {
+    List<Mono<Result<Object>>> monos = new ArrayList<>();
     if (req.getIntro() != null) {
       monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro(), loboErrorCodes));
     }
@@ -231,14 +270,13 @@ public class UserController extends BaseController {
       return Mono.zip(
               monos,
               (objs) -> {
-                boolean auditing = false;
+                boolean auditing = nickNameAuditing;
                 for (Object obj : objs) {
                   Result<Object> result = (Result<Object>) obj;
                   if (LoboCode.isErrorCode(result.getCode())) {
                     throw new BusinessException(
                         result.getCode(), LoboCode.getErrorMessage(result.getCode()));
                   }
-
                   if (result.getCode() == ErrorCode.INNER_ERROR.getCode()) {
                     throw ErrorCode.INNER_ERROR.newBusinessException();
                   }
@@ -265,20 +303,6 @@ public class UserController extends BaseController {
               });
     }
     return Mono.just(Result.success());
-  }
-
-  @GetMapping(value = "/v1/portrait.do")
-  @ApiOperation(value = "获取用户头像")
-  public Mono<Result<AlbumItemRes>> getUserPortrait(@ApiIgnore ServerWebExchange exchange) {
-    return loboClient.get(
-        exchange,
-        LoboPathConst.GET_USER_PORTRAIT,
-        null,
-        (obj) -> {
-          JSONObject result = (JSONObject) obj;
-          return new AlbumItemRes(
-              result.getString("url"), AuditStatus.ofCode(result.getInteger("status")), true);
-        });
   }
 
   private Mono<Result<Object>> callUpdateUserInfo(

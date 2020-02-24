@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.user.AlbumItemRes;
 import com.gaea.single.bridge.dto.user.LoginRes;
 import com.gaea.single.bridge.dto.user.UserProfileRes;
-import com.gaea.single.bridge.enums.AuditStatus;
-import com.gaea.single.bridge.enums.GenderType;
-import com.gaea.single.bridge.enums.UserOnlineStatus;
-import com.gaea.single.bridge.enums.UserType;
+import com.gaea.single.bridge.enums.*;
 import com.gaea.single.bridge.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
@@ -30,6 +27,7 @@ public class UserConverter {
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
         res.setUserType(UserType.ofCode(result.getInteger("userType")));
         res.setInviteCode(result.getString("inviteCode"));
+        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
         return res;
       };
 
