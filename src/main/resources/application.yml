@@ -44,7 +44,7 @@ spring:
 
 service:
   config:
-    server: http://192.168.10.29:30012
+    server: http://gw.sc-gaea.com:30012
     group: SingleBridge
     module: Single
     branch: PROD

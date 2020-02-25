@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
@@ -16,6 +17,11 @@ import java.util.stream.Stream;
 public class WebConfig implements WebFluxConfigurer {
 
   @Autowired private ServiceProperties properties;
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**").allowedOrigins("*").allowedMethods("*").maxAge(3600);
+  }
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
