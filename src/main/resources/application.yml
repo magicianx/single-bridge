@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: prod
   application:
     name: single-bridge
 ---
@@ -38,3 +38,16 @@ logging:
   level:
     org.springframework: debug
 
+---
+spring:
+  profiles: prod
+
+service:
+  config:
+    server: http://192.168.10.29:30012
+    group: SingleBridge
+    module: Single
+    branch: PROD
+    secretKey: 4e3b2dc72528435ea420dde8dff70aa7
+  api.enable: false
+  reportImgPath: /data/app/single-bridge/report.jpg
