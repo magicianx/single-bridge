@@ -34,9 +34,7 @@ public class AppController extends BaseController {
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
-  public Mono<Result<AppInfoRes>> getAppInfo(
-      @ApiIgnore ServerWebExchange exchange,
-      @RequestParam("osType") @ApiParam(value = "系统类型", required = true) OsType osType) {
+  public Mono<Result<AppInfoRes>> getAppInfo(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
@@ -47,7 +45,7 @@ public class AppController extends BaseController {
         };
 
     String path =
-        OsType.ANDROID == osType
+        OsType.ANDROID == getOsType(exchange)
             ? LoboPathConst.CHECK_ANDROID_AUDIT_STATUS
             : LoboPathConst.CHECK_IOS_AUDIT_STATUS;
 

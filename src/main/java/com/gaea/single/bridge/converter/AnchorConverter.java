@@ -8,6 +8,7 @@ import com.gaea.single.bridge.dto.user.AnchorProfileRes;
 import com.gaea.single.bridge.dto.user.LabelRes;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.ArrayList;
@@ -61,7 +62,10 @@ public class AnchorConverter {
         res.setPrice(result.getInteger("price"));
         res.setGender(GenderType.ofCode(result.getInteger("sex")));
         res.setAge(result.getInteger("age"));
-        res.setCity(result.getString("address"));
+        res.setCity(
+            StringUtils.isNotBlank(result.getString("address"))
+                ? result.getString("address")
+                : "火星");
         res.setIntro(result.getString("intro"));
 
         List<String> photos = new ArrayList<>();
