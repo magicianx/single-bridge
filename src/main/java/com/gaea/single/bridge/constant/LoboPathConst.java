@@ -95,4 +95,6 @@ public interface LoboPathConst {
   String SAVE_IOS_PUSH_KIT_ACCOUNT = "/push/device/saveIOSPushKitAccount.do";
   /** 查询应用审核状态 */
   String CHECK_APP_AUDIT_STATUS = "/basic/version/queryAuditSatus";
+  /** 上传用户地址 */
+  String UPLOAD_USER_ADDRESS = "/user/userLogin/uploadAddress.do";
 }

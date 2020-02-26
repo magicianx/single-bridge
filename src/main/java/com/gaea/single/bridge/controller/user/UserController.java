@@ -259,6 +259,23 @@ public class UserController extends BaseController {
         });
   }
 
+  @PostMapping(value = "/v1/address.net", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "上报用户位置")
+  public Mono<Result<LoginRes>> uploadUserAddress(
+      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("province", req.getProvince());
+            put("city", req.getCity());
+            put("latitude", req.getLatitude());
+            put("longitude", req.getLongitude());
+            put("key", getAppId());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_ADDRESS, data, null);
+  }
+
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
       ServerWebExchange exchange, UpdateUserReq req, List<Integer> loboErrorCodes) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
