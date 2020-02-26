@@ -29,6 +29,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -208,7 +210,13 @@ public class UserController extends BaseController {
   @ApiOperation(value = "编辑用户资料", notes = "只传值发生变化的字段，普通用户需要上传头像, 性别和生日不可重复修改，昵称和个人简介修改后需要进行审核")
   public Mono<Result<Object>> modifyUserInfo(
       @Valid UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
-
+    if (req.getBirthday() != null) {
+      long year =
+          ChronoUnit.YEARS.between(DateUtil.toLocalDate(req.getBirthday()), LocalDate.now());
+      if (year < 18) {
+        return Mono.error(ErrorCode.AGE_LESS_THAN_LIMIT.newBusinessException());
+      }
+    }
     List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
       return callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes)
