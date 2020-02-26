@@ -51,3 +51,7 @@ service:
     secretKey: 4e3b2dc72528435ea420dde8dff70aa7
   api.enable: false
   reportImgPath: /data/app/single-bridge/report.jpg
+
+logging:
+  config: logback-spring.xml
+
