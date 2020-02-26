@@ -259,7 +259,7 @@ public class UserController extends BaseController {
         });
   }
 
-  @PostMapping(value = "/v1/address.net", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/v1/address.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "上报用户位置")
   public Mono<Result<LoginRes>> uploadUserAddress(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {

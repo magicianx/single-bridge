@@ -6,18 +6,22 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.app.AppInfoRes;
 import com.gaea.single.bridge.enums.AuditStatus;
+import com.gaea.single.bridge.enums.OsType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +34,9 @@ public class AppController extends BaseController {
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
-  public Mono<Result<AppInfoRes>> getAppInfo(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<AppInfoRes>> getAppInfo(
+      @ApiIgnore ServerWebExchange exchange,
+      @RequestParam("osType") @ApiParam(value = "系统类型", required = true) OsType osType) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
@@ -40,9 +46,14 @@ public class AppController extends BaseController {
           }
         };
 
+    String path =
+        OsType.ANDROID == osType
+            ? LoboPathConst.CHECK_ANDROID_AUDIT_STATUS
+            : LoboPathConst.CHECK_IOS_AUDIT_STATUS;
+
     return loboClient.postForm(
         exchange,
-        LoboPathConst.CHECK_APP_AUDIT_STATUS,
+        path,
         data,
         (obj) -> {
           boolean isAuditPass = true;
