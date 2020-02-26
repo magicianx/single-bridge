@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.controller.app;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
@@ -7,21 +8,19 @@ import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.app.AppInfoRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
+import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +43,9 @@ public class AppController extends BaseController {
           }
         };
 
+    boolean isAndroid = OsType.ANDROID == getOsType(exchange);
     String path =
-        OsType.ANDROID == getOsType(exchange)
-            ? LoboPathConst.CHECK_ANDROID_AUDIT_STATUS
-            : LoboPathConst.CHECK_IOS_AUDIT_STATUS;
+        isAndroid ? LoboPathConst.CHECK_ANDROID_AUDIT_STATUS : LoboPathConst.CHECK_IOS_AUDIT_STATUS;
 
     return loboClient.postForm(
         exchange,
@@ -56,8 +54,10 @@ public class AppController extends BaseController {
         (obj) -> {
           boolean isAuditPass = true;
           if (obj != null) {
-            Integer result = (Integer) obj;
-            isAuditPass = AuditStatus.ofCode(result) == AuditStatus.PASS;
+            isAuditPass =
+                isAndroid
+                    ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
+                    : LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
           }
           return new AppInfoRes(isAuditPass);
         });
