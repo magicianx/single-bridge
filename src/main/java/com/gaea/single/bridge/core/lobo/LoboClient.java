@@ -262,22 +262,23 @@ public class LoboClient {
 
     MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED;
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
+    boolean multipartForm = false;
     if (data != null) {
-      boolean multipartForm =
+      multipartForm =
           data.values().stream().anyMatch(v -> v instanceof HttpEntity || v instanceof FilePart);
       mediaType =
           multipartForm ? MediaType.MULTIPART_FORM_DATA : MediaType.APPLICATION_FORM_URLENCODED;
 
       bodyInserter = getBody(multipartForm, data);
+    }
 
-      if (!multipartForm) {
-        log.info(
-            "正在请求lobo服务 {}: header {}, params {}, data {}",
-            fullPath,
-                String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
-            params != null ? JsonUtils.toJsonString(params) : null,
-            JsonUtils.toJsonString(data));
-      }
+    if (!multipartForm) {
+      log.info(
+          "正在请求lobo服务 {}: header {}, params {}, data {}",
+          fullPath,
+          String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
+          params != null ? JsonUtils.toJsonString(params) : null,
+          JsonUtils.toJsonString(data));
     }
 
     return webClient
