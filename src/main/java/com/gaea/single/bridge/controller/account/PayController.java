@@ -40,13 +40,12 @@ public class PayController extends BaseController {
   @GetMapping(value = "/v1/options.do")
   @ApiOperation(value = "获取充值金额选项")
   public Mono<Result<List<PayAmountOptionRes>>> getPayAmountOptions(
-      @RequestParam("payWay") @ApiParam(value = "支付方式", required = true) @NotNull PayWay payWay,
       @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
             put("key", key);
-            put("type", payWay.getCode());
+            put("type", "1");
           }
         };
     return loboClient.postFormForList(
