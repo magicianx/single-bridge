@@ -68,6 +68,7 @@ public class DictionaryProperties implements IConfig {
   @Setter
   public static class Lobo {
     private String mainHost;
+    private String appAuditHost;
     private String otherHost;
     private String appId;
   }

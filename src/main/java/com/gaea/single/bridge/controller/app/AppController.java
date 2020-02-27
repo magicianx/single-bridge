@@ -12,6 +12,7 @@ import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,9 @@ import java.util.Map;
 @Api(tags = "应用服务")
 @Validated
 public class AppController extends BaseController {
-  @Autowired private LoboClient loboClient;
+  @Autowired
+  @Qualifier("appAuditClient")
+  private LoboClient loboClient;
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
