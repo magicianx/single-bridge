@@ -43,6 +43,7 @@ public class AppController extends BaseController {
             put("version", getAppVersion(exchange));
             put("packageName", getPacketName(exchange));
             put("channelId", getChannelId(exchange));
+            put("single", "single");
           }
         };
 
