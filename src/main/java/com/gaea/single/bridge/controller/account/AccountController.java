@@ -9,6 +9,7 @@ import com.gaea.single.bridge.dto.account.IncomeRes;
 import com.gaea.single.bridge.dto.account.WithdrawReq;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import java.util.Map;
 @RequestMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "账户服务")
 @Validated
+@Slf4j
 public class AccountController extends BaseController {
   @Autowired private LoboClient loboClient;
 
@@ -49,6 +51,7 @@ public class AccountController extends BaseController {
   @GetMapping(value = "/v1/income.do")
   @ApiOperation(value = "获取个人收益")
   public Mono<Result<IncomeRes>> getIncome(@ApiIgnore ServerWebExchange exchange) {
+    exchange.getRequest().getHeaders().forEach((k, v) -> log.info("请求头: {}:{}", k, v));
     return loboOtherClient.postForm(
         exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
   }
