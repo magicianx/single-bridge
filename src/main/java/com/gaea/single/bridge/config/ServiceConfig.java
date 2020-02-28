@@ -54,6 +54,13 @@ public class ServiceConfig {
 
   @Bean
   @DependsOn("configAgent")
+  public WebClient appAuditWebClient() {
+    String host = DictionaryProperties.get().getLobo().getAppAuditHost();
+    return WebClient.builder().baseUrl(host).build();
+  }
+
+  @Bean
+  @DependsOn("configAgent")
   public WebClient loboOtherWebClient() {
     String host = DictionaryProperties.get().getLobo().getOtherHost();
     return WebClient.builder().baseUrl(host).build();
@@ -67,6 +74,11 @@ public class ServiceConfig {
   @Bean
   @Primary
   public LoboClient loboMainClient(@Autowired @Qualifier("loboMainWebClient") WebClient webClient) {
+    return new LoboClient(webClient, new DefaultLoboResultExchanger());
+  }
+
+  @Bean
+  public LoboClient appAuditClient(@Autowired @Qualifier("appAuditWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 

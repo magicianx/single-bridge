@@ -13,6 +13,10 @@ public class DateUtil {
     return LOBO_DATE_FORMATTER.format(LocalDate.parse(date, SINGLE_DATE_FORMATTER));
   }
 
+  public static LocalDate toLocalDate(String date) {
+    return LocalDate.parse(date, SINGLE_DATE_FORMATTER);
+  }
+
   public static String toSingleDate(String date) {
     return SINGLE_DATE_FORMATTER.format(LocalDate.parse(date, LOBO_DATE_FORMATTER));
   }

@@ -29,6 +29,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -208,7 +210,13 @@ public class UserController extends BaseController {
   @ApiOperation(value = "编辑用户资料", notes = "只传值发生变化的字段，普通用户需要上传头像, 性别和生日不可重复修改，昵称和个人简介修改后需要进行审核")
   public Mono<Result<Object>> modifyUserInfo(
       @Valid UpdateUserReq req, @ApiIgnore ServerWebExchange exchange) {
-
+    if (req.getBirthday() != null) {
+      long year =
+          ChronoUnit.YEARS.between(DateUtil.toLocalDate(req.getBirthday()), LocalDate.now());
+      if (year < 18) {
+        return Mono.error(ErrorCode.AGE_LESS_THAN_LIMIT.newBusinessException());
+      }
+    }
     List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
       return callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes)
@@ -249,6 +257,23 @@ public class UserController extends BaseController {
           return new AlbumItemRes(
               result.getString("url"), AuditStatus.ofCode(result.getInteger("status")), true);
         });
+  }
+
+  @PostMapping(value = "/v1/address.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "上报用户位置")
+  public Mono<Result<LoginRes>> uploadUserAddress(
+      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("province", req.getProvince());
+            put("city", req.getCity());
+            put("latitude", req.getLatitude());
+            put("longitude", req.getLongitude());
+            put("key", getAppId());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_ADDRESS, data, null);
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
