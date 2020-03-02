@@ -34,7 +34,7 @@ public class OrderController extends BaseController {
 
   @GetMapping(value = "/v1/records.do")
   @ApiOperation(value = "获取订单列表")
-  public Mono<Result<PageRes<OrderDetailRes>>> orderRecords(
+  public Mono<Result<PageRes<OrderDetailRes>>> getOrderRecords(
       @Valid PageReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data = getPageData(req);
     data.put("userId", getUserId(exchange));
