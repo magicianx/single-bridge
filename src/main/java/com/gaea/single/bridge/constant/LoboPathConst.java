@@ -99,4 +99,10 @@ public interface LoboPathConst {
   String CHECK_IOS_AUDIT_STATUS = "/basic/version/queryAuditAndPaySatus";
   /** 上传用户地址 */
   String UPLOAD_USER_ADDRESS = "/user/userLogin/uploadAddress.do";
+  /** 获取订单列表 */
+  String GET_ORDER_LIST = "/order/order/getUserAll.do";
+  /** 获取微信支付签名 */
+  String WECHAT_PAY_SIGN = "/finance/sign/buyPrivilege/getWechatSign.doo";
+  /** 绑定邀请码 */
+  String BIND_INVITE_CODE = "/user/shareCenter/saveShare.do";
 }

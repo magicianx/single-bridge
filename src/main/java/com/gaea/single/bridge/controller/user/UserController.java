@@ -18,6 +18,8 @@ import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "用户服务")
 @Validated
+@Slf4j
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
 
@@ -55,6 +58,7 @@ public class UserController extends BaseController {
         exchange,
         LoboPathConst.BLACK_LIST,
         getPageData(pageReq),
+        null,
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new BlackUserRes(
@@ -84,6 +88,7 @@ public class UserController extends BaseController {
   @ApiOperation(value = "用户登录")
   public Mono<Result<LoginRes>> login(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
+    Mono<Result<LoginRes>> mono;
     if (req.getType() == LoginType.PHONE_DIRECT) {
       Map<String, Object> data =
           new HashMap<String, Object>() {
@@ -95,7 +100,7 @@ public class UserController extends BaseController {
               put("token", req.getAccessToken());
             }
           };
-      return loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
+      mono = loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
     } else {
       Map<String, Object> data =
           new HashMap<String, Object>() {
@@ -115,9 +120,28 @@ public class UserController extends BaseController {
               put("smsCode", req.getSmsCode());
             }
           };
-      return loboClient.postForm(
-          exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
+      mono =
+          loboClient.postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
     }
+    if (StringUtils.isNotBlank(req.getInviteCode())) {
+      mono =
+          mono.doOnSuccess(
+              (result) -> {
+                if (ErrorCode.isSuccess(result.getCode())) {
+                  log.info("登录成功，用户{}即将绑定邀请码: {}", result.getData().getId(), req.getInviteCode());
+                  Map<String, Object> data =
+                      new HashMap<String, Object>() {
+                        {
+                          put("inviteCode", req.getInviteCode());
+                          put("key", "key");
+                        }
+                      };
+                  loboClient.postForm(exchange, LoboPathConst.BIND_INVITE_CODE, data, null);
+                }
+              });
+    }
+
+    return mono;
   }
 
   @PostMapping(value = "/v1/cancel.do")

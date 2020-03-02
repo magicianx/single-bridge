@@ -72,7 +72,7 @@ public class AnchorController extends BaseController {
     data.put("menuId", columnId);
     ;
     return loboClient.postFormForPage(
-        exchange, LoboPathConst.ANCHOR_LIST, data, AnchorConverter.toAnchorItemRes);
+        exchange, LoboPathConst.ANCHOR_LIST, data, null, AnchorConverter.toAnchorItemRes);
   }
 
   @GetMapping(value = "/v1/profile.net")

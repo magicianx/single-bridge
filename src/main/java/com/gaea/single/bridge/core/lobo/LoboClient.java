@@ -101,6 +101,7 @@ public class LoboClient {
    * @param path 请求路径
    * @param data 表单数据
    * @param resConverter lobo响应转化为{@link Result}
+   * @param nestKey 内嵌的列表参数key
    * @param <R> 业务响应类型
    * @return {@link Mono<Result<R>>}
    */
@@ -108,9 +109,10 @@ public class LoboClient {
       ServerWebExchange exchange,
       String path,
       Map<String, Object> data,
+      String nestKey,
       Converter<Object, R> resConverter) {
     return this.request(HttpMethod.POST, exchange, path, null, data, null)
-        .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
+        .transform(mono -> loboResultExchanger.exchangeForPage(mono, nestKey, resConverter));
   }
 
   /**
@@ -173,6 +175,7 @@ public class LoboClient {
    * @param path 请求路径
    * @param params 请求参数
    * @param resConverter lobo响应转化为{@link Result}
+   * @param nestKey 内嵌的列表参数key
    * @param <R> 业务响应类型
    * @return {@link Mono<Result<R>>}
    */
@@ -180,9 +183,10 @@ public class LoboClient {
       ServerWebExchange exchange,
       String path,
       Map<String, Object> params,
+      String nestKey,
       Converter<Object, R> resConverter) {
     return this.request(HttpMethod.GET, exchange, path, params, null, null)
-        .transform(mono -> loboResultExchanger.exchangeForPage(mono, resConverter));
+        .transform(mono -> loboResultExchanger.exchangeForPage(mono, nestKey, resConverter));
   }
 
   private Mono<LoboResult> request(

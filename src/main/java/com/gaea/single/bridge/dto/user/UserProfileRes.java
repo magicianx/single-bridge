@@ -15,7 +15,7 @@ public class UserProfileRes {
   private Long id;
 
   @ApiModelProperty(value = "显示id", required = true)
-  private Long showId;
+  private String showId;
 
   @ApiModelProperty(value = "昵称", required = true)
   private String nickName;

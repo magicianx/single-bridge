@@ -92,7 +92,11 @@ public class ShareController extends BaseController {
           }
         };
     return loboClient.postFormForPage(
-        exchange, LoboPathConst.SHARE_REWARD_RECORD, data, ShareConverter.toShareRewardRecordRes);
+        exchange,
+        LoboPathConst.SHARE_REWARD_RECORD,
+        data,
+        null,
+        ShareConverter.toShareRewardRecordRes);
   }
 
   @GetMapping(value = "/v1/invite_record.do")
@@ -108,7 +112,11 @@ public class ShareController extends BaseController {
           }
         };
     return loboClient.postFormForPage(
-        exchange, LoboPathConst.SHARE_INVITE_RECORD, data, ShareConverter.toShareInviteRecordRes);
+        exchange,
+        LoboPathConst.SHARE_INVITE_RECORD,
+        data,
+        null,
+        ShareConverter.toShareInviteRecordRes);
   }
 
   /** 请求中钻石数量下个阶段删除 */

@@ -21,4 +21,8 @@ public enum ErrorCode {
   public BusinessException newBusinessException() {
     return new BusinessException(this.code, this.message);
   }
+
+  public static boolean isSuccess(int code) {
+    return code == ErrorCode.SUCCESS.getCode();
+  }
 }

@@ -36,4 +36,7 @@ public class LoginReq {
 
   @ApiModelProperty("验证码, 验证码登录必填")
   private String smsCode;
+
+  @ApiModelProperty("邀请码")
+  private String inviteCode;
 }

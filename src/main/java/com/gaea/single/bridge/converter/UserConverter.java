@@ -15,7 +15,7 @@ public class UserConverter {
         JSONObject result = (JSONObject) obj;
         UserProfileRes res = new UserProfileRes();
         res.setId(result.getLong("userId"));
-        res.setShowId(result.getLong("showId"));
+        res.setShowId(result.getString("showId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
         res.setIntro(result.getString("intro"));
