@@ -18,12 +18,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @EnableConfigurationProperties(ServiceProperties.class)
-public class ServiceConfig {
+public class ServiceConfig implements WebFluxConfigurer {
   @Autowired private ServiceProperties serviceProperties;
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**").allowedOrigins("*").allowedMethods("*").maxAge(3600);
+  }
 
   @Bean
   public ConfigAgent configAgent(@Value("${spring.application.name}") String name)
