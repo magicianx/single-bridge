@@ -102,7 +102,7 @@ public interface LoboPathConst {
   /** 获取订单列表 */
   String GET_ORDER_LIST = "/order/order/getUserAll.do";
   /** 获取微信支付签名 */
-  String WECHAT_PAY_SIGN = "/finance/sign/buyPrivilege/getWechatSign.doo";
+  String WECHAT_PAY_SIGN = "/finance/sign/getWechatSign.do";
   /** 绑定邀请码 */
   String BIND_INVITE_CODE = "/user/shareCenter/saveShare.do";
 }

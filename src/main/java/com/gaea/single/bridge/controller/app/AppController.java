@@ -41,7 +41,7 @@ public class AppController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("version", getAppVersion(exchange));
-            put("packageName", getPacketName(exchange));
+            put("packageName", getPackageName(exchange));
             put("channelId", getChannelId(exchange));
             put("single", "single");
           }

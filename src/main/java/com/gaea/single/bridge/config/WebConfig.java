@@ -20,8 +20,7 @@ public class WebConfig implements WebFluxConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     Stream.of(
-            StaticResource.of("/html/**", "/html"),
-            StaticResource.of("/ios/**", "/ios"),
+            StaticResource.of("/config/**", "/config"),
             StaticResource.of("/android/**", "/android"))
         .forEach(
             resource -> {

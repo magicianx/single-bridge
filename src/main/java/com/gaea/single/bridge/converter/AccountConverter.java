@@ -1,21 +1,17 @@
 package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.dto.LoboResult;
-import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
 import com.gaea.single.bridge.dto.account.IncomeRes;
 import com.gaea.single.bridge.dto.account.OrderDetailRes;
+import com.gaea.single.bridge.dto.account.WechatPayRes;
 import com.gaea.single.bridge.enums.GiftType;
 import com.gaea.single.bridge.enums.OrderType;
 import com.gaea.single.bridge.util.DateUtil;
-import com.gaea.single.bridge.util.JsonUtils;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountConverter {
   public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
@@ -61,6 +57,19 @@ public class AccountConverter {
         res.setTradeUserShowId(result.getString("tradeUserShowId"));
         res.setTradeUserNickName(result.getString("tradeUserNickName"));
         res.setTradeUserPortraitUrl(result.getString("tradeUserPortrait"));
+        return res;
+      };
+
+  public static final Converter<Object, WechatPayRes> toWechatPayRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        WechatPayRes res = new WechatPayRes();
+        res.setAppId(result.getString("appid"));
+        res.setPrepayId(result.getString("prepayid"));
+        res.setSign(result.getString("sign"));
+        res.setTimestamp(result.getString("timestamp"));
+        res.setMchId(result.getString("partnerid"));
+        res.setNonceStr(result.getString("noncestr"));
         return res;
       };
 }

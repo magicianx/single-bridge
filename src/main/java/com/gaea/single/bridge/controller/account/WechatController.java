@@ -2,6 +2,7 @@ package com.gaea.single.bridge.controller.account;
 
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.converter.AccountConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.GetPaySignReq;
@@ -12,7 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -30,19 +31,22 @@ import java.util.Map;
 public class WechatController extends BaseController {
   @Autowired private LoboClient loboClient;
 
-  @PostMapping(value = "/v1/pay.do")
-  @ApiOperation(value = "微信支付")
-  public Mono<Result<WechatPayRes>> wechatPay(
+  @GetMapping(value = "/v1/sign.do")
+  @ApiOperation(value = "获取微信支付签名")
+  public Mono<Result<WechatPayRes>> getWechatPaySign(
       @Valid GetPaySignReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("key", Md5Utils.encrypt("hferfhhvudiewdweerrsdwddff"));
-            put("configId", getOsType(exchange).getCode());
-            put("appId", getAppId());
+            put("key", Md5Utils.encrypt("huoaquaweixinachongz" + req.getDiamonds()));
+            put("type", req.getScene().getCode());
+            put("money", req.getDiamonds());
+            put("os", getOsType(exchange).getCode());
+            put("version", getAppVersion(exchange));
+            put("packageName", getPackageName(exchange));
           }
         };
     return loboClient.get(
-        exchange, LoboPathConst.WECHAT_PAY_SIGN, data, (obj) -> new WechatPayRes());
+        exchange, LoboPathConst.WECHAT_PAY_SIGN, data, AccountConverter.toWechatPayRes);
   }
 }

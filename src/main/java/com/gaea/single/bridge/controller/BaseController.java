@@ -42,7 +42,7 @@ public abstract class BaseController {
     return exchange.getAttribute(CommonHeaderConst.DEVICE_TYPE);
   }
 
-  protected String getPacketName(ServerWebExchange exchange) {
+  protected String getPackageName(ServerWebExchange exchange) {
     return exchange.getAttribute(CommonHeaderConst.PACKAGE_NAME);
   }
 

@@ -83,7 +83,7 @@ public class PlatformController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("type", getOsType(exchange).getCode());
-            put("packageName", getPacketName(exchange));
+            put("packageName", getPackageName(exchange));
           }
         };
     return loboClient.postForm(
