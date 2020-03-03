@@ -31,7 +31,7 @@ import java.util.Map;
 public class WechatController extends BaseController {
   @Autowired private LoboClient loboClient;
 
-  @GetMapping(value = "/v1/sign.do")
+  @GetMapping(value = "/v1/pay_sign.do")
   @ApiOperation(value = "获取微信支付签名")
   public Mono<Result<WechatPayRes>> getWechatPaySign(
       @Valid GetPaySignReq req, @ApiIgnore ServerWebExchange exchange) {
