@@ -22,6 +22,9 @@ public class OrderDetailRes {
   @ApiModelProperty(value = "发生金额(钻石)", required = true)
   private String amount;
 
+  @ApiModelProperty(value = "视频通话时长, 当类型为VIDEO_PAY或VIDEO_INCOME有值")
+  private Integer videoDurationSecond;
+
   @ApiModelProperty(value = "发生时间", required = true)
   private String time;
 
