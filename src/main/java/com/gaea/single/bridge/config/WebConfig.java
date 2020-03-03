@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.resource.VersionResourceResolver;
@@ -19,9 +18,7 @@ public class WebConfig implements WebFluxConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    Stream.of(
-            StaticResource.of("/config/**", "/config"),
-            StaticResource.of("/android/**", "/android"))
+    Stream.of(StaticResource.of("/config/**", "/config"), StaticResource.of("/html/**", "/html"))
         .forEach(
             resource -> {
               String location =
