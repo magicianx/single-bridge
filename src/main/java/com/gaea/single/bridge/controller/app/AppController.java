@@ -63,7 +63,7 @@ public class AppController extends BaseController {
                     ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
                     : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
           }
-          return new AppInfoRes(isAuditPass);
+          return new AppInfoRes(getAppId(), isAuditPass);
         });
   }
 }
