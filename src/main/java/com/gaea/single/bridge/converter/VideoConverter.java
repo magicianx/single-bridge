@@ -22,11 +22,13 @@ public class VideoConverter {
         res.setCallerGrade(result.getInteger("callingGrade"));
         res.setCallerPortraitUrl(result.getString("callingPortrait"));
         res.setCallerShowId(result.getLong("callingUserShowId"));
+        res.setCallerUserId(result.getLong("callingUserId"));
         res.setCalledNickName(result.getString("calledNickName"));
         res.setCalledGradeUrl(result.getString("calledGradeUrl"));
         res.setCalledGrade(result.getInteger("calledGrade"));
         res.setCalledPortraitUrl(result.getString("calledPortrait"));
         res.setCalledShowId(result.getLong("calledUserShowId"));
+        res.setCalledUserId(result.getLong("calledUserId"));
         res.setPrice(result.getInteger("price"));
         res.setHeartTime(result.getInteger("heartTime"));
 
@@ -42,11 +44,13 @@ public class VideoConverter {
         res.setCallerGrade(result.getInteger("callingGrade"));
         res.setCallerPortraitUrl(result.getString("callingPortrait"));
         res.setCallerShowId(result.getLong("callingUserShowId"));
+        res.setCallerUserId(result.getLong("callingUserId"));
         res.setCalledNickName(result.getString("calledNickName"));
         res.setCalledGradeUrl(result.getString("calledGradeUrl"));
         res.setCalledGrade(result.getInteger("calledGrade"));
         res.setCalledPortraitUrl(result.getString("calledPortrait"));
         res.setCalledShowId(result.getLong("calledUserShowId"));
+        res.setCalledUserId(result.getLong("calledUserId"));
         res.setPrice(result.getInteger("price"));
 
         return res;

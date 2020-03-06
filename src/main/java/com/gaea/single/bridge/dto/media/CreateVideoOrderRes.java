@@ -27,6 +27,9 @@ public class CreateVideoOrderRes {
   @ApiModelProperty(value = "主叫方显示id", required = true)
   private Long callerShowId;
 
+  @ApiModelProperty(value = "主叫方用户id", required = true)
+  private Long callerUserId;
+
   @ApiModelProperty(value = "被叫方昵称", required = true)
   private String calledNickName;
 
@@ -41,6 +44,9 @@ public class CreateVideoOrderRes {
 
   @ApiModelProperty(value = "被叫方显示id", required = true)
   private Long calledShowId;
+
+  @ApiModelProperty(value = "被叫方用户id", required = true)
+  private Long calledUserId;
 
   @ApiModelProperty(value = "单价，单位为砖石", required = true)
   private Integer price;
