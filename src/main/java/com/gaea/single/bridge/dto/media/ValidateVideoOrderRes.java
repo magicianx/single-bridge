@@ -5,10 +5,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @ApiModel("验证视频订单响应")
 public class ValidateVideoOrderRes {
+  @ApiModelProperty(value = "订单临时id", required = true)
+  private String orderTempId;
+
   @ApiModelProperty(value = "主叫方昵称", required = true)
   private String callerNickName;
 

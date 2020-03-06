@@ -39,6 +39,7 @@ public class VideoConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         ValidateVideoOrderRes res = new ValidateVideoOrderRes();
+        res.setOrderTempId(result.getString("orderRedisId"));
         res.setCallerNickName(result.getString("callingNickName"));
         res.setCallerGradeUrl(result.getString("orderRedisId"));
         res.setCallerGrade(result.getInteger("callingGrade"));
