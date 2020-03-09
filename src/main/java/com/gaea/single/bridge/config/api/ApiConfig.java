@@ -88,7 +88,7 @@ public class ApiConfig {
                     true,
                     "ANDROID"),
                 getHeaderParameter(
-                    CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.jiangsujinsha.single")));
+                    CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.Ramsey.LoveBubble")));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 
