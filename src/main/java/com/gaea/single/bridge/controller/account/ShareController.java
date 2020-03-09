@@ -35,9 +35,7 @@ import java.util.Map;
 @Api(tags = "分享服务")
 @Validated
 public class ShareController extends BaseController {
-  @Autowired
-  @Qualifier("loboOtherClient")
-  private LoboClient loboClient;
+  @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/ranking.do")
   @ApiOperation(value = "获取分享奖励排行榜")
