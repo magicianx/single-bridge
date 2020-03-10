@@ -50,11 +50,11 @@ public interface LoboPathConst {
   /** 主播认证 */
   String ANCHOR_AUTH = "/zuul/user/sellerCenter/uploadVideo.do?videoNumber=%s&key=-----";
   /** 分享奖励排行 */
-  String SHARE_RANKING = "/webapi/order/orderShare/findShareRanking";
+  String SHARE_RANKING = "/order/orderShare/findShareRanking";
   /** 分销信息 */
-  String SHARE_INFO = "/webapi/user/shareCenter/findShareInfo.do";
+  String SHARE_INFO = "/user/shareCenter/findShareInfo.do";
   /** 我的收益 */
-  String INCOME = "/webapi/user/sellerCenter/getMyIncome.do";
+  String INCOME = "/user/sellerCenter/getMyIncome.do";
   /** 创建媒体订单 */
   String CREATE_MEDIA_ORDER = "/order/createOrder.do";
   /** 验证媒体订单 */
@@ -72,13 +72,13 @@ public interface LoboPathConst {
   /** 获取支付宝支付签名 */
   String ALIPAY_PAY_SIGN = "/finance/sign/getAlipaySignAll.do";
   /** 分享交易记录 */
-  String SHARE_INVITE_RECORD = "/webapi/user/shareCenter/findTotalInvite.do";
+  String SHARE_INVITE_RECORD = "/user/shareCenter/findTotalInvite.do";
   /** 分享奖励记录 */
-  String SHARE_REWARD_RECORD = "/webapi/order/orderShare/findOrderShares.do";
+  String SHARE_REWARD_RECORD = "/order/orderShare/findOrderShares.do";
   /** 分销提现 */
-  String SHARE_WITHDRAW = "/webapi/user/shareCenter/withdraw.do";
+  String SHARE_WITHDRAW = "/user/shareCenter/withdraw.do";
   /** 收益提现 */
-  String INCOME_WITHDRAW = "/webapi/user/sellerCenter/withdraw.do";
+  String INCOME_WITHDRAW = "/user/sellerCenter/withdraw.do";
   /** 最后一笔订单的通话时长 */
   String LAST_ORDER_DURATION_TIME = "/order/getDurationByUserId.do";
   /** 开始订单 */
