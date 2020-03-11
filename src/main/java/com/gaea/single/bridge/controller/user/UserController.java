@@ -2,6 +2,7 @@ package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
@@ -125,7 +126,7 @@ public class UserController extends BaseController {
     }
     if (StringUtils.isNotBlank(req.getInviteCode())) {
       mono =
-          mono.doOnSuccess(
+          mono.flatMap(
               (result) -> {
                 if (ErrorCode.isSuccess(result.getCode())) {
                   log.info("登录成功，用户{}即将绑定邀请码: {}", result.getData().getId(), req.getInviteCode());
@@ -136,8 +137,16 @@ public class UserController extends BaseController {
                           put("key", "key");
                         }
                       };
-                  loboClient.postForm(exchange, LoboPathConst.BIND_INVITE_CODE, data, null);
+                  exchange.getAttributes().put(CommonHeaderConst.USER_ID, result.getData().getId().toString());
+                  exchange
+                      .getAttributes()
+                      .put(CommonHeaderConst.SESSION, result.getData().getSession());
+                  return loboClient
+                      .postForm(exchange, LoboPathConst.BIND_INVITE_CODE, data, null)
+                      .map((r) -> result)
+                      .onErrorResume((ex) -> Mono.just(result));
                 }
+                return Mono.just(result);
               });
     }
 
