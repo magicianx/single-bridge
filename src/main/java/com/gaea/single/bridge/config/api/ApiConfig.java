@@ -39,7 +39,7 @@ public class ApiConfig {
 
   @Bean
   ApiInfo apiInfo() {
-    return new ApiInfoBuilder().title("Single API").version("1.0.0").build();
+    return new ApiInfoBuilder().title("Single API").version("1.1.0").build();
   }
 
   @Bean
@@ -77,7 +77,7 @@ public class ApiConfig {
                     "用户session",
                     false,
                     "df5bdd9047ab43358079f985638fd434"),
-                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true, "1.0.0"),
+                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true, "1.1.0"),
                 getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536"),
                 getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
                 getHeaderParameter(
