@@ -3,12 +3,12 @@ package com.gaea.single.bridge.constant;
 public interface LoboPathConst {
   /** 广告列表 */
   String BANNER_LIST = "/mapper/advert/getBannerList";
-  /** 主播栏目列表 */
-  String ANCHOR_COLUMN_LIST = "/mapper/menu/getHomeList";
-  /** 主播列表 */
-  String ANCHOR_LIST = "/mapper/list/getHomeData";
-  /** 获取主播资料 */
-  String ANCHOR_PROFILE = "/user/userCenter/ProfileVo340";
+  /** 用户栏目列表 */
+  String USER_COLUMN_LIST = "/mapper/menu/getHomeList";
+  /** 用户列表 */
+  String USER_LIST = "/mapper/list/getHomeData";
+  /** 获取用户资料 */
+  String USER_PROFILE = "/user/userCenter/ProfileVo340";
   /** 举报主播 */
   String REPORT_ANCHOR = "/postsales/complaintUser/insertComplaintProfile.do";
   /** 拉黑主播 */

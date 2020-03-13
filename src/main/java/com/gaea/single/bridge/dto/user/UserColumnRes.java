@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@ApiModel("主播栏目信息")
+@ApiModel("栏目信息")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnchorColumnRes {
+public class UserColumnRes {
   @ApiModelProperty(value = "栏目id", required = true)
   private Long id;
 

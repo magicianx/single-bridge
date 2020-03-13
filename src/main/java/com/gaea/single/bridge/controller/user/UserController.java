@@ -45,9 +45,53 @@ import java.util.stream.Collectors;
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
 
+  @GetMapping(value = "/v1/columns.net")
+  @ApiOperation(value = "获取用户栏目列表")
+  public Mono<Result<List<UserColumnRes>>> getUserColumns(@ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("appId", getAppId());
+            put("userId", getUserId(exchange));
+          }
+        };
+    return loboClient.postForm(
+        exchange, LoboPathConst.USER_COLUMN_LIST, data, UserConverter.toUserColumnResList);
+  }
+
+  @GetMapping(value = "/v1/list.net")
+  @ApiOperation(value = "获取用户列表")
+  public Mono<Result<PageRes<UserItemRes>>> getUserList(
+      @ApiParam(value = "栏目id", required = true) @NotNull @RequestParam Long columnId,
+      @Valid PageReq pageReq,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data = getPageData(pageReq);
+    data.put("appId", getAppId());
+    data.put("menuId", columnId);
+
+    return loboClient.postFormForPage(
+        exchange, LoboPathConst.USER_LIST, data, null, UserConverter.toUserItemRes);
+  }
+
+  @GetMapping(value = "/v1/profile.net")
+  @ApiOperation(value = "获取用户资料")
+  public Mono<Result<UserProfileRes>> getUserProfile(
+      @ApiParam(value = "用户id", required = true) @NotNull @RequestParam Long userId,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("appId", getAppId());
+            put("profileId", userId);
+          }
+        };
+    return loboClient.postForm(
+        exchange, LoboPathConst.USER_PROFILE, data, UserConverter.toUserProfileRes);
+  }
+
   @GetMapping(value = "/v1/info.do")
   @ApiOperation(value = "获取当前登录用户信息")
-  public Mono<Result<UserProfileRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<UserInfoRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
     return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
   }
 
@@ -137,7 +181,9 @@ public class UserController extends BaseController {
                           put("key", "key");
                         }
                       };
-                  exchange.getAttributes().put(CommonHeaderConst.USER_ID, result.getData().getId().toString());
+                  exchange
+                      .getAttributes()
+                      .put(CommonHeaderConst.USER_ID, result.getData().getId().toString());
                   exchange
                       .getAttributes()
                       .put(CommonHeaderConst.SESSION, result.getData().getSession());
