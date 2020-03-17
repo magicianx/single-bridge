@@ -32,16 +32,18 @@ public class UserConverter {
   public static final Converter<Object, UserItemRes> toUserItemRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
+        UserType userType = UserType.ofCode(result.getInteger("userType"));
+
         UserItemRes res = new UserItemRes();
         res.setUserId(result.getLong("userId"));
-        res.setUserType(UserType.ofCode(result.getInteger("userType")));
+        res.setUserType(userType);
         res.setNickName(result.getString("nickName"));
         res.setGrade(result.getInteger("grade"));
         res.setGradeIconUrl(result.getString("gradeIcon"));
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setSignature(result.getString("comment"));
         res.setCoverUrl(result.getString("cover"));
-        res.setPrice(result.getInteger("price"));
+        res.setPrice(userType == UserType.ANCHOR ? result.getInteger("price") : null);
         return res;
       };
 
