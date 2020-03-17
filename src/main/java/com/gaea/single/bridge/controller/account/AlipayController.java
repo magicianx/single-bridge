@@ -83,7 +83,7 @@ public class AlipayController extends BaseController {
           {
             put("money", req.getDiamonds());
             put("os", getOsType(exchange).getCode());
-            put("packageName", getPacketName(exchange));
+            put("packageName", getPackageName(exchange));
             put("type", req.getScene().getCode());
             put("version", getAppVersion(exchange));
             put("key", Md5Utils.encrypt("huoaquazhifubaoachongz" + req.getDiamonds()));

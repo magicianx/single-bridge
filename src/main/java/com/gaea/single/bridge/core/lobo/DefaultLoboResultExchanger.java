@@ -9,6 +9,7 @@ import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 import reactor.core.publisher.Mono;
 
@@ -44,10 +45,10 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
 
   @Override
   public <R> Mono<Result<PageRes<R>>> exchangeForPage(
-      Mono<LoboResult> mono, Converter<Object, R> resConverter) {
+      Mono<LoboResult> mono, String nestKey, Converter<Object, R> resConverter) {
     return mono.map(
             res -> {
-              List<R> result = getResultList(res, resConverter);
+              List<R> result = getResultList(res, nestKey, resConverter);
               return Result.success(PageRes.from(res, result));
             })
         .onErrorResume(
@@ -65,7 +66,7 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
       Mono<LoboResult> mono, Converter<Object, R> resConverter) {
     return mono.map(
             res -> {
-              List<R> result = getResultList(res, resConverter);
+              List<R> result = getResultList(res, null, resConverter);
               return Result.success(result);
             })
         .onErrorResume(
@@ -79,10 +80,14 @@ public class DefaultLoboResultExchanger implements LoboResultExchanger {
             });
   }
 
-  private <R> List<R> getResultList(LoboResult res, Converter<Object, R> resConverter) {
+  private <R> List<R> getResultList(
+      LoboResult res, String nestKey, Converter<Object, R> resConverter) {
     List<R> result = new ArrayList<>();
     if (res.getDataCollection() != null && resConverter != null) {
-      JSONArray array = JsonUtils.toJsonArray(res.getDataCollection());
+      JSONArray array =
+          StringUtils.isNotBlank(nestKey)
+              ? ((JSONObject) res.getDataCollection()).getJSONArray(nestKey)
+              : JsonUtils.toJsonArray(res.getDataCollection());
       result = array.stream().map(resConverter::convert).collect(Collectors.toList());
     }
     return result;

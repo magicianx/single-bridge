@@ -1,55 +1,65 @@
 package com.gaea.single.bridge.dto.user;
 
-import com.gaea.single.bridge.enums.AnchorAuthStatus;
+import com.gaea.single.bridge.enums.GenderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-@ApiModel("用户信息")
+import java.util.ArrayList;
+import java.util.List;
+
+@ApiModel("主播资料")
 @Getter
 @Setter
 public class UserProfileRes {
   @ApiModelProperty(value = "用户id", required = true)
-  private Long id;
-
-  @ApiModelProperty(value = "显示id", required = true)
-  private Long showId;
-
-  @ApiModelProperty(value = "昵称", required = true)
-  private String nickName;
-
-  @ApiModelProperty(value = "头像路径", required = true)
-  private String portraitUrl;
-
-  @ApiModelProperty(value = "简介")
-  private String intro;
-
-  @ApiModelProperty(value = "等级", required = true)
-  private Integer grade;
-
-  @ApiModelProperty(value = "等级图标", required = true)
-  private String gradeIconUrl;
-
-  @ApiModelProperty(value = "手机号", notes = "被*遮盖后的手机号")
-  private String mobilePhone;
-
-  @ApiModelProperty(value = "账户余额", required = true)
-  private Long balance;
-
-  @ApiModelProperty(value = "是否完善生日", required = true)
-  private Boolean isPerfectBirthday;
-
-  @ApiModelProperty(value = "是否完善性别", required = true)
-  private Boolean isPerfectGender;
+  private Long userId;
 
   @ApiModelProperty(value = "用户类型", required = true)
   private UserType userType;
 
-  @ApiModelProperty(value = "邀请码", required = true)
-  private String inviteCode;
+  @ApiModelProperty(value = "显示Id", required = true)
+  private String showId;
 
-  @ApiModelProperty(value = "主播认证状态", required = true)
-  private AnchorAuthStatus authStatus;
+  @ApiModelProperty(value = "云信id", required = true)
+  private String yunXinId;
+
+  @ApiModelProperty(value = "在线状态", required = true)
+  private UserOnlineStatus onlineStatus;
+
+  @ApiModelProperty(value = "昵称", required = true)
+  private String nickName;
+
+  @ApiModelProperty(value = "头像", required = true)
+  private String portraitUrl;
+
+  @ApiModelProperty(value = "等级图标链接", required = true)
+  private String gradeIconUrl;
+
+  @ApiModelProperty(value = "价格", required = true)
+  private Integer price;
+
+  @ApiModelProperty(value = "性别", required = true)
+  private GenderType gender;
+
+  @ApiModelProperty(value = "年龄", required = true)
+  private Integer age;
+
+  @ApiModelProperty(value = "城市", required = true)
+  private String city;
+
+  @ApiModelProperty("简介")
+  private String intro;
+
+  @ApiModelProperty(value = "相册列表", required = true)
+  private List<String> photos;
+
+  @ApiModelProperty(value = "标签列表", notes = "不存在时为空列表")
+  private List<LabelRes> labels = new ArrayList<>();
+
+  @ApiModelProperty(value = "收到礼物图片列表", notes = "不存在时为空列表")
+  private List<String> giftIcons = new ArrayList<>();
 }

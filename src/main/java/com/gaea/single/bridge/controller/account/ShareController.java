@@ -35,9 +35,7 @@ import java.util.Map;
 @Api(tags = "分享服务")
 @Validated
 public class ShareController extends BaseController {
-  @Autowired
-  @Qualifier("loboOtherClient")
-  private LoboClient loboClient;
+  @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/ranking.do")
   @ApiOperation(value = "获取分享奖励排行榜")
@@ -92,7 +90,11 @@ public class ShareController extends BaseController {
           }
         };
     return loboClient.postFormForPage(
-        exchange, LoboPathConst.SHARE_REWARD_RECORD, data, ShareConverter.toShareRewardRecordRes);
+        exchange,
+        LoboPathConst.SHARE_REWARD_RECORD,
+        data,
+        null,
+        ShareConverter.toShareRewardRecordRes);
   }
 
   @GetMapping(value = "/v1/invite_record.do")
@@ -108,7 +110,11 @@ public class ShareController extends BaseController {
           }
         };
     return loboClient.postFormForPage(
-        exchange, LoboPathConst.SHARE_INVITE_RECORD, data, ShareConverter.toShareInviteRecordRes);
+        exchange,
+        LoboPathConst.SHARE_INVITE_RECORD,
+        data,
+        null,
+        ShareConverter.toShareInviteRecordRes);
   }
 
   /** 请求中钻石数量下个阶段删除 */

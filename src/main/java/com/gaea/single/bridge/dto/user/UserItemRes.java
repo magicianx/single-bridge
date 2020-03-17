@@ -1,19 +1,23 @@
 package com.gaea.single.bridge.dto.user;
 
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-@ApiModel("主播列表项信息")
+@ApiModel("用户列表项信息")
 @Getter
 @Setter
-public class AnchorItemRes {
-  @ApiModelProperty(value = "主播ID", required = true)
+public class UserItemRes {
+  @ApiModelProperty(value = "用户ID", required = true)
   private Long userId;
 
-  @ApiModelProperty(value = "主播昵称", required = true)
+  @ApiModelProperty(value = "用户类型", required = true)
+  private UserType userType;
+
+  @ApiModelProperty(value = "昵称", required = true)
   private String nickName;
 
   @ApiModelProperty(value = "等级", required = true)

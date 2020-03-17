@@ -54,8 +54,8 @@ public class ServiceConfig implements WebFluxConfigurer {
 
   @Bean
   @DependsOn("configAgent")
-  public WebClient loboMainWebClient() {
-    String host = DictionaryProperties.get().getLobo().getMainHost();
+  public WebClient loboWebClient() {
+    String host = DictionaryProperties.get().getLobo().getHost();
     return WebClient.builder().baseUrl(host).build();
   }
 
@@ -67,31 +67,18 @@ public class ServiceConfig implements WebFluxConfigurer {
   }
 
   @Bean
-  @DependsOn("configAgent")
-  public WebClient loboOtherWebClient() {
-    String host = DictionaryProperties.get().getLobo().getOtherHost();
-    return WebClient.builder().baseUrl(host).build();
-  }
-
-  @Bean
   public LoboResultExchanger loboResultExchanger() {
     return new DefaultLoboResultExchanger();
   }
 
   @Bean
   @Primary
-  public LoboClient loboMainClient(@Autowired @Qualifier("loboMainWebClient") WebClient webClient) {
+  public LoboClient loboClient(@Autowired @Qualifier("loboWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 
   @Bean
   public LoboClient appAuditClient(@Autowired @Qualifier("appAuditWebClient") WebClient webClient) {
-    return new LoboClient(webClient, new DefaultLoboResultExchanger());
-  }
-
-  @Bean
-  public LoboClient loboOtherClient(
-      @Autowired @Qualifier("loboOtherWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 

@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
-import com.gaea.single.bridge.converter.AnchorConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
-import com.gaea.single.bridge.dto.PageReq;
-import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.ReportType;
@@ -46,58 +43,13 @@ public class AnchorController extends BaseController {
     resource = new FileSystemResource(serviceProperties.getReportImgPath());
   }
 
-  @GetMapping(value = "/v1/columns.net")
-  @ApiOperation(value = "获取主播栏目列表")
-  public Mono<Result<List<AnchorColumnRes>>> getAnchorColumns(
-      @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("appId", getAppId());
-            put("userId", getUserId(exchange));
-          }
-        };
-    return loboClient.postForm(
-        exchange, LoboPathConst.ANCHOR_COLUMN_LIST, data, AnchorConverter.toAnchorColumnResList);
-  }
-
-  @GetMapping(value = "/v1/list.net")
-  @ApiOperation(value = "获取主播列表")
-  public Mono<Result<PageRes<AnchorItemRes>>> getAnchorList(
-      @ApiParam(value = "栏目id", required = true) @NotNull @RequestParam Long columnId,
-      @Valid PageReq pageReq,
-      @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data = getPageData(pageReq);
-    data.put("appId", getAppId());
-    data.put("menuId", columnId);
-    ;
-    return loboClient.postFormForPage(
-        exchange, LoboPathConst.ANCHOR_LIST, data, AnchorConverter.toAnchorItemRes);
-  }
-
-  @GetMapping(value = "/v1/profile.net")
-  @ApiOperation(value = "获取主播资料")
-  public Mono<Result<AnchorProfileRes>> getAnchorProfile(
-      @ApiParam(value = "主播id", required = true) @NotNull @RequestParam Long userId,
-      @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("appId", getAppId());
-            put("profileId", userId);
-          }
-        };
-    return loboClient.postForm(
-        exchange, LoboPathConst.ANCHOR_PROFILE, data, AnchorConverter.toAnchorProfileRes);
-  }
-
   @PostMapping(value = "/v1/auth.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ApiOperation(value = "主播认证")
   @ApiImplicitParams({
     @ApiImplicitParam(name = "portrait", value = "头像", paramType = "form", dataType = "__file"),
     @ApiImplicitParam(name = "video", value = "认证视频", paramType = "form", dataType = "__file")
   })
-  public Mono<Result<AnchorProfileRes>> anchorAuth(
+  public Mono<Result<UserProfileRes>> anchorAuth(
       @Valid AnchorAuthReq req, @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {

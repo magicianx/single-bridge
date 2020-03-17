@@ -28,7 +28,7 @@ public interface LoboResultExchanger {
    * @return {@link Mono<Result<PageRes<R>>>}
    */
   <R> Mono<Result<PageRes<R>>> exchangeForPage(
-      Mono<LoboResult> mono, Converter<Object, R> resConverter);
+      Mono<LoboResult> mono, String nestKey, Converter<Object, R> resConverter);
 
   /**
    * 将{@link LoboResult} 转化为业务响应对象列表

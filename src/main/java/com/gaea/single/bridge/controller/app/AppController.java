@@ -41,7 +41,7 @@ public class AppController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("version", getAppVersion(exchange));
-            put("packageName", getPacketName(exchange));
+            put("packageName", getPackageName(exchange));
             put("channelId", getChannelId(exchange));
             put("single", "single");
           }
@@ -63,7 +63,7 @@ public class AppController extends BaseController {
                     ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
                     : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
           }
-          return new AppInfoRes(isAuditPass);
+          return new AppInfoRes("1", isAuditPass); // appId前端用于登录socket, 先用1，lobo处理后再改为5
         });
   }
 }

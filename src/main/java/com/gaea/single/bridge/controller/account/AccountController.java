@@ -11,7 +11,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,10 +30,6 @@ import java.util.Map;
 public class AccountController extends BaseController {
   @Autowired private LoboClient loboClient;
 
-  @Autowired
-  @Qualifier("loboOtherClient")
-  private LoboClient loboOtherClient;
-
   @GetMapping(value = "/v1/balance.do")
   @ApiOperation(value = "获取账户余额")
   public Mono<Result<Long>> getAccountBalance(@ApiIgnore ServerWebExchange exchange) {
@@ -52,8 +47,7 @@ public class AccountController extends BaseController {
   @ApiOperation(value = "获取个人收益")
   public Mono<Result<IncomeRes>> getIncome(@ApiIgnore ServerWebExchange exchange) {
     exchange.getRequest().getHeaders().forEach((k, v) -> log.info("请求头: {}:{}", k, v));
-    return loboOtherClient.postForm(
-        exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
+    return loboClient.postForm(exchange, LoboPathConst.INCOME, null, AccountConverter.toIncomeRes);
   }
 
   @PostMapping(value = "/v1/income_withdraw.do", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -67,6 +61,6 @@ public class AccountController extends BaseController {
             put("money", req.getDiamonds());
           }
         };
-    return loboOtherClient.postForm(exchange, LoboPathConst.INCOME_WITHDRAW, data, null);
+    return loboClient.postForm(exchange, LoboPathConst.INCOME_WITHDRAW, data, null);
   }
 }

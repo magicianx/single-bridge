@@ -2,6 +2,7 @@ package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
@@ -18,6 +19,8 @@ import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -38,12 +41,57 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "用户服务")
 @Validated
+@Slf4j
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
 
+  @GetMapping(value = "/v1/columns.net")
+  @ApiOperation(value = "获取用户栏目列表")
+  public Mono<Result<List<UserColumnRes>>> getUserColumns(@ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("appId", getAppId());
+            put("userId", getUserId(exchange));
+          }
+        };
+    return loboClient.postForm(
+        exchange, LoboPathConst.USER_COLUMN_LIST, data, UserConverter.toUserColumnResList);
+  }
+
+  @GetMapping(value = "/v1/list.net")
+  @ApiOperation(value = "获取用户列表")
+  public Mono<Result<PageRes<UserItemRes>>> getUserList(
+      @ApiParam(value = "栏目id", required = true) @NotNull @RequestParam Long columnId,
+      @Valid PageReq pageReq,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data = getPageData(pageReq);
+    data.put("appId", getAppId());
+    data.put("menuId", columnId);
+
+    return loboClient.postFormForPage(
+        exchange, LoboPathConst.USER_LIST, data, null, UserConverter.toUserItemRes);
+  }
+
+  @GetMapping(value = "/v1/profile.net")
+  @ApiOperation(value = "获取用户资料")
+  public Mono<Result<UserProfileRes>> getUserProfile(
+      @ApiParam(value = "用户id", required = true) @NotNull @RequestParam Long userId,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("appId", getAppId());
+            put("profileId", userId);
+          }
+        };
+    return loboClient.postForm(
+        exchange, LoboPathConst.USER_PROFILE, data, UserConverter.toUserProfileRes);
+  }
+
   @GetMapping(value = "/v1/info.do")
   @ApiOperation(value = "获取当前登录用户信息")
-  public Mono<Result<UserProfileRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<UserInfoRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
     return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
   }
 
@@ -55,6 +103,7 @@ public class UserController extends BaseController {
         exchange,
         LoboPathConst.BLACK_LIST,
         getPageData(pageReq),
+        null,
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new BlackUserRes(
@@ -84,6 +133,7 @@ public class UserController extends BaseController {
   @ApiOperation(value = "用户登录")
   public Mono<Result<LoginRes>> login(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
+    Mono<Result<LoginRes>> mono;
     if (req.getType() == LoginType.PHONE_DIRECT) {
       Map<String, Object> data =
           new HashMap<String, Object>() {
@@ -95,7 +145,7 @@ public class UserController extends BaseController {
               put("token", req.getAccessToken());
             }
           };
-      return loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
+      mono = loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
     } else {
       Map<String, Object> data =
           new HashMap<String, Object>() {
@@ -115,9 +165,38 @@ public class UserController extends BaseController {
               put("smsCode", req.getSmsCode());
             }
           };
-      return loboClient.postForm(
-          exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
+      mono =
+          loboClient.postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
     }
+    if (StringUtils.isNotBlank(req.getInviteCode())) {
+      mono =
+          mono.flatMap(
+              (result) -> {
+                if (ErrorCode.isSuccess(result.getCode())) {
+                  log.info("登录成功，用户{}即将绑定邀请码: {}", result.getData().getId(), req.getInviteCode());
+                  Map<String, Object> data =
+                      new HashMap<String, Object>() {
+                        {
+                          put("inviteCode", req.getInviteCode());
+                          put("key", "key");
+                        }
+                      };
+                  exchange
+                      .getAttributes()
+                      .put(CommonHeaderConst.USER_ID, result.getData().getId().toString());
+                  exchange
+                      .getAttributes()
+                      .put(CommonHeaderConst.SESSION, result.getData().getSession());
+                  return loboClient
+                      .postForm(exchange, LoboPathConst.BIND_INVITE_CODE, data, null)
+                      .map((r) -> result)
+                      .onErrorResume((ex) -> Mono.just(result));
+                }
+                return Mono.just(result);
+              });
+    }
+
+    return mono;
   }
 
   @PostMapping(value = "/v1/cancel.do")

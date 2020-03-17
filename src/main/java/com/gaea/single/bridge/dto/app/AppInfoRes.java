@@ -13,6 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppInfoRes {
+  @ApiModelProperty(value = "应用版本号", required = true)
+  private String appId;
+
   @ApiModelProperty(value = "是否审核通过, 默认值为true", required = true)
   private Boolean isAuditPass;
 }
