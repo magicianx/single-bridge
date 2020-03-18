@@ -31,7 +31,7 @@ public class GradeController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/info.do")
-  @ApiOperation(value = "获取用户等级信息", tags = "getUserGrade")
+  @ApiOperation(value = "获取用户等级信息")
   public Mono<Result<UserGradeRes>> getUserGrade(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
