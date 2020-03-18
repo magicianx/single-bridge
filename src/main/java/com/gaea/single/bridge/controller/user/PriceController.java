@@ -44,7 +44,7 @@ public class PriceController extends BaseController {
               result.getLong("id"),
               result.getInteger("price"),
               result.getInteger("grade"),
-              LoboUtil.toBoolean(result.getInteger("isCheck")));
+              !LoboUtil.toBoolean(result.getInteger("isCheck")));
         }));
   }
 

@@ -22,6 +22,6 @@ public class AnchorPriceItemRes {
   @ApiModelProperty(value = "等级", required = true)
   private Integer grade;
 
-  @ApiModelProperty(value = "是否可选择", required = true)
-  private Boolean checkable;
+  @ApiModelProperty(value = "是否已选择", required = true)
+  private Boolean checked;
 }
