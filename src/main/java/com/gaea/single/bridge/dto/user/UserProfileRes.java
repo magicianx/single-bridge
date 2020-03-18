@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.FollowStatus;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserType;
@@ -11,7 +12,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApiModel("主播资料")
+@ApiModel("用户资料")
 @Getter
 @Setter
 public class UserProfileRes {
@@ -50,6 +51,15 @@ public class UserProfileRes {
 
   @ApiModelProperty(value = "城市", required = true)
   private String city;
+
+  @ApiModelProperty(value = "关注状态", required = true)
+  private FollowStatus followStatus;
+
+  @ApiModelProperty(value = "粉丝数量", required = true)
+  private Integer fansNum;
+
+  @ApiModelProperty(value = "关注数量", required = true)
+  private Integer followNum;
 
   @ApiModelProperty("简介")
   private String intro;
