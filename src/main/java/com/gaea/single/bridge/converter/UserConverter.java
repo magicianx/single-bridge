@@ -200,6 +200,6 @@ public class UserConverter {
     res.setNickName(result.getString("nickName"));
     res.setPortraitUrl(result.getString("portrait"));
     res.setIntro(result.getString("intro"));
-    res.setFollowStatus(FollowStatus.ofCode(result.getInteger("userId")));
+    res.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
   }
 }
