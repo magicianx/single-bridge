@@ -25,7 +25,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class UserVideoController extends BaseController {
   @GetMapping(value = "/v1/list.net")
   @ApiOperation(value = "获取视频列表")
   public Mono<Result<List<UserVideoItemRes>>> getVideos(
-      @NotNull @ApiParam("用户id, 获取当前登录用户的视频列表不需要传此参数") @RequestParam(required = false) Long userId,
+      @ApiParam("用户id, 获取当前登录用户的视频列表不需要传此参数") @RequestParam(required = false) Long userId,
       @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data = new HashMap<>();
     if (userId == null) {
