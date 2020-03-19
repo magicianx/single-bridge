@@ -184,9 +184,13 @@ public class UserConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         UserVideoItemRes res = new UserVideoItemRes();
+        res.setId(result.getLong("id"));
         res.setCloudFileId(result.getString("unid"));
         res.setCoverUrl(result.getString("coverUrl"));
         res.setVideoUrl(result.getString("videoUrl"));
+        res.setAuditStatus(AuditStatus.ofCode(result.getInteger("status")));
+        res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
+        res.setPraiseTimes(result.getLong("praiseTimes"));
         return res;
       };
 

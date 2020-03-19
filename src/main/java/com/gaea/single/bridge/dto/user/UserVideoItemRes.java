@@ -14,6 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserVideoItemRes {
+  @ApiModelProperty(value = "视频id", required = true)
+  private Long id;
+
   @ApiModelProperty(value = "云文件id", required = true)
   private String cloudFileId;
 
@@ -25,4 +28,10 @@ public class UserVideoItemRes {
 
   @ApiModelProperty(value = "审核状态", required = true)
   private AuditStatus auditStatus;
+
+  @ApiModelProperty(value = "是否点赞", required = true)
+  private Boolean isPraise;
+
+  @ApiModelProperty(value = "点赞次数", required = true)
+  private Long praiseTimes;
 }

@@ -6,6 +6,7 @@ import com.gaea.single.bridge.converter.UserConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.DeleteVideoReq;
+import com.gaea.single.bridge.dto.user.PraiseVideoReq;
 import com.gaea.single.bridge.dto.user.UploadVideoReq;
 import com.gaea.single.bridge.dto.user.UserVideoItemRes;
 import com.gaea.single.bridge.error.ErrorCode;
@@ -82,6 +83,19 @@ public class UserVideoController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.DELETE_VIDEO, data, null);
+  }
+
+  @PostMapping(value = "/v1/praise.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "视频点赞")
+  public Mono<Result<Object>> praiseVideo(
+      @RequestBody @Valid PraiseVideoReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("videoUnId", req.getCloudFileId());
+          }
+        };
+    return loboClient.postForm(exchange, LoboPathConst.PRAISE_VIDEO, data, null);
   }
 
   @GetMapping(value = "/v1/sign.do")

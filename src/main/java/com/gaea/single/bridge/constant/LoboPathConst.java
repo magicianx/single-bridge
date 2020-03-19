@@ -129,4 +129,6 @@ public interface LoboPathConst {
   String GET_UPLOAD_VIDEO_SIGN = "/vod/videoCenter/getUploadSignature.do";
   /** 上传视频 */
   String UPLOAD_VIDEO = "/vod/videoCenter/uploadVideo.do";
+  /** 视频点赞 */
+  String PRAISE_VIDEO = "/vod/videoCenter/praiseVod.do";
 }
