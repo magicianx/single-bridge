@@ -40,7 +40,7 @@ public class FollowController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("followId", req.getUserId());
-            put("type", "2");
+            put("type", "1");
           }
         };
     return loboClient.postForm(
@@ -58,7 +58,7 @@ public class FollowController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("followId", req.getUserId());
-            put("type", "1");
+            put("type", "2");
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.UNFOLLOW, data, null);
