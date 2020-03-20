@@ -73,6 +73,10 @@ public class UserConverter {
         res.setIntro(result.getString("intro"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
+        res.setFollowStatus(
+            Optional.ofNullable(result.getInteger("followStatus"))
+                .map(FollowStatus::ofCode)
+                .orElse(FollowStatus.UNFOLLOW));
 
         List<String> photos = new ArrayList<>();
         if (result.getJSONArray("photos") != null) {
