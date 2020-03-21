@@ -47,13 +47,15 @@ public class UserVideoController extends BaseController {
     if (userId == null) {
       userId = getUserId(exchange);
       data.put("viewUserId", userId);
+      data.put("type", "1");
+    } else {
+      data.put("type", "2");
     }
     if (userId == null) {
       return Mono.error(ErrorCode.BAD_REQUEST.newBusinessException("缺少userId参数"));
     }
 
     data.put("userId", userId);
-    data.put("type", "2");
     return loboClient.postFormForList(
         exchange, LoboPathConst.GET_VIDEO_LIST, data, UserConverter.toUserVideoItemRes);
   }
