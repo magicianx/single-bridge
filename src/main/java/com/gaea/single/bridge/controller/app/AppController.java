@@ -63,7 +63,9 @@ public class AppController extends BaseController {
                     ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
                     : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
           }
-          return new AppInfoRes("1", isAuditPass); // appId前端用于登录socket, 先用1，lobo处理后再改为5
+
+          return new AppInfoRes(
+              "1", isAuditPass ? 1234567890 : 0); // appId前端用于登录socket, 先用1，lobo处理后再改为5
         });
   }
 }
