@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.controller.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
@@ -63,8 +64,14 @@ public class AppController extends BaseController {
                     ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
                     : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
           }
+
+          DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
+
           return new AppInfoRes(
-              "1", isAuditPass ? 1234567890 : 0); // appId前端用于登录socket, 先用1，lobo处理后再改为5
+              "1", // appId前端用于登录socket, 先用1，lobo处理后再改为5
+              isAuditPass ? 1234567890 : 0,
+              lobo.getUserSecretaryId(),
+              lobo.getAnchorSecretaryId());
         });
   }
 }

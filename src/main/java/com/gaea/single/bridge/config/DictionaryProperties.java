@@ -70,6 +70,8 @@ public class DictionaryProperties implements IConfig {
     private String host;
     private String appAuditHost;
     private String appId;
+    private String userSecretaryId;
+    private String anchorSecretaryId;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {
