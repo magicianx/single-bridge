@@ -20,6 +20,6 @@ public class ShareRankingRes {
   @ApiModelProperty(value = "头像链接", required = true)
   private String portraitUrl;
 
-  @ApiModelProperty(value = "奖励金额", required = true)
+  @ApiModelProperty(value = "奖励金额(元)", required = true)
   private Long money;
 }
