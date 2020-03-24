@@ -11,8 +11,6 @@ import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
-import java.math.BigDecimal;
-
 public class AccountConverter {
   public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
       (obj) -> {
@@ -33,14 +31,13 @@ public class AccountConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         IncomeRes res = new IncomeRes();
-        res.setIncomeAmount(result.getBigDecimal("money").divide(new BigDecimal("100")));
+        res.setIncomeAmount(LoboUtil.toMoney(result.getBigDecimal("money")));
         res.setDiamonds(result.getLong("diamonds"));
         res.setAlipayAccount(result.getString("alipayNick"));
         res.setWithdrawable(LoboUtil.toBoolean(result.getInteger("isCanWithdraw")));
         res.setIsBindAlipay(LoboUtil.toBoolean(result.getInteger("isBindAlipay")));
         res.setIsFrozen(LoboUtil.toBoolean(result.getInteger("isFrozen")));
-        res.setWithdrawLeastAmount(
-            result.getBigDecimal("lowerLimit").divide(new BigDecimal("100")));
+        res.setWithdrawLeastAmount(LoboUtil.toMoney(result.getBigDecimal("lowerLimit")));
         res.setWithdrawDay(result.getInteger("withdrawalDay"));
         return res;
       };

@@ -11,6 +11,7 @@ import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.*;
 import com.gaea.single.bridge.enums.ShareWayType;
+import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -126,7 +127,7 @@ public class ShareController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("key", "key");
-            put("money", req.getDiamonds());
+            put("money", LoboUtil.toDiamonds(req.getMoney()));
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.SHARE_WITHDRAW, data, null);
