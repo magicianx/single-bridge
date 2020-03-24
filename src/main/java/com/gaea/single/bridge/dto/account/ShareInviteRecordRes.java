@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @ApiModel("分享邀请记录")
@@ -13,7 +15,7 @@ public class ShareInviteRecordRes {
   private Long userId;
 
   @ApiModelProperty(value = "收益(元)", required = true)
-  private Long money;
+  private BigDecimal money;
 
   @ApiModelProperty(value = "昵称", required = true)
   private String nickName;

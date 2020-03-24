@@ -38,7 +38,7 @@ public class ShareConverter {
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setType(ShareRewardType.ofCode(result.getInteger("type")));
-        res.setMoney(result.getLong("money"));
+        res.setMoney(LoboUtil.toMoney(result.getBigDecimal("money")));
         res.setCreateTime(result.getLong("createTime"));
         return res;
       };
@@ -50,7 +50,7 @@ public class ShareConverter {
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
-        res.setMoney(result.getLong("money"));
+        res.setMoney(LoboUtil.toMoney(result.getBigDecimal("money")));
         return res;
       };
 }
