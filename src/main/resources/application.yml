@@ -32,7 +32,7 @@ service:
     branch: TEST
     secretKey: f8f661c1fe7c4be0b33405f9f47c4880
   api.enable: true
-  reportImgPath: /data/app/single/report.jpg
+  reportImgPath: /data/app/single/single-bridge/report.jpg
   appStaticHome: /data/app/single/single-bridge/static
 logging:
   level:
