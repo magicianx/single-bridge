@@ -93,7 +93,7 @@ public class UserVideoController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("videoUnId", req.getCloudFileId());
+            put("videoUnId", req.getId());
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.PRAISE_VIDEO, data, null);

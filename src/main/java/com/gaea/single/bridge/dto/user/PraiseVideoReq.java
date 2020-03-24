@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @ApiModel("点赞视频请求")
@@ -15,8 +14,4 @@ public class PraiseVideoReq {
   @ApiModelProperty(value = "视频id", required = true)
   @NotNull
   private Long id;
-
-  @ApiModelProperty(value = "云文件id", required = true)
-  @NotBlank
-  private String cloudFileId;
 }
