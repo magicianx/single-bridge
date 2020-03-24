@@ -13,9 +13,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppInfoRes {
-  @ApiModelProperty(value = "应用版本号", required = true)
+  @ApiModelProperty(value = "应用id", required = true)
   private String appId;
 
   @ApiModelProperty(value = "是否审核通过, 0 时未审核通过， 1234567890 时审核通过", required = true)
   private Integer an;
+
+  @ApiModelProperty(value = "用户小秘书id", required = true)
+  private String userSecretaryId;
+
+  @ApiModelProperty(value = "主播小秘书id", required = true)
+  private String anchorSecretaryId;
 }
