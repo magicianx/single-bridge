@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @ApiModel(value = "提现请求")
 public class WithdrawReq {
-  @ApiModelProperty("提现钻石数量")
+  @ApiModelProperty("提现金额(元)")
   @NotNull
-  private Long diamonds;
+  private BigDecimal money;
 }
