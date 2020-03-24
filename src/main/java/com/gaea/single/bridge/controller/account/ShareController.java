@@ -61,7 +61,7 @@ public class ShareController extends BaseController {
               result.getLong("userId"),
               result.getString("nickName"),
               result.getString("portrait"),
-              result.getLong("money"));
+              LoboUtil.toMoney(result.getBigDecimal("money")));
         });
   }
 

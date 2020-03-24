@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @ApiModel("分享排名奖励")
@@ -20,6 +22,6 @@ public class ShareRankingRes {
   @ApiModelProperty(value = "头像链接", required = true)
   private String portraitUrl;
 
-  @ApiModelProperty(value = "奖励金额", required = true)
-  private Long money;
+  @ApiModelProperty(value = "奖励金额(元)", required = true)
+  private BigDecimal money;
 }
