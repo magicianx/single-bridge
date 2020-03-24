@@ -78,15 +78,61 @@ public class UserController extends BaseController {
   public Mono<Result<UserProfileRes>> getUserProfile(
       @ApiParam(value = "用户id", required = true) @NotNull @RequestParam Long userId,
       @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("appId", getAppId());
-            put("profileId", userId);
-          }
-        };
-    return loboClient.postForm(
-        exchange, LoboPathConst.USER_PROFILE, data, UserConverter.toUserProfileRes);
+    Mono<Result<UserProfileRes>> profileMono =
+        loboClient.postForm(
+            exchange,
+            LoboPathConst.USER_PROFILE,
+            new HashMap<String, Object>() {
+              {
+                put("appId", getAppId());
+                put("profileId", userId);
+              }
+            },
+            UserConverter.toUserProfileRes);
+
+    Mono<Result<List<AlbumItemRes>>> albumMono =
+        loboClient.postFormForList(
+            exchange,
+            LoboPathConst.USER_ALBUM,
+            new HashMap<String, Object>() {
+              {
+                put("profileId", getUserId(exchange));
+              }
+            },
+            UserConverter.toAlbumItemRes);
+
+    return Mono.zip(
+            profileMono,
+            albumMono,
+            (res1, res2) -> {
+              if (LoboCode.isErrorCode(res1.getCode())) {
+                throw new BusinessException(
+                    res1.getCode(), LoboCode.getErrorMessage(res1.getCode()));
+              }
+              if (res1.getCode() == ErrorCode.INNER_ERROR.getCode()) {
+                throw ErrorCode.INNER_ERROR.newBusinessException();
+              }
+              if (LoboCode.isErrorCode(res2.getCode())) {
+                throw new BusinessException(
+                    res1.getCode(), LoboCode.getErrorMessage(res1.getCode()));
+              }
+              if (res2.getCode() == ErrorCode.INNER_ERROR.getCode()) {
+                throw ErrorCode.INNER_ERROR.newBusinessException();
+              }
+
+              res2.getData().forEach(album -> res1.getData().getPhotos().add(album.getImgUrl()));
+
+              return res1;
+            })
+        .onErrorResume(
+            ex -> {
+              if (ex instanceof BusinessException) {
+                return Mono.just(Result.error(((BusinessException) ex).getCode(), ex.getMessage()));
+              }
+              return Mono.just(
+                  Result.error(
+                      ErrorCode.INNER_ERROR.getCode(), ErrorCode.INNER_ERROR.getMessage()));
+            });
   }
 
   @GetMapping(value = "/v1/info.do")
