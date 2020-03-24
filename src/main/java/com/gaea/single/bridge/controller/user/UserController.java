@@ -96,7 +96,7 @@ public class UserController extends BaseController {
             LoboPathConst.USER_ALBUM,
             new HashMap<String, Object>() {
               {
-                put("profileId", getUserId(exchange));
+                put("profileId", userId);
               }
             },
             UserConverter.toAlbumItemRes);
