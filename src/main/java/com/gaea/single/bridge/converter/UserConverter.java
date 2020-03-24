@@ -36,6 +36,7 @@ public class UserConverter {
 
         UserItemRes res = new UserItemRes();
         res.setUserId(result.getLong("userId"));
+        res.setYunXinId(result.getString("yunxinId"));
         res.setUserType(userType);
         res.setNickName(result.getString("nickName"));
         res.setGrade(result.getInteger("grade"));
