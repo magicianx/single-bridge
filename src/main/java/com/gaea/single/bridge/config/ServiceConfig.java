@@ -61,8 +61,8 @@ public class ServiceConfig implements WebFluxConfigurer {
 
   @Bean
   @DependsOn("configAgent")
-  public WebClient appAuditWebClient() {
-    String host = DictionaryProperties.get().getLobo().getAppAuditHost();
+  public WebClient iosAuditWebClient() {
+    String host = DictionaryProperties.get().getLobo().getIosAuditHost();
     return WebClient.builder().baseUrl(host).build();
   }
 
@@ -78,7 +78,7 @@ public class ServiceConfig implements WebFluxConfigurer {
   }
 
   @Bean
-  public LoboClient appAuditClient(@Autowired @Qualifier("appAuditWebClient") WebClient webClient) {
+  public LoboClient iosAuditClient(@Autowired @Qualifier("iosAuditWebClient") WebClient webClient) {
     return new LoboClient(webClient, new DefaultLoboResultExchanger());
   }
 
