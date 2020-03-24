@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @ApiModel("分享奖励信息")
@@ -17,7 +19,7 @@ public class ShareRewardRecordRes {
   private ShareRewardType type;
 
   @ApiModelProperty(value = "奖励金额(元)", required = true)
-  private Long money;
+  private BigDecimal money;
 
   @ApiModelProperty(value = "创建时间", required = true)
   private Long createTime;

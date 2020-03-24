@@ -14,6 +14,9 @@ public class UserItemRes {
   @ApiModelProperty(value = "用户ID", required = true)
   private Long userId;
 
+  @ApiModelProperty(value = "云信ID", required = true)
+  private String yunXinId;
+
   @ApiModelProperty(value = "用户类型", required = true)
   private UserType userType;
 
