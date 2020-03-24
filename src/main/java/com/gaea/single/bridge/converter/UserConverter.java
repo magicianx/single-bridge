@@ -82,9 +82,6 @@ public class UserConverter {
         if (result.getJSONArray("photos") != null) {
           result.getJSONArray("photos").forEach(photo -> photos.add((String) photo));
         }
-        if (result.getJSONArray("album") != null) {
-          result.getJSONArray("album").forEach(photo -> photos.add((String) photo));
-        }
         res.setPhotos(photos);
 
         Optional.ofNullable(result.getJSONArray("labels"))
