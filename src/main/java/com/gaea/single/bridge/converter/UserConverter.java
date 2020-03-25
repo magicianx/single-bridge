@@ -36,6 +36,7 @@ public class UserConverter {
 
         UserItemRes res = new UserItemRes();
         res.setUserId(result.getLong("userId"));
+        res.setYunXinId(result.getString("yunxinId"));
         res.setUserType(userType);
         res.setNickName(result.getString("nickName"));
         res.setGrade(result.getInteger("grade"));
@@ -73,9 +74,6 @@ public class UserConverter {
         List<String> photos = new ArrayList<>();
         if (result.getJSONArray("photos") != null) {
           result.getJSONArray("photos").forEach(photo -> photos.add((String) photo));
-        }
-        if (result.getJSONArray("album") != null) {
-          result.getJSONArray("album").forEach(photo -> photos.add((String) photo));
         }
         res.setPhotos(photos);
 

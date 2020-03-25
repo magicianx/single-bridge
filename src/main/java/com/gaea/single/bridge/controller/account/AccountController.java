@@ -7,6 +7,7 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.IncomeRes;
 import com.gaea.single.bridge.dto.account.WithdrawReq;
+import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class AccountController extends BaseController {
         new HashMap<String, Object>() {
           {
             put("key", "key");
-            put("money", req.getDiamonds());
+            put("money", LoboUtil.toDiamonds(req.getMoney()));
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.INCOME_WITHDRAW, data, null);

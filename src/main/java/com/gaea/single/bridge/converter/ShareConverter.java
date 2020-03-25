@@ -5,6 +5,7 @@ import com.gaea.single.bridge.dto.account.ShareInfoRes;
 import com.gaea.single.bridge.dto.account.ShareInviteRecordRes;
 import com.gaea.single.bridge.dto.account.ShareRewardRecordRes;
 import com.gaea.single.bridge.enums.ShareRewardType;
+import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
 import java.math.BigDecimal;
@@ -15,14 +16,13 @@ public class ShareConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         ShareInfoRes res = new ShareInfoRes();
-        BigDecimal withdrawableAmount = result.getBigDecimal("money");
+        BigDecimal withdrawableAmount = LoboUtil.toMoney(result.getBigDecimal("money"));
         res.setWithdrawableAmount(withdrawableAmount);
-        res.setRewardAmount(
-            Optional.ofNullable(result.getBigDecimal("totalMoney")).orElse(BigDecimal.ZERO));
+        res.setRewardAmount(LoboUtil.toMoney(result.getBigDecimal("totalMoney")));
         res.setInviteCount(result.getInteger("shareNum"));
 
         boolean isBindAlipay = result.getInteger("isBindAlipay") == 1;
-        BigDecimal leastAmount = result.getBigDecimal("leastMoney").divide(new BigDecimal(100));
+        BigDecimal leastAmount = LoboUtil.toMoney(result.getBigDecimal("leastMoney"));
         boolean withdrawable = withdrawableAmount.compareTo(leastAmount) > 0 && isBindAlipay;
         res.setWithdrawable(withdrawable);
         res.setRechargePercentage(result.getFloat("payPercentage"));
@@ -38,7 +38,7 @@ public class ShareConverter {
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setType(ShareRewardType.ofCode(result.getInteger("type")));
-        res.setMoney(result.getLong("money"));
+        res.setMoney(LoboUtil.toMoney(result.getBigDecimal("money")));
         res.setCreateTime(result.getLong("createTime"));
         return res;
       };
@@ -50,7 +50,7 @@ public class ShareConverter {
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));
-        res.setMoney(result.getLong("money"));
+        res.setMoney(LoboUtil.toMoney(result.getBigDecimal("money")));
         return res;
       };
 }
