@@ -494,6 +494,7 @@ public class UserController extends BaseController {
     DictionaryProperties.AppStoreAudit auditConfig = DictionaryProperties.get().getAppStoreAudit();
     if (req.getType() == LoginType.PHONE_SMS_CODE
         && auditConfig.getPhones().contains(req.getPhoneNum())) {
+      log.info("使用应用审核手机号 {} 进行验证码登录，转换为密码登录", req.getPhoneNum());
       req.setType(LoginType.PHONE_PASSWORD);
       req.setPassword(auditConfig.getPassword());
     }
