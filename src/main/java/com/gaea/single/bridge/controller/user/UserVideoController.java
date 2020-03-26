@@ -45,17 +45,17 @@ public class UserVideoController extends BaseController {
       @ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data = new HashMap<>();
     if (userId == null) {
-      userId = getUserId(exchange);
-      data.put("viewUserId", userId);
+      data.put("userId", getUserId(exchange));
       data.put("type", "1");
     } else {
+      data.put("userId", userId);
       data.put("type", "2");
     }
     if (userId == null) {
       return Mono.error(ErrorCode.BAD_REQUEST.newBusinessException("缺少userId参数"));
     }
 
-    data.put("userId", userId);
+    data.put("viewUserId", getUserId(exchange));
     return loboClient.postFormForList(
         exchange, LoboPathConst.GET_VIDEO_LIST, data, UserConverter.toUserVideoItemRes);
   }
