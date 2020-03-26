@@ -2,6 +2,7 @@ package com.gaea.single.bridge.controller.user;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
@@ -193,6 +194,8 @@ public class UserController extends BaseController {
           };
       mono = loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
     } else {
+      replaceToPasswordLoginForAudit(req);
+
       Map<String, Object> data =
           new HashMap<String, Object>() {
             {
@@ -480,5 +483,19 @@ public class UserController extends BaseController {
     Map<String, Object> data = new HashMap<>();
     data.put("file", portrait); // key和type的值相同
     return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_PORTRAIT, data, url -> url);
+  }
+
+  /**
+   * 如果是使用app store审核账号使用验证码登录, 替换为密码登录
+   *
+   * @param req {@link LoginReq}
+   */
+  private void replaceToPasswordLoginForAudit(LoginReq req) {
+    DictionaryProperties.AppStoreAudit auditConfig = DictionaryProperties.get().getAppStoreAudit();
+    if (req.getType() == LoginType.PHONE_SMS_CODE
+        && auditConfig.getPassword().contains(req.getPhoneNum())) {
+      req.setType(LoginType.PHONE_PASSWORD);
+      req.setPassword(auditConfig.getPassword());
+    }
   }
 }
