@@ -493,7 +493,7 @@ public class UserController extends BaseController {
   private void replaceToPasswordLoginForAudit(LoginReq req) {
     DictionaryProperties.AppStoreAudit auditConfig = DictionaryProperties.get().getAppStoreAudit();
     if (req.getType() == LoginType.PHONE_SMS_CODE
-        && auditConfig.getPassword().contains(req.getPhoneNum())) {
+        && auditConfig.getPhones().contains(req.getPhoneNum())) {
       req.setType(LoginType.PHONE_PASSWORD);
       req.setPassword(auditConfig.getPassword());
     }
