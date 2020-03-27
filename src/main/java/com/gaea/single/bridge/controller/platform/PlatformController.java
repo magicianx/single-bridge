@@ -101,8 +101,8 @@ public class PlatformController extends BaseController {
   }
 
   @GetMapping(value = "/v1/dp/popup_advert.net")
-  @ApiOperation(value = "获取引流包弹窗广告地址")
-  public Mono<Result<DpPopupAdvertRes>> getPopupAdvert(@ApiIgnore ServerWebExchange exchange) {
+  @ApiOperation(value = "获取引流包弹窗广告")
+  public Mono<Result<DpPopupAdvertRes>> getDpPopupAdvert(@ApiIgnore ServerWebExchange exchange) {
     if (getOsType(exchange) == OsType.IOS) {
       Map<String, Object> data =
           new HashMap<String, Object>() {
