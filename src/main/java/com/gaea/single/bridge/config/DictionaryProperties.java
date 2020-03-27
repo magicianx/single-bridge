@@ -15,7 +15,10 @@ import org.platform.config.core.kernel.set.SingleConfigSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 @Getter
 @Slf4j
@@ -28,11 +31,13 @@ public class DictionaryProperties implements IConfig {
   private Lobo lobo;
   private Share share;
   private AppStoreAudit appStoreAudit;
+  private DrainagePackage drainagePackage;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
     this.share = getProperty(Share.class, "share", properties);
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
+    this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -88,6 +93,13 @@ public class DictionaryProperties implements IConfig {
     private String appId;
     private String userSecretaryId;
     private String anchorSecretaryId;
+  }
+
+  @Getter
+  @Setter
+  public static class DrainagePackage {
+    private String downloadUrl;
+    private String advertImgUrl;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {
