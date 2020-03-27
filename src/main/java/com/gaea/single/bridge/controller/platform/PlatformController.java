@@ -119,14 +119,13 @@ public class PlatformController extends BaseController {
           data,
           (obj) -> {
             boolean isAuditPass = !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
-            DictionaryProperties.DrainagePackage.PopupAdvert popupAdvert =
-                DictionaryProperties.get().getDrainagePackage().getPopupAdvert();
             if (isAuditPass) {
+              DictionaryProperties.DrainagePackage drainagePackage =
+                  DictionaryProperties.get().getDrainagePackage();
               return new DpPopupAdvertRes(
-                  popupAdvert.getAuditPassImageUrl(), popupAdvert.getAuditPassDownloadUrl());
+                  drainagePackage.getAdvertImgUrl(), drainagePackage.getDownloadUrl());
             }
-            return new DpPopupAdvertRes(
-                popupAdvert.getAuditNotPassImageUrl(), popupAdvert.getAuditNotPassDownloadUrl());
+            return null;
           });
     }
 

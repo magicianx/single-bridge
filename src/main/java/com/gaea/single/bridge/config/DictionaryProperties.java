@@ -37,10 +37,7 @@ public class DictionaryProperties implements IConfig {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
     this.share = getProperty(Share.class, "share", properties);
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
-    this.drainagePackage =
-        new DrainagePackage(
-            getProperty(
-                DrainagePackage.PopupAdvert.class, "drainagePackage.popupAdvert", properties));
+    this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -100,18 +97,9 @@ public class DictionaryProperties implements IConfig {
 
   @Getter
   @Setter
-  @AllArgsConstructor
   public static class DrainagePackage {
-    private PopupAdvert popupAdvert;
-
-    @Getter
-    @Setter
-    public static class PopupAdvert {
-      private String auditPassDownloadUrl;
-      private String auditPassImageUrl;
-      private String auditNotPassDownloadUrl;
-      private String auditNotPassImageUrl;
-    }
+    private String downloadUrl;
+    private String advertImgUrl;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {
