@@ -14,8 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DpPopupAdvertRes {
   @ApiModelProperty(value = "广告图片链接", required = true)
-  private String advertImgUrl;
+  private String imgUrl;
 
   @ApiModelProperty(value = "下载链接", required = true)
-  private String downloadUrl;
+  private String url;
 }
