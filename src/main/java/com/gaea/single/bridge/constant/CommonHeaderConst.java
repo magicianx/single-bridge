@@ -10,4 +10,5 @@ public interface CommonHeaderConst {
   String DEVICE_NO = "Device-No"; // 设备号, ios: IDFV, android: IMEI
   String OS_TYPE = "OS-Type"; // 操作系统类型
   String PACKAGE_NAME = "Package-Name"; // 包名
+  String Cav = "Cav"; // 混淆版本号，避免ios审核的时候被修改版本号探测隐藏功能，这里使用base64对版本号编码
 }

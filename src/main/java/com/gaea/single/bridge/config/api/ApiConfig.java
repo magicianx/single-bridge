@@ -1,8 +1,8 @@
 package com.gaea.single.bridge.config.api;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
-import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.context.request.async.DeferredResult;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -20,7 +18,6 @@ import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
-import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
@@ -29,13 +26,12 @@ import springfox.documentation.swagger.web.*;
 
 import java.util.Arrays;
 
-import static springfox.documentation.schema.AlternateTypeRules.newRule;
-
 @Configuration
 @ConditionalOnProperty(value = "service.api.enable", havingValue = "true")
 @Import(BeanValidatorPluginsConfiguration.class)
 public class ApiConfig {
   @Autowired private TypeResolver typeResolver;
+  @Autowired private ServiceProperties serviceProperties;
 
   @Bean
   ApiInfo apiInfo() {
@@ -43,7 +39,7 @@ public class ApiConfig {
   }
 
   @Bean
-  public Docket petApi(ApiInfo apiInfo) {
+  public Docket petApi(ApiInfo apiInfo) throws Exception {
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
         .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
@@ -77,7 +73,8 @@ public class ApiConfig {
                     "用户session",
                     false,
                     "df5bdd9047ab43358079f985638fd434"),
-                getHeaderParameter(CommonHeaderConst.APP_VERSION, "客户端版本号", true, "1.1.0"),
+                getHeaderParameter(
+                    CommonHeaderConst.APP_VERSION, "应用版本号, 应用版本号和混淆应用版本号只需传一个即可", true, "1.1.0"),
                 getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536"),
                 getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
                 getHeaderParameter(
@@ -88,7 +85,9 @@ public class ApiConfig {
                     true,
                     "ANDROID"),
                 getHeaderParameter(
-                    CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.Ramsey.LoveBubble")));
+                    CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.Ramsey.LoveBubble"),
+                getHeaderParameter(
+                    CommonHeaderConst.Cav, "混淆应用版本号, 应用版本号和混淆应用版本号只需传一个即可", true, "")));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 

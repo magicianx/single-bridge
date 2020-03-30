@@ -3,6 +3,11 @@ spring:
     active: test
   application:
     name: single-bridge
+
+service:
+  appVersion:
+    key: SMqlkJMxm62b92xoR2d4fg== # 前端应用版本号加密密码
+    iv: VlBFZ6Y9Vlmq1a4hb6IRsg== # 前端应用版本号加密密码
 ---
 spring:
   profiles: dev
