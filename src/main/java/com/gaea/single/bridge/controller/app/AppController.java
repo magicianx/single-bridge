@@ -32,8 +32,10 @@ import java.util.Map;
 @Validated
 public class AppController extends BaseController {
   @Autowired
-  @Qualifier("appAuditClient")
-  private LoboClient loboClient;
+  @Qualifier("iosAuditClient")
+  private LoboClient iosAuditClient;
+
+  @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
@@ -52,7 +54,9 @@ public class AppController extends BaseController {
     String path =
         isAndroid ? LoboPathConst.CHECK_ANDROID_AUDIT_STATUS : LoboPathConst.CHECK_IOS_AUDIT_STATUS;
 
-    return loboClient.postForm(
+    LoboClient client = isAndroid ? loboClient : iosAuditClient; // ios使用的是测试环境的接口
+
+    return client.postForm(
         exchange,
         path,
         data,

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.platform.config.core.CheckException;
 import org.platform.config.core.data.DataPool;
 import org.platform.config.core.data.set.PropertyData;
@@ -14,6 +15,9 @@ import org.platform.config.core.kernel.set.SingleConfigSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 @Getter
@@ -26,10 +30,14 @@ public class DictionaryProperties implements IConfig {
 
   private Lobo lobo;
   private Share share;
+  private AppStoreAudit appStoreAudit;
+  private DrainagePackage drainagePackage;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
     this.share = getProperty(Share.class, "share", properties);
+    this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
+    this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -37,15 +45,13 @@ public class DictionaryProperties implements IConfig {
       R instance = cls.newInstance();
       for (Field field : cls.getDeclaredFields()) {
         String fieldName = field.getName();
+        boolean isListType = List.class.isAssignableFrom(field.getType());
+        Class argType = isListType ? List.class : String.class;
         Method setMethod =
             cls.getMethod(
-                "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1),
-                String.class);
+                "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1), argType);
         String value = properties.getProperty(prefix + "." + fieldName);
-        Object arg = value;
-        if (Integer.class.isAssignableFrom(field.getType())) {
-          arg = Integer.valueOf(value);
-        }
+        Object arg = isListType ? toSplitStrList(value) : value;
         setMethod.invoke(instance, arg);
       }
 
@@ -54,6 +60,14 @@ public class DictionaryProperties implements IConfig {
       log.error(String.format("构建配置属性对象 %s 失败", prefix), ex);
       throw new RuntimeException(ex);
     }
+  }
+
+  private List<String> toSplitStrList(String value) {
+    if (StringUtils.isNotBlank(value)) {
+      return Arrays.asList(value.split(","));
+    }
+
+    return Collections.emptyList();
   }
 
   @Getter
@@ -66,12 +80,26 @@ public class DictionaryProperties implements IConfig {
 
   @Getter
   @Setter
+  public static class AppStoreAudit {
+    private String password;
+    private List<String> phones;
+  }
+
+  @Getter
+  @Setter
   public static class Lobo {
     private String host;
-    private String appAuditHost;
+    private String iosAuditHost;
     private String appId;
     private String userSecretaryId;
     private String anchorSecretaryId;
+  }
+
+  @Getter
+  @Setter
+  public static class DrainagePackage {
+    private String downloadUrl;
+    private String advertImgUrl;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {
