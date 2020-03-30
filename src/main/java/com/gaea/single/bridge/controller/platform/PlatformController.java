@@ -139,7 +139,8 @@ public class PlatformController extends BaseController {
   @GetMapping(value = "/v1/app_version/encrypted.net")
   @ApiOperation(value = "获取加密后的应用版本号")
   public Mono<Result<String>> getEncryptAppVersion(
-      @NotBlank @ApiParam(value = "应用版本号", required = true) String appVersion) throws Exception {
+      @NotBlank @ApiParam(value = "应用版本号", required = true) @RequestParam String appVersion)
+      throws Exception {
     return Mono.just(
         Result.success(
             AESUtils.encrypt(

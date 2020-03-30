@@ -74,7 +74,7 @@ public class ApiConfig {
                     false,
                     "df5bdd9047ab43358079f985638fd434"),
                 getHeaderParameter(
-                    CommonHeaderConst.APP_VERSION, "应用版本号, 应用版本号和混淆应用版本号只需传一个即可", true, "1.1.0"),
+                    CommonHeaderConst.APP_VERSION, "应用版本号, 应用版本号和混淆应用版本号只需传一个即可", false, "1.1.0"),
                 getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536"),
                 getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
                 getHeaderParameter(
@@ -87,7 +87,7 @@ public class ApiConfig {
                 getHeaderParameter(
                     CommonHeaderConst.PACKAGE_NAME, "包名", true, "com.Ramsey.LoveBubble"),
                 getHeaderParameter(
-                    CommonHeaderConst.Cav, "混淆应用版本号, 应用版本号和混淆应用版本号只需传一个即可", true, "")));
+                    CommonHeaderConst.Cav, "混淆应用版本号, 应用版本号和混淆应用版本号只需传一个即可", false, "")));
     //        .tags(new Tag("Pet Service", "All apis relating to pets"))
   }
 
