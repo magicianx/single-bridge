@@ -2,16 +2,19 @@ package com.gaea.single.bridge.controller;
 
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.core.ComplexAppVersionFactory;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.enums.OsType;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class BaseController {
+  @Autowired ComplexAppVersionFactory appVersionFactory;
+
   protected Long getUserId(ServerWebExchange exchange) {
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
 
@@ -31,6 +34,10 @@ public abstract class BaseController {
   }
 
   protected String getAppVersion(ServerWebExchange exchange) {
+    String version = exchange.getAttribute(CommonHeaderConst.Cav);
+    if (StringUtils.isNotBlank(version)) {
+      return appVersionFactory.getAppVersion(version);
+    }
     return exchange.getAttribute(CommonHeaderConst.APP_VERSION);
   }
 

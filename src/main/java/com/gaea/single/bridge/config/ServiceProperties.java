@@ -11,6 +11,7 @@ public class ServiceProperties {
   private Config config;
   private String reportImgPath;
   private String appStaticHome;
+  private AppVersion appVersion;
 
   @Getter
   @Setter
@@ -20,5 +21,12 @@ public class ServiceProperties {
     private String module;
     private String branch;
     private String group;
+  }
+
+  @Getter
+  @Setter
+  public static class AppVersion {
+    private String encryptKey;
+    private String encryptIv;
   }
 }
