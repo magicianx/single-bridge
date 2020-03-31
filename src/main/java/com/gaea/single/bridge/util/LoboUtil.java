@@ -17,9 +17,9 @@ public class LoboUtil {
         .orElse(BigDecimal.ZERO);
   }
 
-  public static BigDecimal toDiamonds(BigDecimal money) {
+  public static int toDiamonds(BigDecimal money) {
     return Optional.ofNullable(money)
-        .map(m -> m.multiply(MONEY_EXCHANGE_RATE))
-        .orElse(BigDecimal.ZERO);
+        .map(m -> m.multiply(MONEY_EXCHANGE_RATE).intValue())
+        .orElse(0);
   }
 }
