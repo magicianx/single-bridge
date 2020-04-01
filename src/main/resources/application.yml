@@ -3,6 +3,11 @@ spring:
     active: test
   application:
     name: single-bridge
+
+service:
+  appVersion:
+    encryptKey: SMqlkJMxm62b92xoR2d4fg== # 前端应用版本号加密密码
+    encryptIv: VlBFZ6Y9Vlmq1a4hb6IRsg== # 前端应用版本号加密密码
 ---
 spring:
   profiles: dev
@@ -32,8 +37,8 @@ service:
     branch: TEST
     secretKey: f8f661c1fe7c4be0b33405f9f47c4880
   api.enable: true
-  reportImgPath: /data/app/single/report.jpg
-  appStaticHome: /data/app/single/static
+  reportImgPath: /data/app/single/single-bridge/report.jpg
+  appStaticHome: /data/app/single/single-bridge/static
 logging:
   level:
     org.springframework: debug

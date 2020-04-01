@@ -14,7 +14,7 @@ public class IncomeRes {
   @ApiModelProperty(value = "收入金额(元)）", required = true)
   private BigDecimal incomeAmount;
 
-  @ApiModelProperty(value = "输入钻石", required = true)
+  @ApiModelProperty(value = "收入钻石", required = true)
   private Long diamonds;
 
   @ApiModelProperty(value = "支付账号", required = true)

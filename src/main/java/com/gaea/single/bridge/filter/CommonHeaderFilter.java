@@ -25,6 +25,7 @@ public class CommonHeaderFilter implements WebFilter {
     putAttribute(exchange, headers, CommonHeaderConst.OS_TYPE);
     putAttribute(exchange, headers, CommonHeaderConst.PACKAGE_NAME);
     putAttribute(exchange, headers, CommonHeaderConst.CHANNEL_ID);
+    putAttribute(exchange, headers, CommonHeaderConst.Cav);
     return chain.filter(exchange);
   }
 

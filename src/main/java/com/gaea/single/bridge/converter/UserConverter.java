@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.*;
 import com.gaea.single.bridge.util.DateUtil;
+import com.gaea.single.bridge.util.LoboUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
@@ -44,6 +45,7 @@ public class UserConverter {
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setSignature(result.getString("comment"));
         res.setCoverUrl(result.getString("cover"));
+        res.setIsUp(LoboUtil.toBoolean(result.getInteger("isUp")));
         res.setPrice(userType == UserType.ANCHOR ? result.getInteger("price") : null);
         return res;
       };
@@ -70,6 +72,12 @@ public class UserConverter {
                 ? result.getString("address")
                 : "火星");
         res.setIntro(result.getString("intro"));
+        res.setFansNum(result.getInteger("fansNum"));
+        res.setFollowNum(result.getInteger("followNum"));
+        res.setFollowStatus(
+            Optional.ofNullable(result.getInteger("followStatus"))
+                .map(FollowStatus::ofCode)
+                .orElse(FollowStatus.UNFOLLOW));
 
         List<String> photos = new ArrayList<>();
         if (result.getJSONArray("photos") != null) {
@@ -114,6 +122,8 @@ public class UserConverter {
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
         res.setUserType(UserType.ofCode(result.getInteger("userType")));
         res.setInviteCode(result.getString("inviteCode"));
+        res.setFansNum(result.getInteger("fansNum"));
+        res.setFollowNum(result.getInteger("followNum"));
         res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
         return res;
       };
@@ -143,4 +153,55 @@ public class UserConverter {
         res.setIsCover(false);
         return res;
       };
+
+  public static final Converter<Object, UserGradeRes> toUserGradeRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        UserGradeRes res = new UserGradeRes();
+        res.setCurrentXp(result.getLong("currentLevel"));
+        result
+            .getJSONArray("grades")
+            .forEach(grade -> res.getGradeXps().add(Long.valueOf(grade.toString())));
+        res.setSetTopNum(result.getInteger("setTopNum"));
+        res.setSetTopDurationTime(result.getInteger("setTopTime"));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
+        return res;
+      };
+
+  public static final Converter<Object, FollowItemRes> toFollowItemRes =
+      (obj) -> {
+        FollowItemRes res = new FollowItemRes();
+        fillFollowItemRes(obj, res);
+        return res;
+      };
+
+  public static final Converter<Object, FansItemRes> toFansItemRes =
+      (obj) -> {
+        FansItemRes res = new FansItemRes();
+        fillFollowItemRes(obj, res);
+        return res;
+      };
+
+  public static final Converter<Object, UserVideoItemRes> toUserVideoItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        UserVideoItemRes res = new UserVideoItemRes();
+        res.setId(result.getLong("id"));
+        res.setCloudFileId(result.getString("unid"));
+        res.setCoverUrl(result.getString("coverUrl"));
+        res.setVideoUrl(result.getString("videoUrl"));
+        res.setAuditStatus(AuditStatus.ofCode(result.getInteger("status")));
+        res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
+        res.setPraiseTimes(result.getLong("praiseTimes"));
+        return res;
+      };
+
+  private static <T extends FollowItemRes> void fillFollowItemRes(Object obj, T res) {
+    JSONObject result = (JSONObject) obj;
+    res.setUserId(result.getLong("userId"));
+    res.setNickName(result.getString("nickName"));
+    res.setPortraitUrl(result.getString("portrait"));
+    res.setIntro(result.getString("intro"));
+    res.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
+  }
 }

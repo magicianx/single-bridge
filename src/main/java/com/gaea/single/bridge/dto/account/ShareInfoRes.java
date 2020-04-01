@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@ApiModel("分j销信息")
+@ApiModel("分销信息")
 public class ShareInfoRes {
   @ApiModelProperty(value = "可提现金额(元)", required = true)
   private BigDecimal withdrawableAmount;

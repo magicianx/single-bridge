@@ -165,4 +165,10 @@ public class AnchorController extends BaseController {
         };
     return loboClient.postForm(exchange, LoboPathConst.ADD_ANCHOR_LABEL, data, null);
   }
+
+  @PostMapping(value = "/v1/top.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "主播置顶", notes = "主播空闲状态时才可以置顶")
+  public Mono<Result<Object>> setAnchorTop(@ApiIgnore ServerWebExchange exchange) {
+    return loboClient.get(exchange, LoboPathConst.SET_ANCHOR_TOP, null, null);
+  }
 }

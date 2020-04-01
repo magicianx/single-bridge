@@ -16,7 +16,7 @@ public class GetPaySignReq {
   @NotNull
   private Long optionId;
 
-  @ApiModelProperty(value = "支付金额（元）", required = true)
+  @ApiModelProperty(value = "支付金额（钻石）", required = true)
   @NotNull
   private Integer diamonds;
 

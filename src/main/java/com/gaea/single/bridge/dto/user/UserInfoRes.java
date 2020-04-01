@@ -50,6 +50,12 @@ public class UserInfoRes {
   @ApiModelProperty(value = "邀请码", required = true)
   private String inviteCode;
 
+  @ApiModelProperty(value = "粉丝数量", required = true)
+  private Integer fansNum;
+
+  @ApiModelProperty(value = "关注数量", required = true)
+  private Integer followNum;
+
   @ApiModelProperty(value = "主播认证状态", required = true)
   private AnchorAuthStatus authStatus;
 }

@@ -2,6 +2,7 @@ package com.gaea.single.bridge.controller.platform;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
+import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.PlatformConverter;
@@ -15,6 +16,7 @@ import com.gaea.single.bridge.enums.BannerType;
 import com.gaea.single.bridge.enums.DeviceType;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.util.AESUtils;
 import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +31,7 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +43,7 @@ import java.util.Map;
 @Validated
 public class PlatformController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private ServiceProperties serviceProperties;
 
   @Autowired
   @Qualifier("iosAuditClient")
@@ -130,5 +134,18 @@ public class PlatformController extends BaseController {
     }
 
     return Mono.error(ErrorCode.BAD_REQUEST.newBusinessException());
+  }
+
+  @GetMapping(value = "/v1/app_version/encrypted.net")
+  @ApiOperation(value = "获取加密后的应用版本号")
+  public Mono<Result<String>> getEncryptAppVersion(
+      @NotBlank @ApiParam(value = "应用版本号", required = true) @RequestParam String appVersion)
+      throws Exception {
+    return Mono.just(
+        Result.success(
+            AESUtils.encrypt(
+                appVersion,
+                serviceProperties.getAppVersion().getEncryptKey(),
+                serviceProperties.getAppVersion().getEncryptIv())));
   }
 }

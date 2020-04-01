@@ -105,4 +105,30 @@ public interface LoboPathConst {
   String WECHAT_PAY_SIGN = "/finance/sign/getWechatSign.do";
   /** 绑定邀请码 */
   String BIND_INVITE_CODE = "/user/shareCenter/saveShare.do";
+  /** 主播置顶 */
+  String SET_ANCHOR_TOP = "/user/userCenter/setTop.do";
+  /** 获取用户等级信息 */
+  String GET_USER_GRADE = "/user/userCenter/getGradeDetail.do";
+  /** 获取主播价格列表 */
+  String GET_ANCHOR_PRICES = "/user/userCenter/getPrices.do";
+  /** 设置主播单价 */
+  String SET_ANCHOR_PRICE = "/user/userCenter/updatePrice.do";
+  /** 添加关注 */
+  String FOLLOW = "/relationship/followCenter/follow.do";
+  /** 取消关注 */
+  String UNFOLLOW = "/relationship/followCenter/follow.do";
+  /** 获取关注列表 */
+  String GET_FOLLOW_LIST = "/relationship/followCenter/getFollows.do";
+  /** 获取粉丝列表 */
+  String GET_FANS_LIST = "/relationship/followCenter/getFollows.do";
+  /** 获取视频列表 */
+  String GET_VIDEO_LIST = "/vod/videoCenter/queryVodByUserId";
+  /** 删除视频 */
+  String DELETE_VIDEO = "/vod/videoCenter/deleteVod.do";
+  /** 获取上传视频签名 */
+  String GET_UPLOAD_VIDEO_SIGN = "/vod/videoCenter/getUploadSignature.do";
+  /** 上传视频 */
+  String UPLOAD_VIDEO = "/vod/videoCenter/uploadVideo.do";
+  /** 视频点赞 */
+  String PRAISE_VIDEO = "/vod/videoCenter/praiseVod.do";
 }
