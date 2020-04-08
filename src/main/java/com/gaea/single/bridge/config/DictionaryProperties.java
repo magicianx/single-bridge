@@ -46,12 +46,21 @@ public class DictionaryProperties implements IConfig {
       for (Field field : cls.getDeclaredFields()) {
         String fieldName = field.getName();
         boolean isListType = List.class.isAssignableFrom(field.getType());
-        Class argType = isListType ? List.class : String.class;
+        Class argType = List.class;
+        boolean isLongType = false;
+        if (!isListType) {
+          isLongType = Long.class.isAssignableFrom(field.getType());
+          argType = isLongType ? Long.class : String.class;
+        }
+
         Method setMethod =
             cls.getMethod(
                 "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1), argType);
         String value = properties.getProperty(prefix + "." + fieldName);
-        Object arg = isListType ? toSplitStrList(value) : value;
+        Object arg =
+            isListType
+                ? toSplitStrList(value)
+                : isLongType ? (value != null ? Long.valueOf(value) : null) : value;
         setMethod.invoke(instance, arg);
       }
 
