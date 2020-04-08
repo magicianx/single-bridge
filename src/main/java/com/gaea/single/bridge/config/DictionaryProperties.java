@@ -81,6 +81,7 @@ public class DictionaryProperties implements IConfig {
   @Getter
   @Setter
   public static class AppStoreAudit {
+    private Long userColumnId; // android审核展示的此栏目，ios目前没有用
     private String password;
     private List<String> phones;
   }

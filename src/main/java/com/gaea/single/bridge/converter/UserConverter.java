@@ -2,6 +2,7 @@ package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.*;
 import com.gaea.single.bridge.util.DateUtil;
@@ -21,6 +22,12 @@ public class UserConverter {
         JSONObject result = (JSONObject) obj;
         JSONArray array = result.getJSONArray("menuList");
         return array.stream()
+            .filter(
+                i -> {
+                  JSONObject item = ((JSONObject) i);
+                  return !item.getLong("id")
+                      .equals(DictionaryProperties.get().getAppStoreAudit().getUserColumnId());
+                })
             .sorted(Comparator.comparingInt(item -> ((JSONObject) item).getInteger("orderNumber")))
             .map(
                 i -> {
