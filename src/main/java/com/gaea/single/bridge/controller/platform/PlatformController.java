@@ -85,6 +85,7 @@ public class PlatformController extends BaseController {
           {
             put("type", req.getType().getCode());
             put("userMobile", req.getPhoneNum());
+            put("appId", getAppId());
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.SEND_SMS_CODE, data, null);
