@@ -60,6 +60,7 @@ public class PlatformController extends BaseController {
           {
             put("deviceType", deviceType.getCode());
             put("type", 2);
+            put("appId", getAppId());
           }
         };
     return loboClient.postFormForList(
