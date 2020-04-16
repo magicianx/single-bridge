@@ -5,6 +5,7 @@ import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
+import com.gaea.single.bridge.util.HttpUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
@@ -238,12 +239,14 @@ public class LoboClient {
 
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
-    String ip = getIp(exchange);
+    String ip = HttpUtil.getIp(exchange);
 
     log.info(
         "正在请求lobo服务 {}: header {}, params {}",
         fullPath,
-        String.format("{\"userId\": \"%s\",\"session\": \"%s\",\"x-forwarded-for\": \"%s\"}", userId, session, ip),
+        String.format(
+            "{\"userId\": \"%s\",\"session\": \"%s\",\"x-forwarded-for\": \"%s\"}",
+            userId, session, ip),
         params != null ? JsonUtils.toJsonString(params) : null);
 
     return webClient
@@ -265,7 +268,7 @@ public class LoboClient {
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
     String fullPath = getFullPath(path, params);
-    String ip = getIp(exchange);
+    String ip = HttpUtil.getIp(exchange);
 
     MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED;
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
@@ -331,11 +334,5 @@ public class LoboClient {
       return path + "?" + pathParams;
     }
     return path;
-  }
-
-  private String getIp(ServerWebExchange exchange) {
-    return Optional.ofNullable(exchange.getRequest().getRemoteAddress())
-        .map(address -> address.getAddress().getHostAddress())
-        .orElse(null);
   }
 }
