@@ -238,11 +238,12 @@ public class LoboClient {
 
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
+    String ip = getIp(exchange);
 
     log.info(
         "正在请求lobo服务 {}: header {}, params {}",
         fullPath,
-        String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
+        String.format("{\"userId\": \"%s\",\"session\": \"%s\",\"x-forwarded-for\": \"%s\"}", userId, session, ip),
         params != null ? JsonUtils.toJsonString(params) : null);
 
     return webClient
@@ -277,11 +278,14 @@ public class LoboClient {
       bodyInserter = getBody(multipartForm, data);
     }
 
+    String ip = getIp(exchange);
     if (!multipartForm) {
       log.info(
           "正在请求lobo服务 {}: header {}, params {}, data {}",
           fullPath,
-          String.format("{\"userId\": \"%s\",\"session\": \"%s\" }", userId, session),
+          String.format(
+              "{\"userId\": \"%s\",\"session\": \"%s\",\"x-forwarded-for\": \"%s\" }",
+              userId, session, ip),
           params != null ? JsonUtils.toJsonString(params) : null,
           JsonUtils.toJsonString(data));
     }
@@ -293,7 +297,7 @@ public class LoboClient {
         .header("userId", userId)
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
-        .header("x-forwarded-for", getIp(exchange))
+        .header("x-forwarded-for", ip)
         .body(bodyInserter)
         .retrieve()
         .bodyToMono(String.class);
