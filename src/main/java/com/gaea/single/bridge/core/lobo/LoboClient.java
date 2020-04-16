@@ -265,6 +265,7 @@ public class LoboClient {
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
     String fullPath = getFullPath(path, params);
+    String ip = getIp(exchange);
 
     MediaType mediaType = MediaType.APPLICATION_FORM_URLENCODED;
     BodyInserter<?, ? super ClientHttpRequest> bodyInserter = null;
@@ -278,7 +279,6 @@ public class LoboClient {
       bodyInserter = getBody(multipartForm, data);
     }
 
-    String ip = getIp(exchange);
     if (!multipartForm) {
       log.info(
           "正在请求lobo服务 {}: header {}, params {}, data {}",
