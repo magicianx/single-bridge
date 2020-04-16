@@ -252,7 +252,7 @@ public class LoboClient {
         .header("userId", userId)
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
-        .header("x-forwarded-for", getIp(exchange))
+        .header("x-forwarded-for", ip)
         .retrieve()
         .bodyToMono(String.class);
   }
