@@ -251,6 +251,7 @@ public class LoboClient {
         .header("userId", userId)
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
+        .header("x-forwarded-for", getIp(exchange))
         .retrieve()
         .bodyToMono(String.class);
   }
@@ -292,6 +293,7 @@ public class LoboClient {
         .header("userId", userId)
         .header("userid", userId) // 8020使用的是userid
         .header("session", session)
+        .header("x-forwarded-for", getIp(exchange))
         .body(bodyInserter)
         .retrieve()
         .bodyToMono(String.class);
@@ -325,5 +327,11 @@ public class LoboClient {
       return path + "?" + pathParams;
     }
     return path;
+  }
+
+  private String getIp(ServerWebExchange exchange) {
+    return Optional.ofNullable(exchange.getRequest().getRemoteAddress())
+        .map(address -> address.getAddress().getHostAddress())
+        .orElse(null);
   }
 }

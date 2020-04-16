@@ -75,9 +75,8 @@ public class PayController extends BaseController {
         (obj) -> {
           List<PayWay> payWays = new ArrayList<>();
           JSONObject result = (JSONObject) obj;
-          if (LoboUtil.toBoolean(result.getInteger("isWxPay"))) {
-            payWays.add(PayWay.WECHAT_PAY);
-          }
+          // 微信支付通过服务端开启，lobo那边不能根据包名配置，开启会影响到lobo那边
+          payWays.add(PayWay.WECHAT_PAY);
           if (LoboUtil.toBoolean(result.getInteger("isAlPay"))) {
             payWays.add(PayWay.ALIPAY);
           }
