@@ -124,7 +124,8 @@ public class PlatformController extends BaseController {
           LoboPathConst.CHECK_IOS_AUDIT_STATUS,
           data,
           (obj) -> {
-            boolean isAuditPass = !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
+            Integer auditStatus = ((JSONObject) obj).getInteger("auditStatus");
+            boolean isAuditPass = auditStatus != null && auditStatus == 2;
             if (isAuditPass) {
               DictionaryProperties.DrainagePackage drainagePackage =
                   DictionaryProperties.get().getDrainagePackage();
