@@ -12,7 +12,7 @@ import com.gaea.single.bridge.dto.platform.BannerRes;
 import com.gaea.single.bridge.dto.platform.CheckVersionRes;
 import com.gaea.single.bridge.dto.platform.DpPopupAdvertRes;
 import com.gaea.single.bridge.dto.platform.SendSmsReq;
-import com.gaea.single.bridge.enums.BannerType;
+import com.gaea.single.bridge.enums.AdvertType;
 import com.gaea.single.bridge.enums.DeviceType;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.error.ErrorCode;
@@ -73,7 +73,7 @@ public class PlatformController extends BaseController {
               result.getString("imgUrl"),
               result.getString("linkToUrl"),
               result.getString("title"),
-              BannerType.INNER);
+              AdvertType.INNER);
         });
   }
 
@@ -125,7 +125,7 @@ public class PlatformController extends BaseController {
           data,
           (obj) -> {
             Integer auditStatus = ((JSONObject) obj).getInteger("auditStatus");
-            boolean isAuditPass = auditStatus != null && auditStatus == 2;
+            boolean isAuditPass = LoboUtil.toBoolean2(auditStatus);
             if (isAuditPass) {
               DictionaryProperties.DrainagePackage drainagePackage =
                   DictionaryProperties.get().getDrainagePackage();

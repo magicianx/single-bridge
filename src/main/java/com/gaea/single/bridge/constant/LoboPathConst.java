@@ -131,4 +131,10 @@ public interface LoboPathConst {
   String UPLOAD_VIDEO = "/vod/videoCenter/uploadVideo.do";
   /** 视频点赞 */
   String PRAISE_VIDEO = "/vod/videoCenter/praiseVod.do";
+  /** 搜索用户 */
+  String SEARCH_USER = "/user/searchUser";
+  /** 手机号绑定 */
+  String BIND_PHONE = "/user/userLogin/bindPhone.do";
+  /** 弹窗广告 */
+  String GET_POPUP_ADVERT = "/mapper/advert/getPopupAdvert";
 }

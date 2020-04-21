@@ -72,13 +72,13 @@ public class ApiConfig {
                     CommonHeaderConst.SESSION,
                     "用户session",
                     false,
-                    "df5bdd9047ab43358079f985638fd434"),
+                    "ffd2bfe74c664d0880989482daa4ceab"),
                 getHeaderParameter(
                     CommonHeaderConst.APP_VERSION, "应用版本号, 应用版本号和混淆应用版本号只需传一个即可", false, "1.1.0"),
                 getHeaderParameter(CommonHeaderConst.CHANNEL_ID, "渠道id", true, "9536"),
-                getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, ""),
+                getHeaderParameter(CommonHeaderConst.DEVICE_TYPE, "设备型号", true, "1"),
                 getHeaderParameter(
-                    CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true, ""),
+                    CommonHeaderConst.DEVICE_NO, "设备号, ios: IDFV, android: IMEI", true, "1"),
                 getHeaderParameter(
                     CommonHeaderConst.OS_TYPE,
                     "操作系统类型, ios: IOS, android: ANDROID",

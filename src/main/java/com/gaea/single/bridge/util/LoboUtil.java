@@ -7,8 +7,22 @@ public class LoboUtil {
 
   public static final BigDecimal MONEY_EXCHANGE_RATE = new BigDecimal("100");
 
-  public static Boolean toBoolean(Integer value) {
+  /**
+   *  1为true , 其他值为false
+   * @param value lobo端值
+   * @return boolean
+   */
+  public static boolean toBoolean(Integer value) {
     return value != null && value == 1;
+  }
+
+  /**
+   * 2为true , 其他值为false
+   * @param value lobo端值
+   * @return boolean
+   */
+  public static boolean toBoolean2(Integer value) {
+    return value != null && value == 2;
   }
 
   public static BigDecimal toMoney(BigDecimal diamonds) {

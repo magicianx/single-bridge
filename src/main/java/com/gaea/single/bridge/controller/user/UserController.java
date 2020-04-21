@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -389,7 +390,7 @@ public class UserController extends BaseController {
 
   @PostMapping(value = "/v1/address.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "上报用户位置")
-  public Mono<Result<LoginRes>> uploadUserAddress(
+  public Mono<Result<Void>> uploadUserAddress(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
@@ -402,6 +403,30 @@ public class UserController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_ADDRESS, data, null);
+  }
+
+  @GetMapping(value = "/v1/search.net")
+  @ApiOperation(value = "搜索用户", notes = "可以搜索用户及主播")
+  public Mono<Result<PageRes<SearchUserItemRes>>> searchUser(
+      @ApiParam(value = "搜索关键字", required = true) @NotBlank @RequestParam String keyword,
+      @Valid PageReq pageReq,
+      @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data = getPageData(pageReq);
+    data.put("pageNo", pageReq.getPageNum());
+    data.put("pageSize", pageReq.getPageSize());
+    data.put("appId", getAppId());
+    data.put("content", keyword);
+
+    return loboClient.postFormForPage(
+        exchange,
+        LoboPathConst.SEARCH_USER,
+        data,
+        null,
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new SearchUserItemRes(
+              result.getLong("id"), result.getString("portrait"), result.getString("nickName"));
+        });
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
