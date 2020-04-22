@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 public class LoboUtil {
@@ -8,7 +9,8 @@ public class LoboUtil {
   public static final BigDecimal MONEY_EXCHANGE_RATE = new BigDecimal("100");
 
   /**
-   *  1为true , 其他值为false
+   * 1为true , 其他值为false
+   *
    * @param value lobo端值
    * @return boolean
    */
@@ -18,6 +20,7 @@ public class LoboUtil {
 
   /**
    * 2为true , 其他值为false
+   *
    * @param value lobo端值
    * @return boolean
    */
@@ -27,7 +30,7 @@ public class LoboUtil {
 
   public static BigDecimal toMoney(BigDecimal diamonds) {
     return Optional.ofNullable(diamonds)
-        .map(d -> d.divide(MONEY_EXCHANGE_RATE))
+        .map(d -> d.divide(MONEY_EXCHANGE_RATE, 2, RoundingMode.FLOOR))
         .orElse(BigDecimal.ZERO);
   }
 

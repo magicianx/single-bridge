@@ -10,6 +10,8 @@ import com.gaea.single.bridge.util.LoboUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -133,7 +135,7 @@ public class UserConverter {
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
         res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
-        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isVip")));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         res.setIsBindPhone(LoboUtil.toBoolean(result.getInteger("isBindPhone")));
         return res;
       };
@@ -203,6 +205,20 @@ public class UserConverter {
         res.setAuditStatus(AuditStatus.ofCode(result.getInteger("status")));
         res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
         res.setPraiseTimes(result.getLong("praiseTimes"));
+        return res;
+      };
+
+  public static final Converter<Object, VipConfigItemRes> toVipConfigItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        VipConfigItemRes res = new VipConfigItemRes();
+        res.setId(result.getLong("id"));
+        res.setType(VipType.ofCode(result.getInteger("type")));
+        BigDecimal diamonds = result.getBigDecimal("vipPrice");
+        res.setPrice(LoboUtil.toMoney(diamonds));
+        res.setDayPrice(
+            LoboUtil.toMoney(
+                diamonds.divide(result.getBigDecimal("duration"), 2, RoundingMode.FLOOR)));
         return res;
       };
 

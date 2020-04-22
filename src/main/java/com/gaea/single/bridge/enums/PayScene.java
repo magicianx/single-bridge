@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PayScene implements Metadata {
   IN_VIDEO(1, "视频内充值"),
-  OUT_VIDEO(2, "视频外充值 ");
+  OUT_VIDEO(2, "视频外充值 "),
+  ACTIVE_VIP(4, "开通vip");
 
   private Integer code;
   private String desc;

@@ -137,4 +137,6 @@ public interface LoboPathConst {
   String BIND_PHONE = "/user/userLogin/bindPhone.do";
   /** 弹窗广告 */
   String GET_POPUP_ADVERT = "/mapper/advert/getPopupAdvert";
+  /** 获取vip支付配置 */
+  String GET_VIP_CONFIG = "/user/userCenter/getBaseVipConfig";
 }
