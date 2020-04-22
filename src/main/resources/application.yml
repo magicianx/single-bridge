@@ -8,17 +8,25 @@ service:
   appVersion:
     encryptKey: SMqlkJMxm62b92xoR2d4fg== # 前端应用版本号加密密码
     encryptIv: VlBFZ6Y9Vlmq1a4hb6IRsg== # 前端应用版本号加密密码
+
+
 ---
 spring:
   profiles: dev
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    ssl: false
+    timeout: 200 # 单位ms
 
 service:
   config:
     server: http://192.168.10.29:30012
     group: SingleBridge
     module: Single
-    branch: DEV
-    secretKey: f8127442b9e14ad897d7f3c37cba1a11
+    branch: TEST
+    secretKey: f8f661c1fe7c4be0b33405f9f47c4880
   api.enable: true
   reportImgPath: /Users/cludy/project/lanbright/single-bridge/src/main/resources/report.jpg
 
@@ -28,6 +36,10 @@ logging:
 ---
 spring:
   profiles: test
+  redis:
+    host: 192.168.10.4
+    password: password
+    timeout: 200 # 单位ms
 
 service:
   config:

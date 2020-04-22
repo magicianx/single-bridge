@@ -61,6 +61,9 @@ public class UserProfileRes {
   @ApiModelProperty(value = "关注数量", required = true)
   private Integer followNum;
 
+  @ApiModelProperty(value = "是否为vip", required = true)
+  private Boolean isVip;
+
   @ApiModelProperty("简介")
   private String intro;
 

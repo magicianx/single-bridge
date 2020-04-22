@@ -81,6 +81,7 @@ public class UserConverter {
         res.setIntro(result.getString("intro"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         res.setFollowStatus(
             Optional.ofNullable(result.getInteger("followStatus"))
                 .map(FollowStatus::ofCode)
@@ -132,6 +133,8 @@ public class UserConverter {
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
         res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isVip")));
+        res.setIsBindPhone(LoboUtil.toBoolean(result.getInteger("isBindPhone")));
         return res;
       };
 

@@ -58,4 +58,13 @@ public class UserInfoRes {
 
   @ApiModelProperty(value = "主播认证状态", required = true)
   private AnchorAuthStatus authStatus;
+
+  @ApiModelProperty(value = "是否为vip", required = true)
+  private Boolean isVip;
+
+  @ApiModelProperty(value = "剩余发送消息次数", required = true)
+  private Integer messageCount;
+
+  @ApiModelProperty(value = "是否绑定手机号", required = true)
+  private Boolean isBindPhone;
 }

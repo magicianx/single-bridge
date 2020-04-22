@@ -17,6 +17,7 @@ import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.service.MessageService;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.*;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private MessageService yxMessageService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -140,7 +142,21 @@ public class UserController extends BaseController {
   @GetMapping(value = "/v1/info.do")
   @ApiOperation(value = "获取当前登录用户信息")
   public Mono<Result<UserInfoRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
-    return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
+    return loboClient
+        .postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes)
+        .flatMap(
+            res -> {
+              if (ErrorCode.isSuccess(res.getCode())) {
+                return yxMessageService
+                    .getMessageCount(res.getData().getId())
+                    .map(
+                        count -> {
+                          res.getData().setMessageCount(count);
+                          return res;
+                        });
+              }
+              return Mono.just(res);
+            });
   }
 
   @GetMapping(value = "/v1/blacks.do")
