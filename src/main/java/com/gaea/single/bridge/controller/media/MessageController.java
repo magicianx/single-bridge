@@ -24,7 +24,7 @@ public class MessageController extends BaseController {
 
   @PostMapping(value = "/v1/count/update.do")
   @ApiOperation(value = "更新消息数量")
-  public Mono<Result<Void>> updateMessageCount(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<Integer>> updateMessageCount(@ApiIgnore ServerWebExchange exchange) {
     return messageService.decrMessageCount(getUserId(exchange)).map(Result::success);
   }
 }

@@ -42,7 +42,7 @@ public class MessageCache extends AbstractMessageCache {
    * @param userId 用户id
    * @return 剩余消息数量
    */
-  public Mono<Void> decrMessageCount(Long userId) {
+  public Mono<Integer> decrMessageCount(Long userId) {
     RAtomicLongReactive value = redission.getAtomicLong(getKey(userId));
 
     return value
@@ -50,9 +50,9 @@ public class MessageCache extends AbstractMessageCache {
         .flatMap(
             v -> {
               if (v > 0) {
-                return value.decrementAndGet().then();
+                return value.decrementAndGet().map(Long::intValue);
               }
-              return Mono.empty();
+              return Mono.just(v.intValue());
             });
   }
 

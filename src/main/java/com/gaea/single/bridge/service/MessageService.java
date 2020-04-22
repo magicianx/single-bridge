@@ -12,6 +12,11 @@ public interface MessageService {
    */
   Mono<Integer> getMessageCount(Long userId);
 
-  /** 将剩余发送消息数量减1 */
-  Mono<Void> decrMessageCount(Long userId);
+  /**
+   * 将剩余发送消息数量减1
+   *
+   * @param userId 用户id
+   * @return 剩余消息数量
+   */
+  Mono<Integer> decrMessageCount(Long userId);
 }

@@ -18,7 +18,7 @@ public class YXMessageServiceImpl implements MessageService {
   }
 
   @Override
-  public Mono<Void> decrMessageCount(Long userId) {
+  public Mono<Integer> decrMessageCount(Long userId) {
     return messageCache.decrMessageCount(userId);
   }
 }
