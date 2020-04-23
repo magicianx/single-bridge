@@ -115,6 +115,7 @@ public class DictionaryProperties implements IConfig {
     private String appId;
     private String userSecretaryId;
     private String anchorSecretaryId;
+    private String imgHost;
   }
 
   @Getter

@@ -1,5 +1,7 @@
 package com.gaea.single.bridge.util;
 
+import com.gaea.single.bridge.config.DictionaryProperties;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
@@ -38,5 +40,9 @@ public class LoboUtil {
     return Optional.ofNullable(money)
         .map(m -> m.multiply(MONEY_EXCHANGE_RATE).intValue())
         .orElse(0);
+  }
+
+  public static String getImageUrl(String imgPath){
+    return DictionaryProperties.get().getLobo().getImgHost() + imgPath;
   }
 }

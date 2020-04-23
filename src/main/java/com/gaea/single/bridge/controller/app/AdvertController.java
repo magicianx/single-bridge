@@ -36,7 +36,7 @@ public class AdvertController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("deviceType", getDeviceType(exchange));
+            put("deviceType", getOsType(exchange));
             put("userId", getUserId(exchange));
           }
         };

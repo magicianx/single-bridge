@@ -19,7 +19,14 @@ spring:
     port: 6379
     ssl: false
     timeout: 200 # 单位ms
-
+  r2dbc:
+    url: r2dbc:pool:mysql://oa:3312/lobo
+    username: appuser
+    password: password
+    pool:
+      initial-size: 10
+      max-size: 100
+      validation-query: SELECT 1
 service:
   config:
     server: http://192.168.10.29:30012
@@ -40,7 +47,14 @@ spring:
     host: 192.168.10.4
     password: password
     timeout: 200 # 单位ms
-
+  r2dbc:
+    url: r2dbc:pool:mysql://oa:3312/lobo
+    username: appuser
+    password: password
+    pool:
+      initial-size: 10
+      max-size: 100
+      validation-query: SELECT 1
 service:
   config:
     server: http://192.168.10.29:30012

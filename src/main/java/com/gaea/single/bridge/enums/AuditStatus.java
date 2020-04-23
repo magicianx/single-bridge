@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum AuditStatus implements Metadata {
   AUDITING(1, "审核中"),
   PASS(2, "审核通过"),
-  NO_PASS(3, "审核未通过");
+  NO_PASS(3, "审核未通过"),
+  PULL_BLACK(4, "拉黑中");
 
   private Integer code;
   private String desc;

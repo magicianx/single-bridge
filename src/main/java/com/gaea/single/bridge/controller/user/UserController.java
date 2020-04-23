@@ -18,8 +18,10 @@ import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.service.MessageService;
+import com.gaea.single.bridge.service.UserSocialInfoService;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
+import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +50,7 @@ import java.util.stream.Collectors;
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
   @Autowired private MessageService yxMessageService;
+  @Autowired private UserSocialInfoService userRegInfoService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -427,22 +430,20 @@ public class UserController extends BaseController {
       @ApiParam(value = "搜索关键字", required = true) @NotBlank @RequestParam String keyword,
       @Valid PageReq pageReq,
       @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data = getPageData(pageReq);
-    data.put("pageNo", pageReq.getPageNum());
-    data.put("pageSize", pageReq.getPageSize());
-    data.put("appId", getAppId());
-    data.put("content", keyword);
 
-    return loboClient.postFormForPage(
-        exchange,
-        LoboPathConst.SEARCH_USER,
-        data,
-        null,
-        (obj) -> {
-          JSONObject result = (JSONObject) obj;
-          return new SearchUserItemRes(
-              result.getLong("id"), result.getString("portrait"), result.getString("nickName"));
-        });
+    return userRegInfoService
+        .findByShowId(getUserId(exchange), keyword)
+        .map(
+            u -> {
+              List<SearchUserItemRes> users =
+                  Collections.singletonList(
+                      new SearchUserItemRes(
+                          u.getUserId(), LoboUtil.getImageUrl(u.getPortrait()), u.getNickName()));
+
+              PageRes<SearchUserItemRes> pageRes = PageRes.of(1, 1, 1, users);
+              return Result.success(pageRes);
+            })
+        .defaultIfEmpty(Result.success(PageRes.empty()));
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
