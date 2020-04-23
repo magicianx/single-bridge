@@ -139,4 +139,6 @@ public interface LoboPathConst {
   String GET_POPUP_ADVERT = "/mapper/advert/getPopupAdvert";
   /** 获取vip支付配置 */
   String GET_VIP_CONFIG = "/user/userCenter/getBaseVipConfig";
+  /** 获取vip剩余时间（毫秒） */
+  String GET_VIP_LAST_TIME = "/user/userCenter/getVipTime.do";
 }

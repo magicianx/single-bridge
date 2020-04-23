@@ -9,6 +9,7 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.VipConfigItemRes;
 import com.gaea.single.bridge.enums.VipType;
+import com.gaea.single.bridge.util.DateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,9 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,12 +37,19 @@ public class VipController extends BaseController {
   @Autowired private LoboClient loboClient;
 
   @GetMapping(value = "/v1/config.do")
-  @ApiOperation(value = "获取vip配置")
+  @ApiOperation(value = "获取vip配置, 没有永久vip")
   public Mono<Result<List<VipConfigItemRes>>> getVipConfig(@ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data =
+        new HashMap<String, Object>() {
+          {
+            put("isVipOrSuperVip", 1);
+          }
+        };
+
     return loboClient.postForm(
         exchange,
         LoboPathConst.GET_VIP_CONFIG,
-        null,
+        data,
         (obj) -> {
           JSONArray array = (JSONArray) obj;
           return array.stream()
@@ -51,6 +61,19 @@ public class VipController extends BaseController {
                   })
               .map(UserConverter.toVipConfigItemRes::convert)
               .collect(Collectors.toList());
+        });
+  }
+
+  @GetMapping(value = "/v1/remaining_days.do")
+  @ApiOperation(value = "获取vip剩余天数")
+  public Mono<Result<Integer>> getRemainingDay(@ApiIgnore ServerWebExchange exchange) {
+    return loboClient.postForm(
+        exchange,
+        LoboPathConst.GET_VIP_LAST_TIME,
+        null,
+        (obj) -> {
+          long milliseconds = obj instanceof Integer ? (int) obj : (long) obj;
+          return DateUtil.toFloorDays(milliseconds);
         });
   }
 }

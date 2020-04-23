@@ -1,5 +1,7 @@
 package com.gaea.single.bridge.util;
 
+import sun.tools.tree.DoubleExpression;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ public class DateUtil {
       DateTimeFormatter.ofPattern("yyyy/M/d");
   private static final DateTimeFormatter SINGLE_DATETIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+  private static final long DAY_MILLISECONDS = 24 * 60 * 60 * 1000L;
 
   public static String toLoboDate(String date) {
     return LOBO_DATE_FORMATTER.format(LocalDate.parse(date, SINGLE_DATE_FORMATTER));
@@ -30,5 +33,18 @@ public class DateUtil {
     LocalDateTime dateTime =
         Instant.ofEpochMilli(timestamp).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
     return SINGLE_DATETIME_FORMATTER.format(dateTime);
+  }
+
+  /**
+   * 毫秒数转换为天数, 向下取整
+   *
+   * @param milliseconds 毫秒数
+   * @return 天数
+   */
+  public static int toFloorDays(long milliseconds) {
+    if (milliseconds > 0) {
+      return (int) Math.floor((double) milliseconds / DAY_MILLISECONDS);
+    }
+    return 0;
   }
 }
