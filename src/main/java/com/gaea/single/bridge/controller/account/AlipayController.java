@@ -87,7 +87,7 @@ public class AlipayController extends BaseController {
             put("type", req.getScene().getCode());
             put("version", getAppVersion(exchange));
             put("key", Md5Utils.encrypt("huoaquazhifubaoachongz" + req.getDiamonds()));
-            put("configId", "");
+            put("configId", req.getConfigId());
           }
         };
     return loboClient.get(exchange, LoboPathConst.ALIPAY_PAY_SIGN, data, (obj) -> (String) obj);

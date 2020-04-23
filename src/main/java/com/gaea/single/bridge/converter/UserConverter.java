@@ -217,8 +217,10 @@ public class UserConverter {
         BigDecimal diamonds = result.getBigDecimal("vipPrice");
         res.setPrice(LoboUtil.toMoney(diamonds));
         res.setDayPrice(
-            LoboUtil.toMoney(
-                diamonds.divide(result.getBigDecimal("duration"), 2, RoundingMode.FLOOR)));
+            diamonds.divide(
+                result.getBigDecimal("duration").multiply(LoboUtil.MONEY_EXCHANGE_RATE),
+                2,
+                RoundingMode.FLOOR));
         return res;
       };
 

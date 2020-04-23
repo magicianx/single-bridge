@@ -44,6 +44,7 @@ public class WechatController extends BaseController {
             put("os", getOsType(exchange).getCode());
             put("version", getAppVersion(exchange));
             put("packageName", getPackageName(exchange));
+            put("configId", req.getConfigId());
           }
         };
     return loboClient.get(
