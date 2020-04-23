@@ -215,6 +215,7 @@ public class UserConverter {
         res.setId(result.getLong("id"));
         res.setType(VipType.ofCode(result.getInteger("type")));
         BigDecimal diamonds = result.getBigDecimal("vipPrice");
+        res.setPrice(diamonds);
         res.setPrice(LoboUtil.toMoney(diamonds));
         res.setDayPrice(
             diamonds.divide(

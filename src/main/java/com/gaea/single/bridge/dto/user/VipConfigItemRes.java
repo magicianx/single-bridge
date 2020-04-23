@@ -25,6 +25,9 @@ public class VipConfigItemRes {
   @ApiModelProperty(value = "总价(元)", required = true)
   private BigDecimal price;
 
+  @ApiModelProperty(value = "钻石价格", required = true)
+  private Integer diamonds;
+
   @ApiModelProperty(value = "每日价格(元)", required = true)
   private BigDecimal dayPrice;
 }
