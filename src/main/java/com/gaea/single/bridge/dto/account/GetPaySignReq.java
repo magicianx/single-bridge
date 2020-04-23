@@ -23,7 +23,4 @@ public class GetPaySignReq {
   @ApiModelProperty(value = "支付场景", required = true)
   @NotNull
   private PayScene scene;
-
-  @ApiModelProperty(value = "支付配置id(vip充值时需要传vip支付配追id, 钱包充值不需要传)")
-  private Integer configId;
 }

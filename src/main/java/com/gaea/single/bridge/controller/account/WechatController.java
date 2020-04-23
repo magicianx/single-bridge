@@ -44,7 +44,7 @@ public class WechatController extends BaseController {
             put("os", getOsType(exchange).getCode());
             put("version", getAppVersion(exchange));
             put("packageName", getPackageName(exchange));
-            put("configId", req.getConfigId());
+            put("configId", req.getOptionId()); // vip充值时需要传vip支付配追id, 钱包充值不需要传
           }
         };
     return loboClient.get(
