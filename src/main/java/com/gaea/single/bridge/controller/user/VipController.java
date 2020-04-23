@@ -66,7 +66,7 @@ public class VipController extends BaseController {
 
   @GetMapping(value = "/v1/remaining_days.do")
   @ApiOperation(value = "获取vip剩余天数")
-  public Mono<Result<Integer>> getRemainingDay(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<Integer>> getVipRemainingDay(@ApiIgnore ServerWebExchange exchange) {
     return loboClient.postForm(
         exchange,
         LoboPathConst.GET_VIP_LAST_TIME,
