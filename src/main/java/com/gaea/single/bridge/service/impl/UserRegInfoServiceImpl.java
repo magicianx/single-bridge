@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.service.impl;
 
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.entity.UserSocialInfo;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.repository.UserSocialInfoRepository;
@@ -25,7 +26,8 @@ public class UserRegInfoServiceImpl implements UserSocialInfoService {
         .flatMap(
             isAnchor ->
                 isAnchor
-                    ? userRegInfoRepository.findAnchorByShowId(showId)
+                    ? userRegInfoRepository.findAnchorByShowId(
+                        showId, DictionaryProperties.get().getLobo().getSystemLabelId())
                     : userRegInfoRepository.findGeneralUserByShowId(showId));
   }
 }
