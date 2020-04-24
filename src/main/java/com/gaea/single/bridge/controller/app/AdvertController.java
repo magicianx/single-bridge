@@ -36,8 +36,9 @@ public class AdvertController extends BaseController {
     Map<String, Object> data =
         new HashMap<String, Object>() {
           {
-            put("deviceType", getOsType(exchange));
+            put("deviceType", getOsType(exchange).getCode());
             put("userId", getUserId(exchange));
+            put("type", "3");
           }
         };
     return loboClient.postForm(

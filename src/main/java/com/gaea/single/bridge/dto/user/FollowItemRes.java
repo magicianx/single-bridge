@@ -19,6 +19,9 @@ public class FollowItemRes {
   @ApiModelProperty(value = "头像链接", required = true)
   private String portraitUrl;
 
+  @ApiModelProperty(value = "等级", required = true)
+  private Integer grade;
+
   @ApiModelProperty("简介")
   private String intro;
 

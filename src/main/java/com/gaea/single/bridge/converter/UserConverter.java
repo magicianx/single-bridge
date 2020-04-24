@@ -230,6 +230,7 @@ public class UserConverter {
     res.setUserId(result.getLong("userId"));
     res.setNickName(result.getString("nickName"));
     res.setPortraitUrl(result.getString("portrait"));
+    res.setGrade(result.getInteger("grade"));
     res.setIntro(result.getString("intro"));
     res.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
   }
