@@ -16,6 +16,11 @@ public class UserRegInfoServiceImpl implements UserSocialInfoService {
 
   @Override
   public Mono<UserSocialInfo> findByShowId(Long currentUserId, String showId) {
+    // 用户未登录，搜索主播
+    if (currentUserId == null) {
+      return userSocialInfoRepository.findAnchorByShowId(
+          showId, DictionaryProperties.get().getLobo().getSystemLabelId());
+    }
     return userSocialInfoRepository
         .findById(currentUserId)
         .map(
