@@ -12,11 +12,11 @@ import reactor.core.publisher.Mono;
 @Service
 public class UserRegInfoServiceImpl implements UserSocialInfoService {
 
-  @Autowired private UserSocialInfoRepository userRegInfoRepository;
+  @Autowired private UserSocialInfoRepository userSocialInfoRepository;
 
   @Override
   public Mono<UserSocialInfo> findByShowId(Long currentUserId, String showId) {
-    return userRegInfoRepository
+    return userSocialInfoRepository
         .findById(currentUserId)
         .map(
             user -> {
@@ -26,8 +26,8 @@ public class UserRegInfoServiceImpl implements UserSocialInfoService {
         .flatMap(
             isAnchor ->
                 isAnchor
-                    ? userRegInfoRepository.findAnchorByShowId(
-                        showId, DictionaryProperties.get().getLobo().getSystemLabelId())
-                    : userRegInfoRepository.findGeneralUserByShowId(showId));
+                    ? userSocialInfoRepository.findGeneralUserByShowId(showId)
+                    : userSocialInfoRepository.findAnchorByShowId(
+                        showId, DictionaryProperties.get().getLobo().getSystemLabelId()));
   }
 }
