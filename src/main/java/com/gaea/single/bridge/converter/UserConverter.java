@@ -56,6 +56,10 @@ public class UserConverter {
         res.setCoverUrl(result.getString("cover"));
         res.setIsUp(LoboUtil.toBoolean(result.getInteger("isUp")));
         res.setPrice(userType == UserType.ANCHOR ? result.getInteger("price") : null);
+        // 只有用户为普通用户时才返回对应的vip状态
+        res.setIsVip(
+            userType == UserType.GENERAL_USER
+                && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         return res;
       };
 
@@ -234,5 +238,9 @@ public class UserConverter {
     res.setGradeHeadUrl(result.getString("gradeHeadUrl"));
     res.setIntro(result.getString("intro"));
     res.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
+    UserType userType = UserType.ofCode(result.getInteger("userType"));
+    // 只有用户为普通用户时才返回对应的vip状态
+    res.setIsVip(
+        userType == UserType.GENERAL_USER && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
   }
 }

@@ -30,4 +30,7 @@ public class FollowItemRes {
 
   @ApiModelProperty(value = "关注状态", required = true)
   private FollowStatus followStatus;
+
+  @ApiModelProperty(value = "是否为vip, 只有当此用户为普通用户时返回对应的状态，为主播时永远为false", required = true)
+  private Boolean isVip;
 }
