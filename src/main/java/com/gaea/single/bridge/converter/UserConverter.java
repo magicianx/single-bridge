@@ -158,7 +158,6 @@ public class UserConverter {
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
-        res.setRegisterTime(result.getString("time"));
         return res;
       };
 
