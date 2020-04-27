@@ -35,4 +35,10 @@ public class LoginRes {
 
   @ApiModelProperty(value = "在线状态", required = true)
   private UserOnlineStatus onlineStatus;
+
+  @ApiModelProperty(value = "是否注册", required = true)
+  private Boolean isRegister;
+
+  @ApiModelProperty(value = "注册时间, 如果此次登录是注册登录时才返回")
+  private String registerTime;
 }
