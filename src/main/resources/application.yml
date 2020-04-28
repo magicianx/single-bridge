@@ -20,12 +20,12 @@ spring:
     ssl: false
     timeout: 200 # 单位ms
   r2dbc:
-    url: r2dbc:pool:mysql://oa:3312/lobo
+    url: r2dbc:pool:mysql://oa:3312/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: appuser
     password: password
     pool:
       initial-size: 10
-      max-size: 100
+      max-size: 10
       validation-query: SELECT 1
 service:
   config:
@@ -48,12 +48,12 @@ spring:
     password: password
     timeout: 200 # 单位ms
   r2dbc:
-    url: r2dbc:pool:mysql://oa:3312/lobo
+    url: r2dbc:pool:mysql://oa:3312/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: appuser
     password: password
     pool:
       initial-size: 10
-      max-size: 100
+      max-size: 10
       validation-query: SELECT 1
 service:
   config:
@@ -72,7 +72,18 @@ logging:
 ---
 spring:
   profiles: prod
-
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    ssl: false
+    timeout: 200 # 单位ms
+  r2dbc:
+    url: r2dbc:pool:mysql://10.13.208.3:3306/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: appuser
+    password: password
+    pool:
+      validation-query: SELECT 1
 service:
   config:
     server: http://gw.sc-gaea.com:30012
