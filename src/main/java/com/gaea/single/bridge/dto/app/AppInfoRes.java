@@ -27,7 +27,4 @@ public class AppInfoRes {
 
   @ApiModelProperty(value = "主播小秘书id", required = true)
   private String anchorSecretaryId;
-
-  @ApiModelProperty(value = "金额转化比率", required = true)
-  private Integer moneyExchangeRatio;
 }

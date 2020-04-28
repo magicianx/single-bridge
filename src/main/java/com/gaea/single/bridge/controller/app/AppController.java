@@ -76,8 +76,7 @@ public class AppController extends BaseController {
               isAuditPass ? 1234567890 : 0,
               DictionaryProperties.get().getAppStoreAudit().getUserColumnId(),
               lobo.getUserSecretaryId(),
-              lobo.getAnchorSecretaryId(),
-              LoboUtil.MONEY_EXCHANGE_RATE.intValue());
+              lobo.getAnchorSecretaryId());
         });
   }
 }
