@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@ApiModel("开始视频订单请求")
+@ApiModel("获取视频结束信息请求")
 public class VideoEndInfoReq {
   @ApiModelProperty(value = "订单临时id", required = true)
   @NotBlank
