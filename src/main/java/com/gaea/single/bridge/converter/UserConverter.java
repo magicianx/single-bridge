@@ -138,7 +138,9 @@ public class UserConverter {
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
-        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
+        Integer isVideoAudit = result.getInteger("isVideoAudit");
+        res.setAuthStatus(
+            isVideoAudit != null ? AnchorAuthStatus.ofCode(isVideoAudit) : AnchorAuthStatus.UNAUTH);
         res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         res.setIsBindPhone(LoboUtil.toBoolean(result.getInteger("isBindPhone")));
         return res;
