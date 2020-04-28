@@ -80,7 +80,7 @@ spring:
     timeout: 200 # 单位ms
   r2dbc:
     url: r2dbc:pool:mysql://10.13.208.3:3306/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: appuser
+    username: appuser2
     password: password
     pool:
       validation-query: SELECT 1
