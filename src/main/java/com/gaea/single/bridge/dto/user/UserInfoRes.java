@@ -35,7 +35,7 @@ public class UserInfoRes {
   @ApiModelProperty(value = "手机号", notes = "被*遮盖后的手机号")
   private String mobilePhone;
 
-  @ApiModelProperty(value = "账户余额", required = true)
+  @ApiModelProperty(value = "账户余额(钻石)", required = true)
   private Long balance;
 
   @ApiModelProperty(value = "是否完善生日", required = true)
