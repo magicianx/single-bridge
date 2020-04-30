@@ -1,9 +1,6 @@
 package com.gaea.single.bridge.util;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
@@ -31,6 +28,10 @@ public class DateUtil {
     LocalDateTime dateTime =
         Instant.ofEpochMilli(timestamp).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
     return SINGLE_DATETIME_FORMATTER.format(dateTime);
+  }
+
+  public static long getNowMilliseconds() {
+    return LocalDateTime.now().atZone(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
   }
 
   /**

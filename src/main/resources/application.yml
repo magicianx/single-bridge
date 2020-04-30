@@ -8,7 +8,10 @@ service:
   appVersion:
     encryptKey: SMqlkJMxm62b92xoR2d4fg== # 前端应用版本号加密密码
     encryptIv: VlBFZ6Y9Vlmq1a4hb6IRsg== # 前端应用版本号加密密码
-
+  yx:
+    host: https://api.netease.im
+    appKey: 5496955336632c1d113fed098d9cd53b
+    appSecret: 1832c6417bc8
 
 ---
 spring:

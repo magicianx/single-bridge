@@ -47,16 +47,20 @@ public class AdvertController extends BaseController {
         data,
         (obj) -> {
           JSONObject result = (JSONObject) obj;
-          AdvertType advertType =
-              LoboUtil.toBoolean2(result.getInteger("isExternalLink"))
-                  ? AdvertType.OUTER
-                  : AdvertType.INNER;
+          if (result != null) {
+            AdvertType advertType =
+                LoboUtil.toBoolean2(result.getInteger("isExternalLink"))
+                    ? AdvertType.OUTER
+                    : AdvertType.INNER;
 
-          return new PopupAdvertRes(
-              result.getString("title"),
-              advertType,
-              result.getString("imgUrl"),
-              result.getString("linkToUrl"));
+            return new PopupAdvertRes(
+                result.getString("title"),
+                advertType,
+                result.getString("imgUrl"),
+                result.getString("linkToUrl"));
+          }
+
+          return null;
         });
   }
 }
