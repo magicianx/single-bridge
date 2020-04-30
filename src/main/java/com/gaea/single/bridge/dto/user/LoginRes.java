@@ -35,4 +35,7 @@ public class LoginRes {
 
   @ApiModelProperty(value = "在线状态", required = true)
   private UserOnlineStatus onlineStatus;
+
+  @ApiModelProperty(value = "是否注册", required = true)
+  private Boolean isRegister;
 }

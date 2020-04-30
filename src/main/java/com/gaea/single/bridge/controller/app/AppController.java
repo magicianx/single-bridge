@@ -72,7 +72,7 @@ public class AppController extends BaseController {
           DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
 
           return new AppInfoRes(
-              "1", // appId前端用于登录socket, 先用1，lobo处理后再改为5
+              "1",
               isAuditPass ? 1234567890 : 0,
               DictionaryProperties.get().getAppStoreAudit().getUserColumnId(),
               lobo.getUserSecretaryId(),

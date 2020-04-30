@@ -17,8 +17,11 @@ import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.service.MessageService;
+import com.gaea.single.bridge.service.UserSocialInfoService;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
+import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +35,7 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -45,6 +49,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private MessageService yxMessageService;
+  @Autowired private UserSocialInfoService userRegInfoService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -139,7 +145,21 @@ public class UserController extends BaseController {
   @GetMapping(value = "/v1/info.do")
   @ApiOperation(value = "获取当前登录用户信息")
   public Mono<Result<UserInfoRes>> getUserInfo(@ApiIgnore ServerWebExchange exchange) {
-    return loboClient.postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes);
+    return loboClient
+        .postForm(exchange, LoboPathConst.USER_INFO, null, UserConverter.toUserRes)
+        .flatMap(
+            res -> {
+              if (ErrorCode.isSuccess(res.getCode())) {
+                return yxMessageService
+                    .getMessageCount(res.getData().getId())
+                    .map(
+                        count -> {
+                          res.getData().setMessageCount(count);
+                          return res;
+                        });
+              }
+              return Mono.just(res);
+            });
   }
 
   @GetMapping(value = "/v1/blacks.do")
@@ -389,7 +409,7 @@ public class UserController extends BaseController {
 
   @PostMapping(value = "/v1/address.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "上报用户位置")
-  public Mono<Result<LoginRes>> uploadUserAddress(
+  public Mono<Result<Void>> uploadUserAddress(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {
     Map<String, Object> data =
         new HashMap<String, Object>() {
@@ -402,6 +422,28 @@ public class UserController extends BaseController {
           }
         };
     return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_ADDRESS, data, null);
+  }
+
+  @GetMapping(value = "/v1/search.net")
+  @ApiOperation(value = "搜索用户", notes = "可以搜索用户及主播")
+  public Mono<Result<PageRes<SearchUserItemRes>>> searchUser(
+      @ApiParam(value = "搜索关键字", required = true) @NotBlank @RequestParam String keyword,
+      @Valid PageReq pageReq,
+      @ApiIgnore ServerWebExchange exchange) {
+
+    return userRegInfoService
+        .findByShowId(getUserId(exchange), keyword)
+        .map(
+            u -> {
+              List<SearchUserItemRes> users =
+                  Collections.singletonList(
+                      new SearchUserItemRes(
+                          u.getUserId(), LoboUtil.getImageUrl(u.getPortrait()), u.getNickName()));
+
+              PageRes<SearchUserItemRes> pageRes = PageRes.of(1, 1, 1, users);
+              return Result.success(pageRes);
+            })
+        .defaultIfEmpty(Result.success(PageRes.empty()));
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(

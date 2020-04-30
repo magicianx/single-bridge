@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.dto.platform;
+package com.gaea.single.bridge.dto.app;
 
 import com.gaea.single.bridge.enums.AdvertType;
 import io.swagger.annotations.ApiModel;
@@ -8,21 +8,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@ApiModel("广告信息")
 @Getter
 @Setter
+@ApiModel("弹窗广告")
 @AllArgsConstructor
 @NoArgsConstructor
-public class BannerRes {
-  @ApiModelProperty(value = "广告图片连接", required = true)
-  private String imgUrl;
-
-  @ApiModelProperty(value = "跳转连接", required = true)
-  private String link;
-
-  @ApiModelProperty(value = "广告标题", required = true)
+public class PopupAdvertRes {
+  @ApiModelProperty(value = "标题", required = true)
   private String title;
 
   @ApiModelProperty(value = "广告类型", required = true)
   private AdvertType type;
+
+  @ApiModelProperty(value = "图片链接", required = true)
+  private String imgUrl;
+
+  @ApiModelProperty(value = "跳转链接", required = true)
+  private String link;
 }

@@ -19,9 +19,18 @@ public class FollowItemRes {
   @ApiModelProperty(value = "头像链接", required = true)
   private String portraitUrl;
 
+  @ApiModelProperty(value = "等级", required = true)
+  private Integer grade;
+
+  @ApiModelProperty(value = "等级头像链接", required = true)
+  private String gradeHeadUrl;
+
   @ApiModelProperty("简介")
   private String intro;
 
   @ApiModelProperty(value = "关注状态", required = true)
   private FollowStatus followStatus;
+
+  @ApiModelProperty(value = "是否为vip, 只有当此用户为普通用户时返回对应的状态，为主播时永远为false", required = true)
+  private Boolean isVip;
 }

@@ -35,7 +35,7 @@ public class UserInfoRes {
   @ApiModelProperty(value = "手机号", notes = "被*遮盖后的手机号")
   private String mobilePhone;
 
-  @ApiModelProperty(value = "账户余额", required = true)
+  @ApiModelProperty(value = "账户余额(钻石)", required = true)
   private Long balance;
 
   @ApiModelProperty(value = "是否完善生日", required = true)
@@ -58,4 +58,13 @@ public class UserInfoRes {
 
   @ApiModelProperty(value = "主播认证状态", required = true)
   private AnchorAuthStatus authStatus;
+
+  @ApiModelProperty(value = "是否为vip", required = true)
+  private Boolean isVip;
+
+  @ApiModelProperty(value = "剩余发送消息次数", required = true)
+  private Integer messageCount;
+
+  @ApiModelProperty(value = "是否绑定手机号", required = true)
+  private Boolean isBindPhone;
 }

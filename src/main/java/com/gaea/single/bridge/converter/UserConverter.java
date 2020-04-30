@@ -10,6 +10,8 @@ import com.gaea.single.bridge.util.LoboUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -54,6 +56,10 @@ public class UserConverter {
         res.setCoverUrl(result.getString("cover"));
         res.setIsUp(LoboUtil.toBoolean(result.getInteger("isUp")));
         res.setPrice(userType == UserType.ANCHOR ? result.getInteger("price") : null);
+        // 只有用户为普通用户时才返回对应的vip状态
+        res.setIsVip(
+            userType == UserType.GENERAL_USER
+                && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         return res;
       };
 
@@ -81,6 +87,7 @@ public class UserConverter {
         res.setIntro(result.getString("intro"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSuperVip")));
         res.setFollowStatus(
             Optional.ofNullable(result.getInteger("followStatus"))
                 .map(FollowStatus::ofCode)
@@ -131,7 +138,11 @@ public class UserConverter {
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
-        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
+        Integer isVideoAudit = result.getInteger("isVideoAudit");
+        res.setAuthStatus(
+            isVideoAudit != null ? AnchorAuthStatus.ofCode(isVideoAudit) : AnchorAuthStatus.UNAUTH);
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSuperVip")));
+        res.setIsBindPhone(LoboUtil.toBoolean(result.getInteger("isBindPhone")));
         return res;
       };
 
@@ -148,6 +159,7 @@ public class UserConverter {
           res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
+        res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
         return res;
       };
 
@@ -203,12 +215,35 @@ public class UserConverter {
         return res;
       };
 
+  public static final Converter<Object, VipConfigItemRes> toVipConfigItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        VipConfigItemRes res = new VipConfigItemRes();
+        res.setId(result.getLong("id"));
+        res.setType(VipType.ofCode(result.getInteger("type")));
+        BigDecimal diamonds = result.getBigDecimal("vipPrice");
+        res.setDiamonds(diamonds.intValue());
+        res.setPrice(LoboUtil.toMoney(diamonds));
+        res.setDayPrice(
+            diamonds.divide(
+                result.getBigDecimal("duration").multiply(LoboUtil.MONEY_EXCHANGE_RATE),
+                2,
+                RoundingMode.FLOOR));
+        return res;
+      };
+
   private static <T extends FollowItemRes> void fillFollowItemRes(Object obj, T res) {
     JSONObject result = (JSONObject) obj;
     res.setUserId(result.getLong("userId"));
     res.setNickName(result.getString("nickName"));
     res.setPortraitUrl(result.getString("portrait"));
+    res.setGrade(result.getInteger("grade"));
+    res.setGradeHeadUrl(result.getString("gradeHeadUrl"));
     res.setIntro(result.getString("intro"));
     res.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
+    UserType userType = UserType.ofCode(result.getInteger("userType"));
+    // 只有用户为普通用户时才返回对应的vip状态
+    res.setIsVip(
+        userType == UserType.GENERAL_USER && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
   }
 }

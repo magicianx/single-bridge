@@ -43,4 +43,7 @@ public class UserItemRes {
 
   @ApiModelProperty(value = "每分钟价格", required = true)
   private Integer price;
+
+  @ApiModelProperty(value = "是否为vip, 只有当此用户为普通用户时返回对应的状态，为主播时永远为false", required = true)
+  private Boolean isVip;
 }

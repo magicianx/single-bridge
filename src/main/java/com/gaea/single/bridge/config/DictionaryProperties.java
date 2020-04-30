@@ -32,12 +32,14 @@ public class DictionaryProperties implements IConfig {
   private Share share;
   private AppStoreAudit appStoreAudit;
   private DrainagePackage drainagePackage;
+  private User user;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
     this.share = getProperty(Share.class, "share", properties);
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
     this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
+    this.user = getProperty(User.class, "user", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -45,23 +47,33 @@ public class DictionaryProperties implements IConfig {
       R instance = cls.newInstance();
       for (Field field : cls.getDeclaredFields()) {
         String fieldName = field.getName();
-        boolean isListType = List.class.isAssignableFrom(field.getType());
-        Class argType = List.class;
-        boolean isLongType = false;
-        if (!isListType) {
-          isLongType = Long.class.isAssignableFrom(field.getType());
-          argType = isLongType ? Long.class : String.class;
+        Class<?> argType = String.class;
+
+        if (List.class.isAssignableFrom(field.getType())) {
+          argType = List.class;
+        } else if (Long.class.isAssignableFrom(field.getType())) {
+          argType = Long.class;
+        } else if (Integer.class.isAssignableFrom(field.getType())) {
+          argType = Integer.class;
         }
 
         Method setMethod =
             cls.getMethod(
                 "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1), argType);
         String value = properties.getProperty(prefix + "." + fieldName);
-        Object arg =
-            isListType
-                ? toSplitStrList(value)
-                : isLongType ? (value != null ? Long.valueOf(value) : null) : value;
-        setMethod.invoke(instance, arg);
+        Object arg = value;
+
+        if (argType == List.class) {
+          arg = toSplitStrList(value);
+          setMethod.invoke(instance, arg);
+        } else if (value != null) {
+          if (argType == Long.class) {
+            arg = Long.valueOf(value);
+          } else if (argType == Integer.class) {
+            arg = Integer.valueOf(value);
+          }
+          setMethod.invoke(instance, arg);
+        }
       }
 
       return instance;
@@ -103,6 +115,14 @@ public class DictionaryProperties implements IConfig {
     private String appId;
     private String userSecretaryId;
     private String anchorSecretaryId;
+    private String imgHost;
+    private Long systemLabelId;
+  }
+
+  @Getter
+  @Setter
+  public static class User {
+    private Integer defaultMessageCount;
   }
 
   @Getter
