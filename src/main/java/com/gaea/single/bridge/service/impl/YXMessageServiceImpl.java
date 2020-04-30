@@ -35,30 +35,30 @@ public class YXMessageServiceImpl implements MessageService {
   }
 
   @Override
-  public Mono<Void> batchSendTextMsg(OsType osType, String content) {
-    log.info("正在批量推送主播文本消息: osType {}, content {}", osType.name(), content);
+  public Mono<Void> batchSendTextMsg(OsType osType, UserType userType, String content) {
+    log.info("正在批量推送文本消息: osType {}, content {}", osType.name(), content);
     String appId = DictionaryProperties.get().getLobo().getAppId();
-    Mono<Void> anchorMono =
-        userRegInfoRepository
-            .listAuditPassedYunXinIds(osType.getCode(), appId)
-            .collectList()
-            .flatMap(
-                users -> {
-                  List<String> yunXinIds =
-                      users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                  return yxClient.sendBatchTextMsg(UserType.ANCHOR, yunXinIds, content);
-                });
 
-    Mono<Void> userMono =
-        userRegInfoRepository
-            .listUnAuditPassedYunXinIds(osType.getCode(), appId)
-            .collectList()
-            .flatMap(
-                users -> {
-                  List<String> yunXinIds =
-                      users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                  return yxClient.sendBatchTextMsg(UserType.GENERAL_USER, yunXinIds, content);
-                });
-    return Mono.zip(anchorMono, userMono, (t1, t2) -> t1);
+    if (UserType.ANCHOR == userType) {
+      return userRegInfoRepository
+          .listAuditPassedYunXinIds(osType.getCode(), appId)
+          .collectList()
+          .flatMap(
+              users -> {
+                List<String> yunXinIds =
+                    users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
+                return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+              });
+    } else {
+      return userRegInfoRepository
+          .listUnAuditPassedYunXinIds(osType.getCode(), appId)
+          .collectList()
+          .flatMap(
+              users -> {
+                List<String> yunXinIds =
+                    users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
+                return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+              });
+    }
   }
 }
