@@ -8,6 +8,7 @@ import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.repository.UserRegInfoRepository;
 import com.gaea.single.bridge.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class YXMessageServiceImpl implements MessageService {
   @Autowired private MessageCache messageCache;
   @Autowired private YxClient yxClient;
@@ -34,6 +36,7 @@ public class YXMessageServiceImpl implements MessageService {
 
   @Override
   public Mono<Void> batchSendTextMsg(OsType osType, String content) {
+    log.info("正在批量推送主播文本消息: osType {}, content {}", osType.name(), content);
     String appId = DictionaryProperties.get().getLobo().getAppId();
     Mono<Void> anchorMono =
         userRegInfoRepository

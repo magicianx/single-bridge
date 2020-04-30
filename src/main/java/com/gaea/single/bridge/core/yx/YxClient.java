@@ -92,8 +92,10 @@ public class YxClient {
         .flatMap(
             r -> {
               if (!r.isSuccess()) {
+                log.error("批量推送 {} 文本消息失败: 数量 {}", userType.getDesc(), ccids.size());
                 return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
               }
+              log.error("批量推送 {} 文本消息成功: 数量 {}", userType.getDesc(), ccids.size());
               return Mono.empty();
             });
   }
