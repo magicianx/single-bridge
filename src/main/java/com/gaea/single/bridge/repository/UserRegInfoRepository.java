@@ -13,8 +13,8 @@ public interface UserRegInfoRepository extends ReactiveCrudRepository<UserRegInf
           + "         join user_social_info us on ur.id = us.user_id\n"
           + "where ur.os = :os\n"
           + "  and ua.app_id = :appId\n"
-          + "  and us.is_video_audit = 2")
-  Flux<UserRegInfo> listAuditPassedYunXinIds(Integer os, String appId);
+          + "  and us.is_video_audit = 2 limit :start,:pageSize")
+  Flux<UserRegInfo> listAuditPassedYunXinIds(Integer os, String appId, int start, int pageSize);
 
   @Query(
       "select ur.yunxin_id\n"
@@ -23,6 +23,6 @@ public interface UserRegInfoRepository extends ReactiveCrudRepository<UserRegInf
           + "         join user_social_info us on ur.id = us.user_id\n"
           + "where ur.os = :os\n"
           + "  and ua.app_id = :appId\n"
-          + "  and us.is_video_audit != 2")
-  Flux<UserRegInfo> listUnAuditPassedYunXinIds(Integer os, String appId);
+          + "  and us.is_video_audit != 2 limit :start,:pageSize")
+  Flux<UserRegInfo> listUnAuditPassedYunXinIds(Integer os, String appId, int start, int pageSize);
 }

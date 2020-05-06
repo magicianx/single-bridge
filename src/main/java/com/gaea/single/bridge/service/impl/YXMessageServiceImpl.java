@@ -40,8 +40,9 @@ public class YXMessageServiceImpl implements MessageService {
     String appId = DictionaryProperties.get().getLobo().getAppId();
 
     if (UserType.ANCHOR == userType) {
+
       return userRegInfoRepository
-          .listAuditPassedYunXinIds(osType.getCode(), appId)
+          .listAuditPassedYunXinIds(osType.getCode(), appId, 0, 500)
           .collectList()
           .flatMap(
               users -> {
@@ -50,15 +51,32 @@ public class YXMessageServiceImpl implements MessageService {
                 return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
               });
     } else {
-      return userRegInfoRepository
-          .listUnAuditPassedYunXinIds(osType.getCode(), appId)
-          .collectList()
-          .flatMap(
-              users -> {
-                List<String> yunXinIds =
-                    users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
-              });
+      Mono<Void> mono =
+          userRegInfoRepository
+              .listUnAuditPassedYunXinIds(osType.getCode(), appId, 0, 100)
+              .collectList()
+              .flatMap(
+                  users -> {
+                    List<String> yunXinIds =
+                        users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
+                    return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+                  });
+      for (int i = 1; i < 33; i++) {
+        mono =
+            mono.then(
+                userRegInfoRepository
+                    .listUnAuditPassedYunXinIds(osType.getCode(), appId, i * 100, 100)
+                    .collectList()
+                    .flatMap(
+                        users -> {
+                          List<String> yunXinIds =
+                              users.stream()
+                                  .map(UserRegInfo::getYunxinId)
+                                  .collect(Collectors.toList());
+                          return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+                        }));
+      }
+      return mono;
     }
   }
 }
