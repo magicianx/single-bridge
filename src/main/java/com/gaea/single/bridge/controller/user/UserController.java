@@ -18,6 +18,7 @@ import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.error.ErrorCode;
 import com.gaea.single.bridge.service.MessageService;
+import com.gaea.single.bridge.service.UserService;
 import com.gaea.single.bridge.service.UserSocialInfoService;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
@@ -51,6 +52,7 @@ public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
   @Autowired private MessageService yxMessageService;
   @Autowired private UserSocialInfoService userRegInfoService;
+  @Autowired private UserService userService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -291,6 +293,14 @@ public class UserController extends BaseController {
         };
     return loboClient.postFormForList(
         exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
+  }
+
+  @GetMapping(value = "/v1/in_register_channel.do")
+  @ApiOperation(value = "用户是否为当日注册并且首次充值")
+  public Mono<Result<Boolean>> isInRegisterChannel(@ApiIgnore ServerWebExchange exchange) {
+    return userService
+        .isInRegisterChannel(getUserId(exchange), getChannelId(exchange))
+        .map(Result::success);
   }
 
   @PostMapping(value = "/v1/album.do", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

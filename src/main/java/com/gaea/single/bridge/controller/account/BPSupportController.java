@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.controller.user;
+package com.gaea.single.bridge.controller.account;
 
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.dto.Result;
@@ -16,34 +16,30 @@ import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping(value = "/user/bp", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/account/bp", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(tags = "埋点支持服务")
 @Validated
 public class BPSupportController extends BaseController {
   @Autowired private BPSupportService bpSupportService;
 
-  @GetMapping(value = "/v1/first_recharge.net")
+  @GetMapping(value = "/v1/first_recharge.do")
   @ApiOperation(value = "用户是否为第一次充值")
   public Mono<Result<Boolean>> isFirstRecharge(@ApiIgnore ServerWebExchange exchange) {
-    return bpSupportService
-        .isFirstRecharge(getUserId(exchange), getChannelId(exchange))
-        .map(Result::success);
+    return bpSupportService.isFirstRecharge(getUserId(exchange)).map(Result::success);
   }
 
-  @GetMapping(value = "/v1/first_open_vip.net")
+  @GetMapping(value = "/v1/first_open_vip.do")
   @ApiOperation(value = "用户是否第一次开通vip")
   public Mono<Result<Boolean>> isFirstOpenVip(@ApiIgnore ServerWebExchange exchange) {
-    return bpSupportService
-        .isFirstOpenVip(getUserId(exchange), getChannelId(exchange))
-        .map(Result::success);
+    return bpSupportService.isFirstOpenVip(getUserId(exchange)).map(Result::success);
   }
 
-  @GetMapping(value = "/v1/today_register_recharge.net")
+  @GetMapping(value = "/v1/today_register_recharge.do")
   @ApiOperation(value = "用户是否为当日注册并且首次充值")
   public Mono<Result<Boolean>> isTodayRegisterAndFirstRecharge(
       @ApiIgnore ServerWebExchange exchange) {
     return bpSupportService
-        .isTodayRegisterAndFirstRecharge(getUserId(exchange), getChannelId(exchange))
+        .isTodayRegisterAndFirstRecharge(getUserId(exchange))
         .map(Result::success);
   }
 }
