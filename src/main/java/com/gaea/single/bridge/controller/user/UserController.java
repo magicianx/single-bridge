@@ -296,7 +296,7 @@ public class UserController extends BaseController {
   }
 
   @GetMapping(value = "/v1/in_register_channel.do")
-  @ApiOperation(value = "用户是否为当日注册并且首次充值")
+  @ApiOperation(value = "当前登录用户渠道是否为注册渠道")
   public Mono<Result<Boolean>> isInRegisterChannel(@ApiIgnore ServerWebExchange exchange) {
     return userService
         .isInRegisterChannel(getUserId(exchange), getChannelId(exchange))
