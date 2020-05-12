@@ -35,7 +35,7 @@ public class BPSupportServiceImpl implements BPSupportService {
         .as(Integer.class)
         .fetch()
         .one()
-        .map(count -> count == 1);
+        .map(count -> count <= 1);
   }
 
   @Override
@@ -46,7 +46,7 @@ public class BPSupportServiceImpl implements BPSupportService {
         .as(Integer.class)
         .fetch()
         .one()
-        .map(count -> count == 1);
+        .map(count -> count <= 1);
   }
 
   public Mono<Boolean> isInRegisterChannel(Long userId, String channel) {
@@ -57,6 +57,6 @@ public class BPSupportServiceImpl implements BPSupportService {
         .as(Integer.class)
         .fetch()
         .one()
-        .map(count -> count == 1);
+        .map(count -> count <= 1);
   }
 }
