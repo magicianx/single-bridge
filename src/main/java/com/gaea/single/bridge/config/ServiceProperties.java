@@ -12,6 +12,7 @@ public class ServiceProperties {
   private String reportImgPath;
   private String appStaticHome;
   private AppVersion appVersion;
+  private Yx yx;
 
   @Getter
   @Setter
@@ -28,5 +29,13 @@ public class ServiceProperties {
   public static class AppVersion {
     private String encryptKey;
     private String encryptIv;
+  }
+
+  @Getter
+  @Setter
+  public static class Yx {
+    private String host;
+    private String appKey;
+    private String appSecret;
   }
 }

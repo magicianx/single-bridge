@@ -141,4 +141,6 @@ public interface LoboPathConst {
   String GET_VIP_CONFIG = "/user/userCenter/getBaseVipConfig";
   /** 获取vip剩余时间（毫秒） */
   String GET_VIP_LAST_TIME = "/user/userCenter/getVipTime.do";
+  /** 获取小羊商城支付表单 */
+  String GET_LEGEND_SHOP_PAY_FORM = "/finance/form/legendShopPay.do";
 }

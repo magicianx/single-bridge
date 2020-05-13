@@ -7,6 +7,7 @@ import com.gaea.single.bridge.SingleBridgeApplication;
 import com.gaea.single.bridge.core.lobo.DefaultLoboResultExchanger;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.core.lobo.LoboResultExchanger;
+import com.gaea.single.bridge.core.yx.YxClient;
 import org.platform.config.ConfigAgent;
 import org.platform.config.ConfigBuilder;
 import org.platform.config.ConfigManager;
@@ -107,5 +108,11 @@ public class ServiceConfig implements WebFluxConfigurer {
         .setDatabase(redisProperties.getDatabase())
         .setPassword(redisProperties.getPassword());
     return Redisson.createReactive(config);
+  }
+
+  @Bean
+  public YxClient yxClient() {
+    ServiceProperties.Yx yx = serviceProperties.getYx();
+    return new YxClient(yx.getHost(), yx.getAppKey(), yx.getAppSecret());
   }
 }

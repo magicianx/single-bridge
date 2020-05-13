@@ -1,5 +1,7 @@
 package com.gaea.single.bridge.service;
 
+import com.gaea.single.bridge.enums.OsType;
+import com.gaea.single.bridge.enums.UserType;
 import reactor.core.publisher.Mono;
 
 /** 运行消息服务 */
@@ -19,4 +21,13 @@ public interface MessageService {
    * @return 剩余消息数量
    */
   Mono<Integer> decrMessageCount(Long userId);
+
+  /**
+   * 批量发送文本消息
+   *
+   * @param osType {@link OsType}
+   * @param userType {@link UserType}
+   * @param content 消息内容
+   */
+  Mono<Void> batchSendTextMsg(OsType osType, UserType userType, String content);
 }
