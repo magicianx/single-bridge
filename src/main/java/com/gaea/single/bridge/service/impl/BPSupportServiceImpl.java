@@ -18,7 +18,7 @@ public class BPSupportServiceImpl implements BPSupportService {
         .as(Integer.class)
         .fetch()
         .one()
-        .map(count -> count == 1);
+        .map(count -> count <= 1);
   }
 
   @Override
@@ -43,17 +43,6 @@ public class BPSupportServiceImpl implements BPSupportService {
     return client
         .execute("select count(*) from order_buy_privilege where status = 2 and user_id = ?")
         .bind(0, userId)
-        .as(Integer.class)
-        .fetch()
-        .one()
-        .map(count -> count <= 1);
-  }
-
-  public Mono<Boolean> isInRegisterChannel(Long userId, String channel) {
-    return client
-        .execute("select count(*) from user_reg_info where channel = ? and id = ?")
-        .bind(0, channel)
-        .bind(1, userId)
         .as(Integer.class)
         .fetch()
         .one()
