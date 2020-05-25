@@ -7,7 +7,6 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
 import com.gaea.single.bridge.enums.PayWay;
-import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -61,29 +60,10 @@ public class PayController extends BaseController {
 
   @GetMapping(value = "/v1/types.do")
   @ApiOperation(value = "获取支付方式列表")
-  public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("type", getOsType(exchange).getCode());
-          }
-        };
-    return loboClient.postForm(
-        exchange,
-        LoboPathConst.PAY_WAYS,
-        data,
-        (obj) -> {
-          List<PayWay> payWays = new ArrayList<>();
-          JSONObject result = (JSONObject) obj;
-          // 微信支付通过服务端开启，lobo那边不能根据包名配置，开启会影响到lobo那边
-          payWays.add(PayWay.WECHAT_PAY);
-          if (LoboUtil.toBoolean(result.getInteger("isAlPay"))) {
-            payWays.add(PayWay.ALIPAY);
-          }
-          if (LoboUtil.toBoolean(result.getInteger("isIpadPay"))) {
-            payWays.add(PayWay.APPLE_PAY);
-          }
-          return payWays;
-        });
+  public Mono<Result<List<PayWay>>> getPayWays() {
+    List<PayWay> payWays = new ArrayList<>();
+    payWays.add(PayWay.LEGEND_SHOP_PAY);
+    payWays.add(PayWay.ALIPAY);
+    return Mono.just(Result.success(payWays));
   }
 }

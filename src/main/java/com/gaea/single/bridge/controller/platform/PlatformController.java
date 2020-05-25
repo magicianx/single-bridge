@@ -73,7 +73,7 @@ public class PlatformController extends BaseController {
               result.getString("imgUrl"),
               result.getString("linkToUrl"),
               result.getString("title"),
-              AdvertType.INNER);
+              AdvertType.ofCode(result.getInteger("isExternalLink")));
         });
   }
 
