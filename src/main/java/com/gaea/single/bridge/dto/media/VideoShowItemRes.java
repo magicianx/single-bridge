@@ -30,9 +30,6 @@ public class VideoShowItemRes {
   @ApiModelProperty(value = "打赏礼物金额(钻石)", required = true)
   private Long gratuityMoney;
 
-  @ApiModelProperty(value = "在线状态", required = true)
-  private UserOnlineStatus onlineStatus;
-
   @ApiModelProperty(value = "用户信息", required = true)
   private UserInfo userInfo;
 
@@ -57,5 +54,11 @@ public class VideoShowItemRes {
 
     @ApiModelProperty(value = "关注状态", required = true)
     private FollowStatus followStatus;
+
+    @ApiModelProperty(value = "在线状态", required = true)
+    private UserOnlineStatus onlineStatus;
+
+    @ApiModelProperty(value = "云信id", required = true)
+    private String yunXinId;
   }
 }

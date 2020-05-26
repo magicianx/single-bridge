@@ -126,7 +126,6 @@ public class VideoConverter {
         res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
         res.setPraiseTimes(result.getLong("praiseTimes"));
         res.setGratuityMoney(result.getLong("rewardTotalMoney"));
-        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
 
         VideoShowItemRes.UserInfo userInfo = new VideoShowItemRes.UserInfo();
         userInfo.setUserId(result.getLong("userId"));
@@ -135,6 +134,8 @@ public class VideoConverter {
         userInfo.setPortraitUrl(result.getString("portrait"));
         userInfo.setGradeIcon(result.getString("gradeIcon"));
         userInfo.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
+        userInfo.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
+        userInfo.setYunXinId(result.getString("yunxinId"));
 
         res.setUserInfo(userInfo);
 
