@@ -5,10 +5,13 @@ import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.VideoConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
+import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.media.*;
 import com.gaea.single.bridge.enums.MediaCallType;
 import com.gaea.single.bridge.enums.MediaOrderType;
+import com.gaea.single.bridge.enums.VideoShowType;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -119,5 +122,27 @@ public class VideoController extends BaseController {
         };
     return loboClient.postForm(
         exchange, LoboPathConst.VIDEO_END_INFO, data, VideoConverter.toVideoEndInfoRes);
+  }
+
+  /** 获取视频秀列表，这里没有传每页数量问题, 由服务端控制 */
+  @GetMapping(value = "/v1/show_list.net")
+  @ApiOperation(value = "获取视频秀列表")
+  public Mono<Result<PageRes<VideoShowItemRes>>> getVideoShowList(
+      @ApiParam("页号") @RequestParam("pageNum") Integer pageNum,
+      @ApiParam("视频秀类型") @RequestParam("type") VideoShowType type,
+      @ApiIgnore ServerWebExchange exchange) {
+    String path =
+        type == VideoShowType.ONLINE
+            ? LoboPathConst.ONLINE_VIDEO_SHOW_LIST
+            : LoboPathConst.RECOMMEND_VIDEO_SHOW_LIST;
+    Map<String, Object> data =
+        ImmutableMap.<String, Object>builder()
+            .put("pageNo", pageNum)
+            .put("pageSize", 10)
+            .put("userId", getUserId(exchange))
+            .build();
+
+    return loboClient.postFormForPage(
+        exchange, path, data, null, VideoConverter.toVideoShowItemRes);
   }
 }

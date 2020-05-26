@@ -143,4 +143,8 @@ public interface LoboPathConst {
   String GET_VIP_LAST_TIME = "/user/userCenter/getVipTime.do";
   /** 获取小羊商城支付表单 */
   String GET_LEGEND_SHOP_PAY_FORM = "/finance/legend-shop/form/pay.do";
+  /** 在线视频秀列表 */
+  String ONLINE_VIDEO_SHOW_LIST = "/vod/videoCenter/queryVideoShowNew";
+  /** 推荐视频秀列表 */
+  String RECOMMEND_VIDEO_SHOW_LIST = "/vod/videoCenter/queryVideoShow";
 }

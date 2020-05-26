@@ -42,7 +42,7 @@ public class LegendShopController extends BaseController {
     if (StringUtils.isBlank(req.getSession())) {
       String session = exchange.getAttribute(CommonHeaderConst.SESSION);
       if (StringUtils.isBlank(session)) {
-        return Mono.just(Result.error(ErrorCode.BAD_REQUEST));
+        throw ErrorCode.BAD_REQUEST.newBusinessException(CommonHeaderConst.SESSION);
       }
       exchange.getAttributes().put(CommonHeaderConst.SESSION, session);
     }
@@ -50,19 +50,22 @@ public class LegendShopController extends BaseController {
     if (StringUtils.isBlank(req.getUserId())) {
       String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
       if (StringUtils.isBlank(userId)) {
-        return Mono.just(Result.error(ErrorCode.BAD_REQUEST));
+        throw ErrorCode.BAD_REQUEST.newBusinessException(CommonHeaderConst.USER_ID);
       }
       exchange.getAttributes().put(CommonHeaderConst.USER_ID, userId);
     }
 
     String version =
-        StringUtils.isBlank(req.getVersion()) ? req.getVersion() : getAppVersion(exchange);
-    OsType osType = req.getOsType() == null ? req.getOsType() : getOsType(exchange);
+        StringUtils.isNotBlank(req.getVersion()) ? req.getVersion() : getAppVersion(exchange);
+    OsType osType = req.getOsType() != null ? req.getOsType() : getOsType(exchange);
     String packageName =
-        StringUtils.isBlank(req.getPackageName()) ? req.getPackageName() : getPackageName(exchange);
+        StringUtils.isNotBlank(req.getPackageName())
+            ? req.getPackageName()
+            : getPackageName(exchange);
 
     if (osType == null || StringUtils.isAnyBlank(version, packageName)) {
-      return Mono.just(Result.error(ErrorCode.BAD_REQUEST));
+      return Mono.error(
+          ErrorCode.BAD_REQUEST.newBusinessException("缺少osType,version或packageName参数"));
     }
 
     Map<String, Object> data =
