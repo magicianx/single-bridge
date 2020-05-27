@@ -15,7 +15,7 @@ import com.gaea.single.bridge.dto.platform.SendSmsReq;
 import com.gaea.single.bridge.enums.AdvertType;
 import com.gaea.single.bridge.enums.DeviceType;
 import com.gaea.single.bridge.enums.OsType;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.util.AESUtils;
 import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;

@@ -135,14 +135,15 @@ public class VideoController extends BaseController {
         type == VideoShowType.ONLINE
             ? LoboPathConst.ONLINE_VIDEO_SHOW_LIST
             : LoboPathConst.RECOMMEND_VIDEO_SHOW_LIST;
-    Map<String, Object> data =
-        ImmutableMap.<String, Object>builder()
-            .put("pageNo", pageNum)
-            .put("pageSize", 10)
-            .put("userId", getUserId(exchange))
-            .build();
+    Long userId = getUserId(exchange);
+    ImmutableMap.Builder<String, Object> dataBuilder =
+        ImmutableMap.<String, Object>builder().put("pageNo", pageNum).put("pageSize", 10);
+
+    if (userId != null) {
+      dataBuilder.put("userId", userId);
+    }
 
     return loboClient.postFormForPage(
-        exchange, path, data, null, VideoConverter.toVideoShowItemRes);
+        exchange, path, dataBuilder.build(), null, VideoConverter.toVideoShowItemRes);
   }
 }

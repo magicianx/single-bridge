@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.core.cache;
 
+import com.gaea.single.bridge.constant.CacheConstant;
 import org.redisson.api.RAtomicLongReactive;
 import org.redisson.api.RBucketReactive;
 import org.redisson.client.codec.LongCodec;
@@ -8,9 +9,7 @@ import reactor.core.publisher.Mono;
 
 /** 云信消息缓存 */
 @Component
-public class MessageCache extends AbstractMessageCache {
-  private static final String KEY_NAME = "user:message_count";
-
+public class MessageCache extends AbstractCache {
   /**
    * 获取用户剩余发送云信消息数量，如果不存在则设置默值, 如果发现值小于0，会将值重置为0
    *
@@ -18,7 +17,8 @@ public class MessageCache extends AbstractMessageCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> getMessageCount(Long userId, int count) {
-    RBucketReactive<Long> bucket = redission.getBucket(getKey(userId), LongCodec.INSTANCE);
+    String key = getKey(CacheConstant.USER_MESSAGE_COUNT, userId);
+    RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
     return bucket
         .trySet((long) count)
         .flatMap(
@@ -43,7 +43,8 @@ public class MessageCache extends AbstractMessageCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> decrMessageCount(Long userId) {
-    RAtomicLongReactive value = redission.getAtomicLong(getKey(userId));
+    String key = getKey(CacheConstant.USER_MESSAGE_COUNT, userId);
+    RAtomicLongReactive value = redission.getAtomicLong(key);
 
     return value
         .get()
@@ -54,10 +55,5 @@ public class MessageCache extends AbstractMessageCache {
               }
               return Mono.just(v.intValue());
             });
-  }
-
-  @Override
-  String getKeyName() {
-    return KEY_NAME;
   }
 }

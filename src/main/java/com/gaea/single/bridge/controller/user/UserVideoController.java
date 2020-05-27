@@ -9,7 +9,7 @@ import com.gaea.single.bridge.dto.user.DeleteVideoReq;
 import com.gaea.single.bridge.dto.user.PraiseVideoReq;
 import com.gaea.single.bridge.dto.user.UploadVideoReq;
 import com.gaea.single.bridge.dto.user.UserVideoItemRes;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

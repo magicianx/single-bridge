@@ -3,7 +3,7 @@ package com.gaea.single.bridge.core.yx;
 import com.gaea.single.bridge.constant.YxCcidConstant;
 import com.gaea.single.bridge.constant.YxPathConst;
 import com.gaea.single.bridge.enums.UserType;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import com.gaea.single.bridge.util.Sha1Utils;

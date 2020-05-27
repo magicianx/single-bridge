@@ -7,7 +7,7 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.GetPaySignReq;
 import com.gaea.single.bridge.enums.OsType;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.util.Md5Utils;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;

@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.entity;
+package com.gaea.single.bridge.entity.mysql;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

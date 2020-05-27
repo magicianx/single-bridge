@@ -212,6 +212,7 @@ public class UserConverter {
         res.setAuditStatus(AuditStatus.ofCode(result.getInteger("status")));
         res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
         res.setPraiseTimes(result.getLong("praiseTimes"));
+        res.setGratuityMoney(result.getLong("rewardTotalMoney"));
         return res;
       };
 

@@ -95,22 +95,6 @@ public class ServiceConfig implements WebFluxConfigurer {
   }
 
   @Bean
-  public RedissonReactiveClient redissonReactiveClient(RedisProperties redisProperties) {
-    Config config = new Config();
-    String prefix = "redis://";
-    if (redisProperties.isSsl()) {
-      prefix = "rediss://";
-    }
-    config
-        .useSingleServer()
-        .setAddress(prefix + redisProperties.getHost() + ":" + redisProperties.getPort())
-        .setConnectTimeout((int) redisProperties.getTimeout().toMillis())
-        .setDatabase(redisProperties.getDatabase())
-        .setPassword(redisProperties.getPassword());
-    return Redisson.createReactive(config);
-  }
-
-  @Bean
   public YxClient yxClient() {
     ServiceProperties.Yx yx = serviceProperties.getYx();
     return new YxClient(yx.getHost(), yx.getAppKey(), yx.getAppSecret());

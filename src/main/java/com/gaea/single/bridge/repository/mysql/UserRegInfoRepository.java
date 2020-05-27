@@ -1,11 +1,12 @@
-package com.gaea.single.bridge.repository;
+package com.gaea.single.bridge.repository.mysql;
 
-import com.gaea.single.bridge.entity.UserRegInfo;
+import com.gaea.single.bridge.entity.mysql.UserRegInfo;
 import org.springframework.data.r2dbc.repository.Query;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
-public interface UserRegInfoRepository extends ReactiveCrudRepository<UserRegInfo, Long> {
+public interface UserRegInfoRepository extends R2dbcRepository<UserRegInfo, Long> {
   @Query(
       "select ur.yunxin_id\n"
           + "from user_reg_info ur\n"

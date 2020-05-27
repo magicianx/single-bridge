@@ -12,16 +12,22 @@ service:
     host: https://api.netease.im
     appKey: 5496955336632c1d113fed098d9cd53b
     appSecret: 1832c6417bc8
-
+  auth:
+    session:
+      - POST /user/position.do
 ---
 spring:
   profiles: dev
   redis:
-    database: 0
-    host: localhost
-    port: 6379
-    ssl: false
-    timeout: 200 # 单位ms
+    single:
+      database: 0
+      host: localhost
+      port: 6379
+      ssl: false
+      timeout: 200 # 单位ms
+    lobo:
+      cluster:
+        nodes: gnode2:6000, gnode2:6001, gnode2:6002, gnode3:6003, gnode3:6004, gnode3:6005
   r2dbc:
     url: r2dbc:pool:mysql://oa:3312/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: appuser
@@ -30,6 +36,10 @@ spring:
       initial-size: 10
       max-size: 10
       validation-query: SELECT 1
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/single_bridge
+
 service:
   config:
     server: http://192.168.10.29:30012
@@ -47,9 +57,13 @@ logging:
 spring:
   profiles: test
   redis:
-    host: 192.168.10.4
-    password: password
-    timeout: 200 # 单位ms
+    single:
+      host: 192.168.10.4
+      password: password
+      timeout: 200 # 单位ms
+    lobo:
+      cluster:
+        nodes: gnode2:6000, gnode2:6001, gnode2:6002, gnode3:6003, gnode3:6004, gnode3:6005
   r2dbc:
     url: r2dbc:pool:mysql://oa:3312/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: appuser
@@ -58,6 +72,10 @@ spring:
       initial-size: 10
       max-size: 10
       validation-query: SELECT 1
+  data:
+    mongodb:
+      uri: mongodb://singler:password@192.168.10.4:27017/single_bridge
+
 service:
   config:
     server: http://192.168.10.29:30012
@@ -71,7 +89,6 @@ service:
 logging:
   level:
     org.springframework: debug
-
 ---
 spring:
   profiles: prod
