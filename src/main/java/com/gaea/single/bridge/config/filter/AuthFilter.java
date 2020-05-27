@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 //@Component
 @Slf4j
 public class AuthFilter implements WebFilter {
-  @Qualifier("loboRedissonReactiveClient")
+//  @Qualifier("loboRedissonReactiveClient")
   @Autowired
   private RedissonReactiveClient redissonClient;
 
