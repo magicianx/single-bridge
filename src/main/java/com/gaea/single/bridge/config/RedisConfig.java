@@ -3,7 +3,7 @@ package com.gaea.single.bridge.config;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonReactiveClient;
 import org.redisson.config.Config;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,16 +22,28 @@ public class RedisConfig {
   private static final String REDIS_PREFIX = "redis://";
   private static final String REDIS_SSL_PREFIX = "rediss://";
 
-  @Bean
-  @Primary
   @ConfigurationProperties("spring.redis.single")
-  public RedissonReactiveClient singleRedissonReactiveClient(RedisProperties redisProperties) {
-    return newRedissonClient(redisProperties);
+  @Bean
+  RedisProperties singleRedisProperties() {
+    return new RedisProperties();
   }
 
   @Bean
   @ConfigurationProperties("spring.redis.lobo")
-  public RedissonReactiveClient loboRedissonReactiveClient(RedisProperties redisProperties) {
+  RedisProperties loboRedisProperties() {
+    return new RedisProperties();
+  }
+
+  @Bean
+  @Primary
+  public RedissonReactiveClient singleRedissonReactiveClient(
+      @Qualifier("singleRedisProperties") RedisProperties redisProperties) {
+    return newRedissonClient(redisProperties);
+  }
+
+  @Bean
+  public RedissonReactiveClient loboRedissonReactiveClient(
+      @Qualifier("loboRedisProperties") RedisProperties redisProperties) {
     return newRedissonClient(redisProperties);
   }
 
