@@ -27,11 +27,11 @@ public class UserPositionController extends BaseController {
 
   @PostMapping(value = "/v1/switch.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "切换定位功能状态")
-  public Mono<Result<Void>> updatePositionStatus(
+  public Mono<Result<Void>> switchPositionStatus(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody SwitchPositionStatusReq req) {
     return userService
         .switchPositionStatus(getUserId(exchange), req.getIsEnable())
-        .flatMap(v -> Mono.just(Result.success()));
+        .thenReturn(Result.success());
   }
 
   @GetMapping(value = "/v1/status.do")
