@@ -3,6 +3,7 @@ package com.gaea.single.bridge.converter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.*;
 import com.gaea.single.bridge.util.DateUtil;
@@ -83,7 +84,7 @@ public class UserConverter {
         res.setCity(
             StringUtils.isNotBlank(result.getString("address"))
                 ? result.getString("address")
-                : "火星");
+                : DefaultSettingConstant.UNKNOWN_POSITION);
         res.setIntro(result.getString("intro"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));

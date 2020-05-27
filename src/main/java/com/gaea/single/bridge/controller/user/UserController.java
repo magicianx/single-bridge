@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
@@ -18,6 +19,7 @@ import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.service.MessageService;
+import com.gaea.single.bridge.service.UserService;
 import com.gaea.single.bridge.service.UserSocialInfoService;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
@@ -51,6 +53,7 @@ public class UserController extends BaseController {
   @Autowired private LoboClient loboClient;
   @Autowired private MessageService yxMessageService;
   @Autowired private UserSocialInfoService userRegInfoService;
+  @Autowired private UserService userService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -86,16 +89,32 @@ public class UserController extends BaseController {
       @ApiParam(value = "用户id", required = true) @NotNull @RequestParam Long userId,
       @ApiIgnore ServerWebExchange exchange) {
     Mono<Result<UserProfileRes>> profileMono =
-        loboClient.postForm(
-            exchange,
-            LoboPathConst.USER_PROFILE,
-            new HashMap<String, Object>() {
-              {
-                put("appId", getAppId());
-                put("profileId", userId);
-              }
-            },
-            UserConverter.toUserProfileRes);
+        loboClient
+            .postForm(
+                exchange,
+                LoboPathConst.USER_PROFILE,
+                new HashMap<String, Object>() {
+                  {
+                    put("appId", getAppId());
+                    put("profileId", userId);
+                  }
+                },
+                UserConverter.toUserProfileRes)
+            .flatMap(
+                result -> {
+                  if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
+                    return userService
+                        .isEnablePosition(result.getData().getUserId())
+                        .map(
+                            enable -> {
+                              if (!enable) {
+                                result.getData().setCity(DefaultSettingConstant.UNKNOWN_POSITION);
+                              }
+                              return result;
+                            });
+                  }
+                  return Mono.just(result);
+                });
 
     Mono<Result<List<AlbumItemRes>>> albumMono =
         loboClient.postFormForList(
