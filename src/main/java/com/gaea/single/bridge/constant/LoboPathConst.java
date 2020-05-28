@@ -158,4 +158,6 @@ public final class LoboPathConst {
   public static final String ONLINE_VIDEO_SHOW_LIST = "/vod/videoCenter/queryVideoShowNew";
   /** 推荐视频秀列表 */
   public static final String RECOMMEND_VIDEO_SHOW_LIST = "/vod/videoCenter/queryVideoShow";
+  /** 谁看过我（全部） */
+  public static final String VIEW_RECORD_LIST = "/user/getUserOverHistory.do";
 }

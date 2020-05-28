@@ -234,6 +234,20 @@ public class UserConverter {
         return res;
       };
 
+  public static final Converter<Object, ViewRecordItemRes> toViewRecordItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        ViewRecordItemRes res = new ViewRecordItemRes();
+        res.setUserId(result.getLong("userId"));
+        res.setNickName(result.getString("nickName"));
+        res.setPortraitUrl(result.getString("overUserIdHeadUrl"));
+        res.setGradeIconUrl(result.getString("gradeIcon"));
+        res.setYunXinId(result.getString("yunxinId"));
+        res.setViewTimestamp(result.getLong("createTime"));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSupperVip")));
+        return res;
+      };
+
   private static <T extends FollowItemRes> void fillFollowItemRes(Object obj, T res) {
     JSONObject result = (JSONObject) obj;
     res.setUserId(result.getLong("userId"));

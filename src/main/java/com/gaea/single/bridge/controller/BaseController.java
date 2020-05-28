@@ -5,11 +5,11 @@ import com.gaea.single.bridge.constant.CommonHeaderConst;
 import com.gaea.single.bridge.core.ComplexAppVersionFactory;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.enums.OsType;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ServerWebExchange;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseController {
@@ -62,11 +62,13 @@ public abstract class BaseController {
   }
 
   protected Map<String, Object> getPageData(PageReq pageReq) {
-    return new HashMap<String, Object>() {
-      {
-        put("pageNo", pageReq.getPageNum());
-        put("pageSize", pageReq.getPageSize());
-      }
-    };
+    return getPageData(pageReq.getPageNum(), pageReq.getPageSize());
+  }
+
+  protected Map<String, Object> getPageData(int pageNum, int pageSize) {
+    return ImmutableMap.<String, Object>builder()
+        .put("pageNo", pageNum)
+        .put("pageSize", pageSize)
+        .build();
   }
 }
