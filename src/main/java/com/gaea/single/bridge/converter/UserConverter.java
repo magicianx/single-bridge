@@ -238,13 +238,14 @@ public class UserConverter {
       (obj) -> {
         JSONObject result = (JSONObject) obj;
         ViewRecordItemRes res = new ViewRecordItemRes();
-        res.setUserId(result.getLong("userId"));
+        res.setUserId(result.getLong("overUserId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("overUserIdHeadUrl"));
         res.setGradeIconUrl(result.getString("gradeIcon"));
         res.setYunXinId(result.getString("yunxinId"));
         res.setViewTimestamp(result.getLong("createTime"));
         res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSupperVip")));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("userStatus")));
         return res;
       };
 

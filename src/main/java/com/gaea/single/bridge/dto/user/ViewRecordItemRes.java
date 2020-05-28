@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -30,4 +31,7 @@ public class ViewRecordItemRes {
 
   @ApiModelProperty(value = "查看时的时间戳", required = true)
   private Long viewTimestamp;
+
+  @ApiModelProperty(value = "用户在线状态", required = true)
+  private UserOnlineStatus onlineStatus;
 }

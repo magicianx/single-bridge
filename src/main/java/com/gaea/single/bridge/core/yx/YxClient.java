@@ -2,11 +2,12 @@ package com.gaea.single.bridge.core.yx;
 
 import com.gaea.single.bridge.constant.YxCcidConstant;
 import com.gaea.single.bridge.constant.YxPathConst;
-import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.core.error.ErrorCode;
+import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import com.gaea.single.bridge.util.Sha1Utils;
+import com.gaea.single.bridge.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
@@ -18,7 +19,6 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 public class YxClient {
@@ -42,7 +42,7 @@ public class YxClient {
    */
   public Mono<Void> sendBatchTextMsg(UserType userType, List<String> ccids, String content) {
     String curTime = String.valueOf(DateUtil.getNowMilliseconds() / 1000L);
-    String nonce = getNonce();
+    String nonce = StringUtil.uuid();
     String checkSum = Sha1Utils.digest(appSecret + nonce + curTime);
 
     Map<String, String> body =
@@ -98,9 +98,5 @@ public class YxClient {
               log.error("批量推送 {} 文本消息成功: 数量 {}", userType.getDesc(), ccids.size());
               return Mono.empty();
             });
-  }
-
-  private String getNonce() {
-    return UUID.randomUUID().toString().replace("-", "");
   }
 }

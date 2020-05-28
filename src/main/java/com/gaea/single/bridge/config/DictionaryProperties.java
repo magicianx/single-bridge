@@ -33,6 +33,7 @@ public class DictionaryProperties implements IConfig {
   private AppStoreAudit appStoreAudit;
   private DrainagePackage drainagePackage;
   private User user;
+  private GreetMessage greetMessage;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
@@ -40,6 +41,7 @@ public class DictionaryProperties implements IConfig {
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
     this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
     this.user = getProperty(User.class, "user", properties);
+    this.greetMessage = getProperty(GreetMessage.class, "greetMessage", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -130,6 +132,13 @@ public class DictionaryProperties implements IConfig {
   public static class DrainagePackage {
     private String downloadUrl;
     private String advertImgUrl;
+  }
+
+  @Getter
+  @Setter
+  public static class GreetMessage {
+    /** 最大系统消息数量 */
+    private Integer maxCount;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

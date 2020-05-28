@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseController {
@@ -66,9 +67,9 @@ public abstract class BaseController {
   }
 
   protected Map<String, Object> getPageData(int pageNum, int pageSize) {
-    return ImmutableMap.<String, Object>builder()
-        .put("pageNo", pageNum)
-        .put("pageSize", pageSize)
-        .build();
+    Map<String, Object> data = new HashMap<>();
+    data.put("pageNo", pageNum);
+    data.put("pageSize", pageSize);
+    return data;
   }
 }

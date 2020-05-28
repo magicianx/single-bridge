@@ -12,7 +12,8 @@ public enum ErrorCode {
   DUPLICATE_REPORT(1001, "已有投诉正在处理，不可重复投诉"),
   USER_INFO_AUDITING(1002, "个人资料正在审核中"),
   INVALID_VIDEO_ORDER(1003, "订单无效"),
-  AGE_LESS_THAN_LIMIT(1004, "本产品建议18岁以上用户使用");
+  AGE_LESS_THAN_LIMIT(1004, "本产品建议18岁以上用户使用"),
+  CUSTOM_GREET_MESSAGE_LIMIT_COUNT(1005, "自定义打招呼数量达到上限");
 
   private int code;
   private String message;

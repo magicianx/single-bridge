@@ -133,7 +133,10 @@ public class VideoConverter {
         userInfo.setIntro(result.getString("intruduction"));
         userInfo.setPortraitUrl(result.getString("portrait"));
         userInfo.setGradeIcon(result.getString("gradeIcon"));
-        userInfo.setFollowStatus(FollowStatus.ofCode(result.getInteger("followStatus")));
+
+        Integer followStatus = result.getInteger("followStatus");
+        userInfo.setFollowStatus(
+            followStatus != null ? FollowStatus.ofCode(followStatus) : FollowStatus.UNFOLLOW);
         userInfo.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         userInfo.setYunXinId(result.getString("yunxinId"));
 

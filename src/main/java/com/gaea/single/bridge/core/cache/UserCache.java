@@ -1,7 +1,6 @@
 package com.gaea.single.bridge.core.cache;
 
 import com.gaea.single.bridge.constant.CacheConstant;
-import com.gaea.single.bridge.entity.mongodb.User;
 import com.gaea.single.bridge.enums.BoolType;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import org.redisson.api.RBucketReactive;
@@ -45,13 +44,8 @@ public class UserCache extends AbstractCache {
                                         BoolType.ofValue(user.getIsEnablePosition()).getCode(),
                                         300,
                                         TimeUnit.SECONDS)
-                                    .thenReturn(true))
-                        .switchIfEmpty(
-                            Mono.defer(
-                                () ->
-                                    bucket
-                                        .set(BoolType.TRUE.getCode(), 300, TimeUnit.SECONDS)
-                                        .thenReturn(true)))));
+                                    .thenReturn(user.getIsEnablePosition()))
+                        .switchIfEmpty(Mono.defer(() -> Mono.just(true)))));
   }
 
   /**
@@ -70,8 +64,6 @@ public class UserCache extends AbstractCache {
               user.setIsEnablePosition(isEnable);
               return userRepository.save(user);
             })
-        .switchIfEmpty(
-            Mono.defer(() -> userRepository.save(new User(userId, isEnable)).then(Mono.empty())))
         .then(bucket.delete().then(Mono.empty()));
   }
 }

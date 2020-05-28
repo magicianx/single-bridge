@@ -37,8 +37,6 @@ public class UserPositionController extends BaseController {
   @GetMapping(value = "/v1/status.do")
   @ApiOperation(value = "获取定位功能状态")
   public Mono<Result<Boolean>> getPositionStatus(@ApiIgnore ServerWebExchange exchange) {
-    return userService
-        .isEnablePosition(getUserId(exchange))
-        .flatMap(v -> Mono.just(Result.success(v)));
+    return userService.isEnablePosition(getUserId(exchange)).map(Result::success);
   }
 }
