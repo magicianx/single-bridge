@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.core.cache;
+package com.gaea.single.bridge.core.manager;
 
 import org.redisson.api.RedissonReactiveClient;
 import org.springframework.beans.factory.annotation.Autowired;

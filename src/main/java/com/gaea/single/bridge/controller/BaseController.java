@@ -1,11 +1,10 @@
 package com.gaea.single.bridge.controller;
 
-import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.core.ComplexAppVersionFactory;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.enums.OsType;
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ServerWebExchange;
@@ -27,7 +26,7 @@ public abstract class BaseController {
   }
 
   protected String getAppId() {
-    return DictionaryProperties.get().getLobo().getAppId();
+    return DefaultSettingConstant.APP_ID;
   }
 
   protected String getChannelId(ServerWebExchange exchange) {

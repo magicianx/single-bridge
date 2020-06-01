@@ -1,6 +1,8 @@
 package com.gaea.single.bridge.service;
 
 import com.gaea.single.bridge.dto.user.GreetMessageRes;
+import com.gaea.single.bridge.dto.user.GreetStatusRes;
+import com.gaea.single.bridge.dto.user.SendGreetMessageRes;
 import com.gaea.single.bridge.dto.user.UserGreetConfigRes;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +18,11 @@ public interface UserGreetService {
 
   Mono<Void> deleteCustomMessage(Long userId, String messageId);
 
-  Mono<Boolean> isEnableGreet(Long userId);
+  Mono<GreetStatusRes> getGreetStatus(Long userId);
 
   Mono<Void> useSystemGreetMessage(Long userId, String messageId, boolean isUse);
+
+  Mono<SendGreetMessageRes> sendGreetMessage(Long userId);
+
+  Mono<Void> setGreetStatus(Long userId, boolean isEnable);
 }

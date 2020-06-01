@@ -2,10 +2,7 @@ package com.gaea.single.bridge.controller.user;
 
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.dto.user.AddCustomGreetMessageReq;
-import com.gaea.single.bridge.dto.user.GreetMessageRes;
-import com.gaea.single.bridge.dto.user.UseSystemGreetMessageReq;
-import com.gaea.single.bridge.dto.user.UserGreetConfigRes;
+import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.service.UserGreetService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +42,7 @@ public class UserGreetController extends BaseController {
         .map(Result::success);
   }
 
-  @PostMapping(value = "/v1/message/delete.do")
+  @DeleteMapping(value = "/v1/message/delete.do")
   @ApiOperation("删除自定义打招呼消息")
   public Mono<Result<Void>> deleteCustomMessage(
       @ApiIgnore ServerWebExchange exchange, @RequestParam("messageId") @NotNull String messageId) {
@@ -54,10 +51,10 @@ public class UserGreetController extends BaseController {
         .thenReturn(Result.success());
   }
 
-  @GetMapping(value = "/v1/enable.do")
+  @GetMapping(value = "/v1/status.do")
   @ApiOperation("获取打招呼开启状态")
-  public Mono<Result<Boolean>> isEnableGreet(@ApiIgnore ServerWebExchange exchange) {
-    return userGreetService.isEnableGreet(getUserId(exchange)).map(Result::success);
+  public Mono<Result<GreetStatusRes>> getGreetStatus(@ApiIgnore ServerWebExchange exchange) {
+    return userGreetService.getGreetStatus(getUserId(exchange)).map(Result::success);
   }
 
   @PostMapping(value = "/v1/message/use.do")
@@ -66,6 +63,21 @@ public class UserGreetController extends BaseController {
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UseSystemGreetMessageReq req) {
     return userGreetService
         .useSystemGreetMessage(getUserId(exchange), req.getMessageId(), req.getIsUse())
+        .thenReturn(Result.success());
+  }
+
+  @PostMapping(value = "/v1/send.do")
+  @ApiOperation("发送打招呼消息")
+  public Mono<Result<SendGreetMessageRes>> sendGreetMessage(@ApiIgnore ServerWebExchange exchange) {
+    return userGreetService.sendGreetMessage(getUserId(exchange)).map(Result::success);
+  }
+
+  @PostMapping(value = "/v1/status.do")
+  @ApiOperation("设置打招呼开启状态")
+  public Mono<Result<Void>> setGreetStatus(
+      @RequestBody @Valid SetGreetStatusReq req, @ApiIgnore ServerWebExchange exchange) {
+    return userGreetService
+        .setGreetStatus(getUserId(exchange), req.getIsEnable())
         .thenReturn(Result.success());
   }
 }

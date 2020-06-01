@@ -5,6 +5,7 @@ import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.VideoConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
+import com.gaea.single.bridge.core.manager.GreetUserManager;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.media.*;
@@ -33,6 +34,7 @@ import java.util.Map;
 @Validated
 public class VideoController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private GreetUserManager greetUserManager;
 
   @PostMapping(value = "/v1/order.do", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ApiOperation(value = "创建视频订单")
@@ -48,8 +50,14 @@ public class VideoController extends BaseController {
             put("key", "key");
           }
         };
-    return loboClient.postForm(
-        exchange, LoboPathConst.CREATE_MEDIA_ORDER, data, VideoConverter.toCreateVideoOrderRes);
+    return greetUserManager
+        .removeUncalledUser(req.getCalledId())
+        .then(
+            loboClient.postForm(
+                exchange,
+                LoboPathConst.CREATE_MEDIA_ORDER,
+                data,
+                VideoConverter.toCreateVideoOrderRes));
   }
 
   @PostMapping(value = "/v1/order/validate.do", consumes = MediaType.APPLICATION_JSON_VALUE)

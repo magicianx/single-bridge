@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public final class DefaultSettingConstant {
   /** 未知定位位置 */
   public static final String UNKNOWN_POSITION = "火星";
+
+  public static final String APP_ID = "5";
 }

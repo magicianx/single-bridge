@@ -1,8 +1,10 @@
-package com.gaea.single.bridge.core.cache;
+package com.gaea.single.bridge.core.manager;
 
-import com.gaea.single.bridge.constant.CacheConstant;
+import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.enums.BoolType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucketReactive;
 import org.redisson.client.codec.LongCodec;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,46 @@ import java.util.concurrent.TimeUnit;
  * @author cludy
  */
 @Component
-public class UserCache extends AbstractCache {
+@Slf4j
+public class UserManager extends AbstractCache {
   @Autowired private UserRepository userRepository;
+
+  /**
+   * 获取用户在线状态
+   *
+   * @param userId 用户id
+   * @return {@link Mono<UserOnlineStatus> }
+   */
+  public Mono<UserOnlineStatus> getUserOnlineStatus(Long userId) {
+    return redission
+        .getList(RedisConstant.USER_UN_DISTURB)
+        .contains(userId)
+        .flatMap(
+            dnd -> {
+              if (dnd) {
+                return Mono.just(UserOnlineStatus.UN_DISTURB);
+              }
+              return redission
+                  .getList(RedisConstant.USER_FREE)
+                  .contains(userId)
+                  .flatMap(
+                      free -> {
+                        if (free) {
+                          return Mono.just(UserOnlineStatus.FREE);
+                        }
+                        return redission
+                            .getList(RedisConstant.USER_BUSY)
+                            .contains(userId)
+                            .flatMap(
+                                busy -> {
+                                  if (busy) {
+                                    return Mono.just(UserOnlineStatus.CHATTING);
+                                  }
+                                  return Mono.just(UserOnlineStatus.UN_DISTURB);
+                                });
+                      });
+            });
+  }
 
   /**
    * 获取用户开启定位状态
@@ -26,7 +66,7 @@ public class UserCache extends AbstractCache {
    * @param userId ¬用户id
    */
   public Mono<Boolean> getPositionStatus(Long userId) {
-    String key = getKey(CacheConstant.USER_POSITION_STATUS, userId);
+    String key = getKey(RedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
 
     return bucket
@@ -55,7 +95,7 @@ public class UserCache extends AbstractCache {
    * @param isEnable 是否开启定位
    */
   public Mono<Void> setPositionStatus(Long userId, boolean isEnable) {
-    String key = getKey(CacheConstant.USER_POSITION_STATUS, userId);
+    String key = getKey(RedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
     return userRepository
         .findById(userId)
@@ -66,4 +106,6 @@ public class UserCache extends AbstractCache {
             })
         .then(bucket.delete().then(Mono.empty()));
   }
+
+
 }

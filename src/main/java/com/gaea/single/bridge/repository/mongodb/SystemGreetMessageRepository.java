@@ -5,4 +5,4 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 /** @author cludy */
 public interface SystemGreetMessageRepository
-    extends ReactiveMongoRepository<SystemGreetMessage, Long> {}
+    extends ReactiveMongoRepository<SystemGreetMessage, String> {}

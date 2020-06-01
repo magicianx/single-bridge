@@ -1,7 +1,9 @@
 package com.gaea.single.bridge.service.impl;
 
 import com.gaea.single.bridge.config.DictionaryProperties;
-import com.gaea.single.bridge.core.cache.MessageCache;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
+import com.gaea.single.bridge.constant.YxCcidConstant;
+import com.gaea.single.bridge.core.manager.MessageManager;
 import com.gaea.single.bridge.core.yx.YxClient;
 import com.gaea.single.bridge.entity.mysql.UserRegInfo;
 import com.gaea.single.bridge.enums.OsType;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class YXMessageServiceImpl implements MessageService {
-  @Autowired private MessageCache messageCache;
+  @Autowired private MessageManager messageCache;
   @Autowired private YxClient yxClient;
   @Autowired private UserRegInfoRepository userRegInfoRepository;
 
@@ -37,7 +39,7 @@ public class YXMessageServiceImpl implements MessageService {
   @Override
   public Mono<Void> batchSendTextMsg(OsType osType, UserType userType, String content) {
     log.info("正在批量推送文本消息: osType {}, content {}", osType.name(), content);
-    String appId = DictionaryProperties.get().getLobo().getAppId();
+    String appId = DefaultSettingConstant.APP_ID;
 
     if (UserType.ANCHOR == userType) {
 
@@ -48,7 +50,8 @@ public class YXMessageServiceImpl implements MessageService {
               users -> {
                 List<String> yunXinIds =
                     users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+                return yxClient.sendBatchTextMsg(
+                    YxCcidConstant.ANCHOR_SECRETARY_CCID, yunXinIds, content);
               });
     } else {
       Mono<Void> mono =
@@ -59,7 +62,8 @@ public class YXMessageServiceImpl implements MessageService {
                   users -> {
                     List<String> yunXinIds =
                         users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                    return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+                    return yxClient.sendBatchTextMsg(
+                        YxCcidConstant.USER_SECRETARY_CCID, yunXinIds, content);
                   });
       for (int i = 1; i < 33; i++) {
         mono =
@@ -73,7 +77,8 @@ public class YXMessageServiceImpl implements MessageService {
                               users.stream()
                                   .map(UserRegInfo::getYunxinId)
                                   .collect(Collectors.toList());
-                          return yxClient.sendBatchTextMsg(userType, yunXinIds, content);
+                          return yxClient.sendBatchTextMsg(
+                              YxCcidConstant.USER_SECRETARY_CCID, yunXinIds, content);
                         }));
       }
       return mono;

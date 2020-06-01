@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.service.impl;
 
-import com.gaea.single.bridge.core.cache.UserCache;
+import com.gaea.single.bridge.core.manager.UserManager;
 import com.gaea.single.bridge.entity.mongodb.User;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.service.UserService;
@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-  @Autowired private UserCache userCache;
+  @Autowired private UserManager userCache;
   @Autowired private UserRepository userRepository;
 
   @Override

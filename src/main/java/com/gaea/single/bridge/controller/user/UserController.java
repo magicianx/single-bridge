@@ -12,6 +12,8 @@ import com.gaea.single.bridge.core.error.BusinessException;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.core.lobo.LoboCode;
+import com.gaea.single.bridge.core.manager.GreetUserManager;
+import com.gaea.single.bridge.core.manager.model.GreetUser;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
@@ -54,6 +56,7 @@ public class UserController extends BaseController {
   @Autowired private MessageService yxMessageService;
   @Autowired private UserSocialInfoService userRegInfoService;
   @Autowired private UserService userService;
+  @Autowired private GreetUserManager greetUserManager;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -284,7 +287,17 @@ public class UserController extends BaseController {
               });
     }
 
-    return mono;
+    return mono.flatMap(
+        result -> {
+          LoginRes res = result.getData();
+          if (ErrorCode.isSuccess(result.getCode()) && res.getIsRegister()) {
+            return greetUserManager
+                .addGreetUser(new GreetUser(res.getId(), res.getYunXinId()), true)
+                .thenReturn(result);
+          }
+
+          return Mono.just(result);
+        });
   }
 
   @PostMapping(value = "/v1/cancel.do")

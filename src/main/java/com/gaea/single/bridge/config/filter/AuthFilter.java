@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.config.filter;
 
 import com.gaea.single.bridge.config.ServiceProperties;
-import com.gaea.single.bridge.constant.CacheConstant;
+import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -9,9 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.redisson.api.RMapReactive;
 import org.redisson.api.RedissonReactiveClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -53,7 +51,7 @@ public class AuthFilter implements WebFilter {
 
     if (StringUtils.isNotBlank(session)) {
 
-      RMapReactive<String, String> userInfo = redissonClient.getMap(CacheConstant.USER_LOGIN_INFO);
+      RMapReactive<String, String> userInfo = redissonClient.getMap(RedisConstant.USER_LOGIN_INFO);
 //      userInfo.get("lastLoginSession").map(loginSession -> loginSession.equals(session));
     }
     return chain.filter(exchange);

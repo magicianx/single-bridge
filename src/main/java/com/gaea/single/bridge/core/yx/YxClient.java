@@ -1,15 +1,14 @@
 package com.gaea.single.bridge.core.yx;
 
-import com.gaea.single.bridge.constant.YxCcidConstant;
 import com.gaea.single.bridge.constant.YxPathConst;
 import com.gaea.single.bridge.core.error.ErrorCode;
-import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import com.gaea.single.bridge.util.Sha1Utils;
 import com.gaea.single.bridge.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -35,12 +34,12 @@ public class YxClient {
   /**
    * 批量发送文本消息
    *
-   * @param userType 用户类型
+   * @param fromAccid 发送者云信id
    * @param ccids 接受消息用户的云信id
    * @param content 消息内容
    * @return 发送结果
    */
-  public Mono<Void> sendBatchTextMsg(UserType userType, List<String> ccids, String content) {
+  public Mono<Void> sendBatchTextMsg(String fromAccid, List<String> ccids, String content) {
     String curTime = String.valueOf(DateUtil.getNowMilliseconds() / 1000L);
     String nonce = StringUtil.uuid();
     String checkSum = Sha1Utils.digest(appSecret + nonce + curTime);
@@ -65,11 +64,7 @@ public class YxClient {
     MultiValueMap<String, Object> data =
         new LinkedMultiValueMap<String, Object>() {
           {
-            add(
-                "fromAccid",
-                UserType.ANCHOR == userType
-                    ? YxCcidConstant.ANCHOR_SECRETARY_CCID
-                    : YxCcidConstant.USER_SECRETARY_CCID);
+            add("fromAccid", fromAccid);
             add("toAccids", JsonUtils.toJsonString(ccids));
             add("type", "0");
             add("body", JsonUtils.toJsonString(body));
@@ -92,10 +87,10 @@ public class YxClient {
         .flatMap(
             r -> {
               if (!r.isSuccess()) {
-                log.error("批量推送 {} 文本消息失败: 数量 {}", userType.getDesc(), ccids.size());
+                log.error("{} 批量推送 {} 云信文本消息失败: 数量 {}", fromAccid, ccids.size());
                 return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
               }
-              log.error("批量推送 {} 文本消息成功: 数量 {}", userType.getDesc(), ccids.size());
+              log.error("{} 批量推送 {} 云信文本消息成功: 数量 {}", fromAccid, ccids.size());
               return Mono.empty();
             });
   }

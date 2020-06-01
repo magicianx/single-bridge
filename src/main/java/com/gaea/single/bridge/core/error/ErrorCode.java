@@ -13,7 +13,10 @@ public enum ErrorCode {
   USER_INFO_AUDITING(1002, "个人资料正在审核中"),
   INVALID_VIDEO_ORDER(1003, "订单无效"),
   AGE_LESS_THAN_LIMIT(1004, "本产品建议18岁以上用户使用"),
-  CUSTOM_GREET_MESSAGE_LIMIT_COUNT(1005, "自定义打招呼数量达到上限");
+  CUSTOM_GREET_MESSAGE_LIMIT_COUNT(1005, "自定义打招呼数量达到上限"),
+  UNAVAILABLE_GREET_MESSAGE(1006, "未定义咋招呼消息"),
+  GREET_TIME_LIMIT(1008, "发送时间限制"),
+  NOT_OPENED_GREET(1009, "未开启打招呼功能");
 
   private int code;
   private String message;
