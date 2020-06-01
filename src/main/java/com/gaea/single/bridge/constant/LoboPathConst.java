@@ -160,4 +160,8 @@ public final class LoboPathConst {
   public static final String RECOMMEND_VIDEO_SHOW_LIST = "/vod/videoCenter/queryVideoShow";
   /** 谁看过我（全部） */
   public static final String VIEW_RECORD_LIST = "/user/getUserOverHistory.do";
+  /** 获取加入公会认证信息 */
+  public static final String USER_GUILD_AUTH_INFO = "/bossapi/partnerCompany/getAuthInfo.do";
+  /** 加入或拒绝加入公会 */
+  public static final String UPDATE_GUILD_AUTH_INFO = "/bossapi/partnerCompany/updateAuthInfo.do";
 }

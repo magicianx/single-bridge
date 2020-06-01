@@ -114,6 +114,7 @@ public class DictionaryProperties implements IConfig {
   public static class Lobo {
     private String host;
     private String iosAuditHost;
+    private String bossHost;
     private String userSecretaryId;
     private String anchorSecretaryId;
     private String imgHost;
