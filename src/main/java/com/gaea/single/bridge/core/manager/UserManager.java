@@ -66,7 +66,7 @@ public class UserManager extends AbstractCache {
    * @param userId ¬用户id
    */
   public Mono<Boolean> getPositionStatus(Long userId) {
-    String key = getKey(RedisConstant.USER_POSITION_STATUS, userId);
+    String key = key(RedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
 
     return bucket
@@ -95,7 +95,7 @@ public class UserManager extends AbstractCache {
    * @param isEnable 是否开启定位
    */
   public Mono<Void> setPositionStatus(Long userId, boolean isEnable) {
-    String key = getKey(RedisConstant.USER_POSITION_STATUS, userId);
+    String key = key(RedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
     return userRepository
         .findById(userId)

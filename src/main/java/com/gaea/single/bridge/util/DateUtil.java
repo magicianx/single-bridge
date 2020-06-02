@@ -1,6 +1,9 @@
 package com.gaea.single.bridge.util;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
@@ -10,6 +13,8 @@ public class DateUtil {
       DateTimeFormatter.ofPattern("yyyy/M/d");
   private static final DateTimeFormatter SINGLE_DATETIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+  private static final DateTimeFormatter DB_DATE_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private static final long DAY_MILLISECONDS = 24 * 60 * 60 * 1000L;
 
   public static String toLoboDate(String date) {
@@ -32,6 +37,10 @@ public class DateUtil {
 
   public static long getNowMilliseconds() {
     return LocalDateTime.now().atZone(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
+  }
+
+  public static String toDbDate(LocalDate date) {
+    return DB_DATE_FORMATTER.format(date);
   }
 
   /**

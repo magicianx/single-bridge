@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.app.AppInfoRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
+import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.service.UserService;
 import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
@@ -37,8 +39,8 @@ public class AppController extends BaseController {
   private LoboClient iosAuditClient;
 
   @Autowired private UserService userService;
-
   @Autowired private LoboClient loboClient;
+  @Autowired private UserGreetService userGreetService;
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
@@ -83,6 +85,16 @@ public class AppController extends BaseController {
                   lobo.getAnchorSecretaryId());
             })
         // 由于android更新不需要重新登录，暂时在获取app信息时初始化用户，后面移到登录接口中
-        .flatMap(res -> userService.initUser(getUserId(exchange)).thenReturn(res));
+        .flatMap(
+            res -> {
+              Long userId = getUserId(exchange);
+              if (ErrorCode.isSuccess(res.getCode()) && userId != null) {
+                return userService
+                    .initUser(userId)
+                    .then(Mono.defer(() -> userGreetService.addGreetUser(userId, false)))
+                    .thenReturn(res);
+              }
+              return Mono.just(res);
+            });
   }
 }

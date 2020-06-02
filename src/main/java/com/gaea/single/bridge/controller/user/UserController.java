@@ -12,8 +12,6 @@ import com.gaea.single.bridge.core.error.BusinessException;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.core.lobo.LoboCode;
-import com.gaea.single.bridge.core.manager.GreetUserManager;
-import com.gaea.single.bridge.core.manager.model.GreetUser;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
@@ -21,6 +19,7 @@ import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.service.MessageService;
+import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.service.UserService;
 import com.gaea.single.bridge.service.UserSocialInfoService;
 import com.gaea.single.bridge.util.DateUtil;
@@ -56,7 +55,7 @@ public class UserController extends BaseController {
   @Autowired private MessageService yxMessageService;
   @Autowired private UserSocialInfoService userRegInfoService;
   @Autowired private UserService userService;
-  @Autowired private GreetUserManager greetUserManager;
+  @Autowired private UserGreetService userGreetService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -291,9 +290,7 @@ public class UserController extends BaseController {
         result -> {
           LoginRes res = result.getData();
           if (ErrorCode.isSuccess(result.getCode()) && res.getIsRegister()) {
-            return greetUserManager
-                .addGreetUser(new GreetUser(res.getId(), res.getYunXinId()), true)
-                .thenReturn(result);
+            return userGreetService.addGreetUser(res.getId(), true).thenReturn(result);
           }
 
           return Mono.just(result);

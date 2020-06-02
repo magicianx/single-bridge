@@ -28,13 +28,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Mono<Void> initUser(Long userId) {
-    if (userId != null) {
-      log.info("正在创建用户初始化信息: " + userId);
-      return userRepository
-          .findById(userId)
-          .switchIfEmpty(Mono.defer(() -> userRepository.save(new User(userId, true, true))))
-          .then();
-    }
-    return Mono.empty();
+    log.info("正在创建用户初始化信息: " + userId);
+    return userRepository
+        .findById(userId)
+        .switchIfEmpty(Mono.defer(() -> userRepository.save(new User(userId, true, true))))
+        .then();
   }
 }

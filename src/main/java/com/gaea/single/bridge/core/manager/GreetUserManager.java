@@ -6,6 +6,7 @@ import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.core.manager.model.GreetUser;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
+import com.gaea.single.bridge.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RAtomicLongReactive;
 import org.redisson.api.RQueueReactive;
@@ -36,9 +37,9 @@ public class GreetUserManager extends AbstractCache {
 
   @PostConstruct
   public void init() {
-    this.newUserSet = redission.getScoredSortedSet(RedisConstant.USER_GREET_NEW);
-    this.uncalledUserSet = redission.getScoredSortedSet(RedisConstant.USER_GREET_UNCALLED);
-    this.greetUsingQueue = redission.getQueue(RedisConstant.USER_GREET_USING);
+    this.newUserSet = redission.getScoredSortedSet(key(RedisConstant.USER_GREET_NEW));
+    this.uncalledUserSet = redission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
+    this.greetUsingQueue = redission.getQueue(key(RedisConstant.USER_GREET_USING));
     initGreetUser().subscribe();
   }
 
@@ -52,7 +53,7 @@ public class GreetUserManager extends AbstractCache {
   public Mono<Void> addGreetUser(GreetUser greetUser, boolean isNewUser) {
     long userId = greetUser.getUserId();
     return redission
-        .getAtomicLong(RedisConstant.USER_GREET_TIMES + userId)
+        .getAtomicLong(key(RedisConstant.USER_GREET_TIMES, userId))
         .get()
         .flatMap(
             v -> {
@@ -105,64 +106,67 @@ public class GreetUserManager extends AbstractCache {
    * @param count 用户数量, 必须为偶数
    * @return {@link Mono<Collection<GreetUser>>}
    */
-  public Mono<Collection<GreetUser>> getGreetUsers(int count) {
+  public Mono<? extends Collection<GreetUser>> getGreetUsers(Long currentUserId, int count) {
     Set<GreetUser> greetUsers = new HashSet<>();
     int maxReceiveTimes = DictionaryProperties.get().getGreetMessage().getMaxReceiveGreetTimes();
 
-    return popGreetUser(count, maxReceiveTimes, greetUsers)
+    Mono<Void> addNewUsers =
+        newUserSet
+            .readAll()
+            .flatMap(
+                v -> {
+                  log.info("已重新发放入{}个新用户到使用队列中", v.size());
+                  return greetUsingQueue.addAll(v).then();
+                })
+            .switchIfEmpty(
+                Mono.defer(
+                    () -> {
+                      log.info("无新用户放入打招呼使用队列");
+                      return Mono.empty();
+                    }));
+
+    Mono<Void> addUncalledUsers =
+        uncalledUserSet
+            .size()
+            .flatMap(
+                size -> {
+                  if (size > 0) {
+                    log.info("已重新发放入{}个未呼叫用户到使用队列中", size);
+                    // 结束分数为当前时间戳减去5秒
+                    long endScore =
+                        System.currentTimeMillis()
+                            - DictionaryProperties.get().getGreetMessage().getUncalledUserSecond()
+                                * 1000;
+                    return uncalledUserSet
+                        .valueRange(0, true, endScore, false)
+                        .flatMap(v -> greetUsingQueue.addAll(v))
+                        .then();
+                  } else {
+                    log.info("无未呼叫用户放入打招呼使用队列");
+                    return Mono.empty();
+                  }
+                });
+    Mono<Set<GreetUser>> rePutToUsingQueue =
+        Mono.when(addNewUsers, addUncalledUsers)
+            .then(
+                Mono.defer(() -> popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers)));
+
+    return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers)
         .flatMap(
             users -> {
               // 可发送用户数量小于需要数量, 从原始set中放入使用set中
               if (users.size() < count) {
                 log.info("获得可打招呼用户数量{}小于需要数量{}, 从新放入可打招呼用户到使用队列", users.size(), count);
-                Mono<Void> addNewUsers =
-                    newUserSet
-                        .size()
-                        .flatMap(
-                            size -> {
-                              if (size > 0) {
-                                log.info("已重新发放入{}个新用户到使用队列中", size);
-                                return newUserSet
-                                    .valueRange(0, size - 1)
-                                    .flatMap(v -> greetUsingQueue.addAll(v))
-                                    .then();
-                              } else {
-                                log.info("无可打招呼未呼叫用户放入使用队列");
-                                return Mono.empty();
-                              }
-                            });
-                Mono<Void> addUncalledUsers =
-                    uncalledUserSet
-                        .size()
-                        .flatMap(
-                            size -> {
-                              if (size > 0) {
-                                log.info("已重新发放入{}个未呼叫用户到使用队列中", size);
-                                // 结束分数为当前时间戳减去5秒
-                                long endScore =
-                                    System.currentTimeMillis()
-                                        - DictionaryProperties.get()
-                                            .getGreetMessage()
-                                            .getUncalledUserSecond();
-                                return uncalledUserSet
-                                    .valueRange(0, true, endScore, false)
-                                    .flatMap(v -> greetUsingQueue.addAll(v))
-                                    .then();
-                              } else {
-                                log.info("无可打招呼新用户放入使用队列");
-                                return Mono.empty();
-                              }
-                            });
-                return Mono.zip(addNewUsers, addUncalledUsers)
-                    .then(popGreetUser(count, maxReceiveTimes, greetUsers));
+                return rePutToUsingQueue;
               } else {
                 return Mono.just(users);
               }
-            });
+            })
+        .switchIfEmpty(Mono.defer(() -> rePutToUsingQueue));
   }
 
   private Mono<Set<GreetUser>> popGreetUser(
-      int count, int maxReceiveTimes, Set<GreetUser> greetUsers) {
+      Long currentUserId, int count, int maxReceiveTimes, Set<GreetUser> greetUsers) {
     return greetUsingQueue
         .poll()
         .flatMap(
@@ -172,16 +176,18 @@ public class GreetUserManager extends AbstractCache {
                     .getUserOnlineStatus(user.getUserId())
                     .flatMap(
                         status -> {
-                          if (status == UserOnlineStatus.FREE) {
+                          if (user.getUserId() != currentUserId
+                              && status == UserOnlineStatus.FREE) {
                             greetUsers.add(user);
                             return increaseReceiveTimes(user, maxReceiveTimes)
                                 .flatMap(
                                     success ->
                                         greetUsers.size() == count
                                             ? Mono.just(greetUsers)
-                                            : popGreetUser(count, maxReceiveTimes, greetUsers));
+                                            : popGreetUser(
+                                                currentUserId, count, maxReceiveTimes, greetUsers));
                           }
-                          return popGreetUser(count, maxReceiveTimes, greetUsers);
+                          return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);
                         });
                 // 使用中的列表已经弹完了
               } else {
@@ -192,7 +198,7 @@ public class GreetUserManager extends AbstractCache {
 
   private Mono<Boolean> increaseReceiveTimes(GreetUser user, int maxReceiveTimes) {
     RAtomicLongReactive greetAtomicTimes =
-        redission.getAtomicLong(RedisConstant.USER_GREET_TIMES + user.getUserId());
+        redission.getAtomicLong(key(RedisConstant.USER_GREET_TIMES, user.getUserId()));
     return greetAtomicTimes
         .incrementAndGet()
         .flatMap(
@@ -211,7 +217,7 @@ public class GreetUserManager extends AbstractCache {
     // 如果次数达到最大接收次数，从新用户和未呼叫队列中移除
     if (receiveTimes >= maxReceiveTimes) {
       log.info("用户{}已达到最大接收招呼次数{}", user.getUserId(), maxReceiveTimes);
-      return newUserSet.remove(user).then(uncalledUserSet.remove(user));
+      return newUserSet.remove(user).then(Mono.defer(() -> uncalledUserSet.remove(user)));
     }
     return Mono.just(false);
   }
@@ -241,7 +247,10 @@ public class GreetUserManager extends AbstractCache {
               if (size == 0) {
                 log.info("可打招呼新用户列队为空, 正在初始化");
                 return userRegInfoRepository
-                    .findNewRegisterUser(DefaultSettingConstant.APP_ID, startDate, endDate)
+                    .findNewRegisterUser(
+                        DefaultSettingConstant.APP_ID,
+                        DateUtil.toDbDate(startDate),
+                        DateUtil.toDbDate(endDate))
                     .flatMap(
                         user -> {
                           int score =

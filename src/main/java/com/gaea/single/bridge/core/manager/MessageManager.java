@@ -17,7 +17,7 @@ public class MessageManager extends AbstractCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> getMessageCount(Long userId, int count) {
-    String key = getKey(RedisConstant.USER_MESSAGE_COUNT, userId);
+    String key = key(RedisConstant.USER_MESSAGE_COUNT, userId);
     RBucketReactive<Long> bucket = redission.getBucket(key, LongCodec.INSTANCE);
     return bucket
         .trySet((long) count)
@@ -43,7 +43,7 @@ public class MessageManager extends AbstractCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> decrMessageCount(Long userId) {
-    String key = getKey(RedisConstant.USER_MESSAGE_COUNT, userId);
+    String key = key(RedisConstant.USER_MESSAGE_COUNT, userId);
     RAtomicLongReactive value = redission.getAtomicLong(key);
 
     return value

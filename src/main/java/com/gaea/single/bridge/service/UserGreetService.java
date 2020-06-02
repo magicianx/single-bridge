@@ -25,4 +25,6 @@ public interface UserGreetService {
   Mono<SendGreetMessageRes> sendGreetMessage(Long userId);
 
   Mono<Void> setGreetStatus(Long userId, boolean isEnable);
+
+  Mono<Void> addGreetUser(Long userId, boolean isNew);
 }

@@ -45,5 +45,5 @@ public interface UserRegInfoRepository extends R2dbcRepository<UserRegInfo, Long
           + "  and date(u.create_time) between ? and ?\n"
           + "order by create_time desc\n"
           + "\n")
-  Flux<UserRegInfo> findNewRegisterUser(String appId, LocalDate startDate, LocalDate endDate);
+  Flux<UserRegInfo> findNewRegisterUser(String appId, String startDate, String endDate);
 }
