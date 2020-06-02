@@ -21,6 +21,7 @@ import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.util.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.redisson.api.RBucketReactive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 
 /** @author cludy */
 @Service
+@Slf4j
 public class UserGreetServiceImpl extends AbstractCache implements UserGreetService {
   @Autowired private UserRepository userRepository;
   @Autowired private UserGreetConfigRepository userGreetConfigRepository;
@@ -122,7 +124,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
         .flatMap(
             user -> {
               RBucketReactive<GreetInfo> greetInfoBucket =
-                  redission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
+                  singleRedission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
 
               return greetInfoBucket
                   .get()
@@ -137,6 +139,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                             DictionaryProperties.get().getGreetMessage().getSendIntervalSecond()
                                 - intervalSecond;
                         lastSecond = lastSecond < 0 ? 0 : lastSecond;
+                        log.info("用户{}距离下次发送打招呼消息剩余{}秒", userId, lastSecond);
                         return new GreetStatusRes(user.getIsEnableGreet(), (int) lastSecond);
                       })
                   .switchIfEmpty(
@@ -174,8 +177,10 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   @Override
   public Mono<SendGreetMessageRes> sendGreetMessage(Long userId) {
+    log.info("用户{}发送打招呼消息", userId);
     DictionaryProperties.GreetMessage greetConfig = DictionaryProperties.get().getGreetMessage();
-    return userRegInfoRepository
+
+    userRegInfoRepository
         .findById(userId)
         .flatMap(
             currentUser ->
@@ -202,7 +207,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                                                       .then(
                                                           Mono.defer(
                                                               () ->
-                                                                  redission
+                                                                  singleRedission
                                                                       .getBucket(
                                                                           key(
                                                                               RedisConstant
@@ -212,16 +217,16 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                                                                           new GreetInfo(
                                                                               info.getGreetTimes()
                                                                                   + 1,
-                                                                              LocalDateTime.now()))
-                                                                      .thenReturn(
-                                                                          new SendGreetMessageRes(
-                                                                              greetConfig
-                                                                                  .getSendIntervalSecond()))));
+                                                                              LocalDateTime
+                                                                                  .now()))));
                                                 })
                                             .switchIfEmpty(
                                                 Mono.error(
                                                     ErrorCode.UNAVAILABLE_GREET_USER
-                                                        .newBusinessException())))));
+                                                        .newBusinessException())))))
+        .toFuture();
+
+    return Mono.just(new SendGreetMessageRes(greetConfig.getSendIntervalSecond()));
   }
 
   @Override
@@ -245,6 +250,11 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   private Mono<Void> sendGreetMessage(
       String yunXinId, Collection<GreetUser> users, List<String> messages) {
+    log.info(
+        "发送打招呼消息给用户: "
+            + users.stream()
+                .map(u -> String.valueOf(u.getUserId()))
+                .collect(Collectors.joining(",")));
     int messageIndex = 0;
     List<Mono<Void>> monos = new ArrayList<>();
     for (GreetUser greetUser : users) {
@@ -304,7 +314,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                 throw ErrorCode.NOT_OPENED_GREET.newBusinessException();
               }
               RBucketReactive<GreetInfo> greetInfoBucket =
-                  redission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
+                  singleRedission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
               return greetInfoBucket
                   .get()
                   .map(

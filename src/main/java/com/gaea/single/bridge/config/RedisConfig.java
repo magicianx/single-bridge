@@ -41,11 +41,11 @@ public class RedisConfig {
     return newRedissonClient(redisProperties);
   }
 
-//  @Bean
-//  public RedissonReactiveClient loboRedissonReactiveClient(
-//      @Qualifier("loboRedisProperties") RedisProperties redisProperties) {
-//    return newRedissonClient(redisProperties);
-//  }
+  @Bean
+  public RedissonReactiveClient loboRedissonReactiveClient(
+      @Qualifier("loboRedisProperties") RedisProperties redisProperties) {
+    return newRedissonClient(redisProperties);
+  }
 
   private RedissonReactiveClient newRedissonClient(RedisProperties redisProperties) {
     Config config = new Config();

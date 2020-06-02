@@ -37,9 +37,9 @@ public class GreetUserManager extends AbstractCache {
 
   @PostConstruct
   public void init() {
-    this.newUserSet = redission.getScoredSortedSet(key(RedisConstant.USER_GREET_NEW));
-    this.uncalledUserSet = redission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
-    this.greetUsingQueue = redission.getQueue(key(RedisConstant.USER_GREET_USING));
+    this.newUserSet = singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_NEW));
+    this.uncalledUserSet = singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
+    this.greetUsingQueue = singleRedission.getQueue(key(RedisConstant.USER_GREET_USING));
     initGreetUser().subscribe();
   }
 
@@ -52,7 +52,7 @@ public class GreetUserManager extends AbstractCache {
    */
   public Mono<Void> addGreetUser(GreetUser greetUser, boolean isNewUser) {
     long userId = greetUser.getUserId();
-    return redission
+    return singleRedission
         .getAtomicLong(key(RedisConstant.USER_GREET_TIMES, userId))
         .get()
         .flatMap(
@@ -149,7 +149,20 @@ public class GreetUserManager extends AbstractCache {
     Mono<Set<GreetUser>> rePutToUsingQueue =
         Mono.when(addNewUsers, addUncalledUsers)
             .then(
-                Mono.defer(() -> popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers)));
+                Mono.defer(
+                    () ->
+                        popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers)
+                            .map(
+                                users -> {
+                                  log.info("用户{}可发送打招呼消息给{}个用户", currentUserId, users.size());
+                                  return users;
+                                })
+                            .switchIfEmpty(
+                                Mono.defer(
+                                    () -> {
+                                      log.info("无可发送用户,用户{}不发送打招呼消息", currentUserId);
+                                      return Mono.just(Collections.emptySet());
+                                    }))));
 
     return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers)
         .flatMap(
@@ -159,6 +172,7 @@ public class GreetUserManager extends AbstractCache {
                 log.info("获得可打招呼用户数量{}小于需要数量{}, 从新放入可打招呼用户到使用队列", users.size(), count);
                 return rePutToUsingQueue;
               } else {
+                log.info("用户{}可发送打招呼消息给{}个用户", currentUserId, users.size());
                 return Mono.just(users);
               }
             })
@@ -176,17 +190,24 @@ public class GreetUserManager extends AbstractCache {
                     .getUserOnlineStatus(user.getUserId())
                     .flatMap(
                         status -> {
-                          if (user.getUserId() != currentUserId
-                              && status == UserOnlineStatus.FREE) {
-                            greetUsers.add(user);
-                            return increaseReceiveTimes(user, maxReceiveTimes)
-                                .flatMap(
-                                    success ->
-                                        greetUsers.size() == count
-                                            ? Mono.just(greetUsers)
-                                            : popGreetUser(
-                                                currentUserId, count, maxReceiveTimes, greetUsers));
+                          if (user.getUserId() != currentUserId) {
+                            if (status == UserOnlineStatus.FREE) {
+                              greetUsers.add(user);
+                              return increaseReceiveTimes(user, maxReceiveTimes)
+                                  .flatMap(
+                                      success ->
+                                          greetUsers.size() == count
+                                              ? Mono.just(greetUsers)
+                                              : popGreetUser(
+                                                  currentUserId,
+                                                  count,
+                                                  maxReceiveTimes,
+                                                  greetUsers));
+                            } else {
+                              uncalledUserSet.remove(user);
+                            }
                           }
+
                           return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);
                         });
                 // 使用中的列表已经弹完了
@@ -198,7 +219,7 @@ public class GreetUserManager extends AbstractCache {
 
   private Mono<Boolean> increaseReceiveTimes(GreetUser user, int maxReceiveTimes) {
     RAtomicLongReactive greetAtomicTimes =
-        redission.getAtomicLong(key(RedisConstant.USER_GREET_TIMES, user.getUserId()));
+        singleRedission.getAtomicLong(key(RedisConstant.USER_GREET_TIMES, user.getUserId()));
     return greetAtomicTimes
         .incrementAndGet()
         .flatMap(
