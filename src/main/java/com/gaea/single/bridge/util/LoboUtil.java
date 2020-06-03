@@ -21,6 +21,16 @@ public class LoboUtil {
   }
 
   /**
+   * 1为true , 其他值为false
+   *
+   * @param value lobo端值
+   * @return boolean
+   */
+  public static int toInteger(boolean value) {
+    return value ? 1 : 0;
+  }
+
+  /**
    * 2为true , 其他值为false
    *
    * @param value lobo端值
@@ -42,7 +52,7 @@ public class LoboUtil {
         .orElse(0);
   }
 
-  public static String getImageUrl(String imgPath){
+  public static String getImageUrl(String imgPath) {
     return DictionaryProperties.get().getLobo().getImgHost() + imgPath;
   }
 }

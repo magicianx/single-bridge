@@ -61,69 +61,82 @@ public class YxClient {
     String nonce = StringUtil.uuid();
     String checkSum = Sha1Utils.digest(appSecret + nonce + curTime);
 
-    MultiValueMap<String, Object> data =
-        getData(fromYunXinId, fromSocialInfo, toYunXinIds, content);
-
-    return webClient
-        .post()
-        .uri(YxPathConst.BATCH_SEND_MESSAGE)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .header("AppKey", appKey)
-        .header("Nonce", nonce)
-        .header("CurTime", curTime)
-        .header("CheckSum", checkSum)
-        .body(BodyInserters.fromMultipartData(data))
-        .retrieve()
-        .bodyToMono(YxResult.class)
+    return getData(fromYunXinId, fromSocialInfo, toYunXinIds, content)
         .flatMap(
-            r -> {
-              if (!r.isSuccess()) {
-                log.error("{} 批量推送云信文本消息 {} 失败: 数量 {}", fromYunXinId, content, toYunXinIds.size());
-                return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
-              }
-              log.error("{} 批量推送云信文本消息 {} 成功: 数量 {}", fromYunXinId, content, toYunXinIds.size());
-              return Mono.empty();
-            });
+            data ->
+                webClient
+                    .post()
+                    .uri(YxPathConst.BATCH_SEND_MESSAGE)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header("AppKey", appKey)
+                    .header("Nonce", nonce)
+                    .header("CurTime", curTime)
+                    .header("CheckSum", checkSum)
+                    .body(BodyInserters.fromMultipartData(data))
+                    .retrieve()
+                    .bodyToMono(YxResult.class)
+                    .flatMap(
+                        r -> {
+                          if (!r.isSuccess()) {
+                            log.error(
+                                "{} 批量推送云信文本消息 {} 失败: 数量 {}",
+                                fromYunXinId,
+                                content,
+                                toYunXinIds.size());
+                            return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
+                          }
+                          log.error(
+                              "{} 批量推送云信文本消息 {} 成功: 数量 {}",
+                              fromYunXinId,
+                              content,
+                              toYunXinIds.size());
+                          return Mono.empty();
+                        }));
   }
 
-  private MultiValueMap<String, Object> getData(
+  private Mono<MultiValueMap<String, Object>> getData(
       String fromYunXinId,
       UserSocialInfo fromSocialInfo,
       List<String> toYunXinIds,
       String content) {
-    Map<String, String> body = new HashMap<>();
-    body.put("msg", content);
+    return userManager
+        .isVip(fromSocialInfo.getUserId())
+        .map(
+            isVip -> {
+              Map<String, String> body = new HashMap<>();
+              body.put("msg", content);
 
-    Map<String, Boolean> options = new HashMap<>();
-    // 是否需要漫游
-    options.put("roam", false);
-    // 是否存云端历史
-    options.put("history", false);
-    // 是否需要发送方多端同步
-    options.put("sendersync", false);
-    // 是否需要抄送第三方
-    options.put("route", false);
+              Map<String, Boolean> options = new HashMap<>();
+              // 是否需要漫游
+              options.put("roam", false);
+              // 是否存云端历史
+              options.put("history", false);
+              // 是否需要发送方多端同步
+              options.put("sendersync", false);
+              // 是否需要抄送第三方
+              options.put("route", false);
 
-    Map<String, Object> ext = new HashMap<>();
-    ext.put("nickname", fromSocialInfo.getNickName());
-    ext.put("headurl", LoboUtil.getImageUrl(fromSocialInfo.getPortrait()));
-    ext.put("netid", fromYunXinId);
-    ext.put(
-        "userType",
-        AnchorAuthStatus.ofCode(fromSocialInfo.getIsVideoAudit()).isAuditPass()
-            ? UserType.ANCHOR.getCode()
-            : UserType.GENERAL_USER.getCode());
-    ext.put("isVip", userManager.isVip(fromSocialInfo.getUserId()));
+              Map<String, Object> ext = new HashMap<>();
+              ext.put("nickname", fromSocialInfo.getNickName());
+              ext.put("headurl", LoboUtil.getImageUrl(fromSocialInfo.getPortrait()));
+              ext.put("netid", fromYunXinId);
+              ext.put(
+                  "userType",
+                  AnchorAuthStatus.ofCode(fromSocialInfo.getIsVideoAudit()).isAuditPass()
+                      ? UserType.ANCHOR.getCode()
+                      : UserType.GENERAL_USER.getCode());
+              ext.put("isVip", LoboUtil.toInteger(isVip));
 
-    MultiValueMap<String, Object> data = new LinkedMultiValueMap<>();
-    data.add("fromAccid", fromYunXinId);
-    data.add("toAccids", JsonUtils.toJsonString(toYunXinIds));
-    data.add("type", "0");
-    data.add("body", JsonUtils.toJsonString(body));
-    data.add("pushcontent", content);
-    data.add("option", JsonUtils.toJsonString(options));
-    data.add("ext", JsonUtils.toJsonString(ext));
+              MultiValueMap<String, Object> data = new LinkedMultiValueMap<>();
+              data.add("fromAccid", fromYunXinId);
+              data.add("toAccids", JsonUtils.toJsonString(toYunXinIds));
+              data.add("type", "0");
+              data.add("body", JsonUtils.toJsonString(body));
+              data.add("pushcontent", content);
+              data.add("option", JsonUtils.toJsonString(options));
+              data.add("ext", JsonUtils.toJsonString(ext));
 
-    return data;
+              return data;
+            });
   }
 }

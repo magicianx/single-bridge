@@ -260,7 +260,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   @Override
   public Mono<Void> removeGreetUser(Long userId) {
-    return greetUserManager.removeUser(userId);
+    return greetUserManager.removeGreetUser(userId);
   }
 
   private Mono<Void> sendGreetMessage(
