@@ -16,7 +16,7 @@ public interface UserRegInfoRepository extends R2dbcRepository<UserRegInfo, Long
           + "where ur.os = :os\n"
           + "  and ua.app_id = :appId\n"
           + "  and us.is_video_audit = 2 limit :start,:pageSize")
-  Flux<UserRegInfo> listAuditPassedYunXinIds(Integer os, String appId, int start, int pageSize);
+  Flux<UserRegInfo> listAuditPassedInfos(Integer os, String appId, int start, int pageSize);
 
   @Query(
       "select ur.yunxin_id\n"
@@ -26,7 +26,7 @@ public interface UserRegInfoRepository extends R2dbcRepository<UserRegInfo, Long
           + "where ur.os = :os\n"
           + "  and ua.app_id = :appId\n"
           + "  and us.is_video_audit != 2 limit :start,:pageSize")
-  Flux<UserRegInfo> listUnAuditPassedYunXinIds(Integer os, String appId, int start, int pageSize);
+  Flux<UserRegInfo> listUnAuditPassedInfos(Integer os, String appId, int start, int pageSize);
 
   /**
    * 查询新注册用户

@@ -52,6 +52,7 @@ service:
 logging:
   level:
     org.springframework: debug
+    com.gaea: debug
 ---
 spring:
   profiles: test
@@ -87,6 +88,7 @@ service:
 logging:
   level:
     org.springframework: debug
+    com.gaea: debug
 ---
 spring:
   profiles: prod

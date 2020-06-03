@@ -83,4 +83,10 @@ public final class RedisConstant {
    * value: String
    */
   public static final String USER_BUSY = "user:busy";
+
+  /**
+   * 用户vip信息 <br>
+   * type: Map
+   */
+  public static final String USER_VIP_INFO = "user:super:vip:";
 }

@@ -289,10 +289,11 @@ public class UserController extends BaseController {
     return mono.flatMap(
         result -> {
           LoginRes res = result.getData();
-          if (ErrorCode.isSuccess(result.getCode()) && res.getIsRegister()) {
-            return userGreetService.addGreetUser(res.getId(), true).thenReturn(result);
+          if (ErrorCode.isSuccess(result.getCode())) {
+            return userGreetService
+                .addGreetUser(res.getId(), res.getIsRegister())
+                .thenReturn(result);
           }
-
           return Mono.just(result);
         });
   }

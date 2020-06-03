@@ -15,10 +15,12 @@ import com.gaea.single.bridge.dto.user.SendGreetMessageRes;
 import com.gaea.single.bridge.dto.user.UserGreetConfigRes;
 import com.gaea.single.bridge.entity.mongodb.SystemGreetMessage;
 import com.gaea.single.bridge.entity.mongodb.UserGreetConfig;
+import com.gaea.single.bridge.enums.AnchorAuthStatus;
 import com.gaea.single.bridge.repository.mongodb.SystemGreetMessageRepository;
 import com.gaea.single.bridge.repository.mongodb.UserGreetConfigRepository;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
+import com.gaea.single.bridge.repository.mysql.UserSocialInfoRepository;
 import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
   @Autowired private UserGreetConfigRepository userGreetConfigRepository;
   @Autowired private SystemGreetMessageRepository systemGreetMessageRepository;
   @Autowired private UserRegInfoRepository userRegInfoRepository;
+  @Autowired private UserSocialInfoRepository userSocialInfoRepository;
   @Autowired private GreetUserManager greetUserManager;
   @Autowired private YxClient yxClient;
 
@@ -51,7 +54,6 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
   public Mono<UserGreetConfigRes> getGreetConfig(Long userId) {
     Mono<List<SystemGreetMessage>> allMessageMono =
         systemGreetMessageRepository.findAll().collectList();
-
     return userGreetConfigRepository
         .findByUserId(userId)
         .flatMap(config -> allMessageMono.map(messages -> Pair.of(config, messages)))
@@ -133,7 +135,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                         // 距离上次发送的间隔秒数
                         long intervalSecond =
                             ChronoUnit.SECONDS.between(
-                                LocalDateTime.now(), info.getLastGreetTime());
+                                info.getLastGreetTime(), LocalDateTime.now());
                         // 距离下次发送的剩余秒数
                         long lastSecond =
                             DictionaryProperties.get().getGreetMessage().getSendIntervalSecond()
@@ -180,53 +182,43 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     log.info("用户{}发送打招呼消息", userId);
     DictionaryProperties.GreetMessage greetConfig = DictionaryProperties.get().getGreetMessage();
 
-    userRegInfoRepository
-        .findById(userId)
+    return validateIsGreetable(userId, greetConfig)
         .flatMap(
-            currentUser ->
-                validateIsGreetable(userId, greetConfig)
+            greetInfo ->
+                getGreetMessages(userId)
                     .flatMap(
-                        info ->
-                            getGreetMessages(userId)
+                        messages ->
+                            greetUserManager
+                                .getGreetUsers(userId, greetConfig.getOneMaxSendGreetCount())
                                 .flatMap(
-                                    messages ->
-                                        greetUserManager
-                                            .getGreetUsers(
-                                                userId, greetConfig.getOneMaxSendGreetCount())
-                                            .flatMap(
-                                                users -> {
-                                                  if (users.isEmpty()) {
-                                                    return Mono.error(
-                                                        ErrorCode.UNAVAILABLE_GREET_USER
-                                                            .newBusinessException());
-                                                  }
-                                                  return sendGreetMessage(
-                                                          currentUser.getYunxinId(),
-                                                          users,
-                                                          messages)
-                                                      .then(
-                                                          Mono.defer(
-                                                              () ->
-                                                                  singleRedission
-                                                                      .getBucket(
-                                                                          key(
-                                                                              RedisConstant
-                                                                                  .USER_GREET_INFO,
-                                                                              userId))
-                                                                      .set(
-                                                                          new GreetInfo(
-                                                                              info.getGreetTimes()
-                                                                                  + 1,
-                                                                              LocalDateTime
-                                                                                  .now()))));
-                                                })
-                                            .switchIfEmpty(
-                                                Mono.error(
-                                                    ErrorCode.UNAVAILABLE_GREET_USER
-                                                        .newBusinessException())))))
-        .toFuture();
-
-    return Mono.just(new SendGreetMessageRes(greetConfig.getSendIntervalSecond()));
+                                    users -> {
+                                      if (users.isEmpty()) {
+                                        return Mono.error(
+                                            ErrorCode.UNAVAILABLE_GREET_USER
+                                                .newBusinessException());
+                                      }
+                                      // 异步发送消息
+                                      sendGreetMessage(userId, users, messages)
+                                          .then(
+                                              Mono.defer(
+                                                  () ->
+                                                      singleRedission
+                                                          .getBucket(
+                                                              key(
+                                                                  RedisConstant.USER_GREET_INFO,
+                                                                  userId))
+                                                          .set(
+                                                              new GreetInfo(
+                                                                  greetInfo.getGreetTimes() + 1,
+                                                                  LocalDateTime.now()))))
+                                          .toFuture();
+                                      return Mono.just(
+                                          new SendGreetMessageRes(
+                                              greetConfig.getSendIntervalSecond()));
+                                    })
+                                .switchIfEmpty(
+                                    Mono.error(
+                                        ErrorCode.UNAVAILABLE_GREET_USER.newBusinessException()))));
   }
 
   @Override
@@ -245,29 +237,58 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     return userRegInfoRepository
         .findById(userId)
         .flatMap(
-            u -> greetUserManager.addGreetUser(new GreetUser(u.getId(), u.getYunxinId()), isNew));
+            u -> {
+              if (isNew) {
+                return greetUserManager.addGreetUser(
+                    new GreetUser(u.getId(), u.getYunxinId()), isNew);
+              } else {
+                return userSocialInfoRepository
+                    .findByUserId(userId)
+                    .flatMap(
+                        s -> {
+                          // 主播不加入队列
+                          if (AnchorAuthStatus.ofCode(s.getIsVideoAudit()).isAuditPass()) {
+                            log.info("用户{}为主播，不加入打招呼用户队列", userId);
+                            return Mono.empty();
+                          }
+                          return greetUserManager.addGreetUser(
+                              new GreetUser(u.getId(), u.getYunxinId()), isNew);
+                        });
+              }
+            });
   }
 
   private Mono<Void> sendGreetMessage(
-      String yunXinId, Collection<GreetUser> users, List<String> messages) {
-    log.info(
-        "发送打招呼消息给用户: "
-            + users.stream()
-                .map(u -> String.valueOf(u.getUserId()))
-                .collect(Collectors.joining(",")));
-    int messageIndex = 0;
-    List<Mono<Void>> monos = new ArrayList<>();
-    for (GreetUser greetUser : users) {
-      if (messageIndex == messages.size()) {
-        messageIndex = 0;
-      }
-      messageIndex++;
-      String message = messages.get(messageIndex);
-      monos.add(
-          yxClient.sendBatchTextMsg(
-              yunXinId, Collections.singletonList(greetUser.getYunxinId()), message));
-    }
-    return Mono.when(monos).then();
+      Long userId, Collection<GreetUser> users, List<String> messages) {
+    return userRegInfoRepository
+        .findById(userId)
+        .flatMap(
+            regInfo ->
+                userSocialInfoRepository
+                    .findByUserId(userId)
+                    .flatMap(
+                        socialInfo -> {
+                          log.info(
+                              "发送打招呼消息给用户: "
+                                  + users.stream()
+                                      .map(u -> String.valueOf(u.getUserId()))
+                                      .collect(Collectors.joining(",")));
+                          int messageIndex = 0;
+                          List<Mono<Void>> monos = new ArrayList<>();
+                          for (GreetUser greetUser : users) {
+                            if (messageIndex == messages.size()) {
+                              messageIndex = 0;
+                            }
+                            String message = messages.get(messageIndex++);
+                            monos.add(
+                                yxClient.sendMessage(
+                                    regInfo.getYunxinId(),
+                                    socialInfo,
+                                    Collections.singletonList(greetUser.getYunxinId()),
+                                    message));
+                          }
+                          return Mono.when(monos);
+                        }));
   }
 
   private Mono<List<String>> getGreetMessages(Long userId) {
@@ -323,7 +344,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                             info.getLastGreetTime()
                                 .plusSeconds(greetConfig.getSendIntervalSecond());
                         // 当前是否在可发送时间之后
-                        if (LocalDateTime.now().isAfter(minSendTime)) {
+                        if (LocalDateTime.now().isBefore(minSendTime)) {
                           throw ErrorCode.GREET_TIME_LIMIT.newBusinessException();
                         }
                         return info;

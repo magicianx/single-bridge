@@ -102,10 +102,4 @@ public class ServiceConfig implements WebFluxConfigurer {
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }
-
-  @Bean
-  public YxClient yxClient() {
-    ServiceProperties.Yx yx = serviceProperties.getYx();
-    return new YxClient(yx.getHost(), yx.getAppKey(), yx.getAppSecret());
-  }
 }

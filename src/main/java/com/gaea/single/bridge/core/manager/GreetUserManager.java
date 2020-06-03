@@ -38,7 +38,8 @@ public class GreetUserManager extends AbstractCache {
   @PostConstruct
   public void init() {
     this.newUserSet = singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_NEW));
-    this.uncalledUserSet = singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
+    this.uncalledUserSet =
+        singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
     this.greetUsingQueue = singleRedission.getQueue(key(RedisConstant.USER_GREET_USING));
     initGreetUser().subscribe();
   }
@@ -90,7 +91,7 @@ public class GreetUserManager extends AbstractCache {
     return newUserSet.removeRangeByScore(0, true, 0, true).then();
   }
 
-  public Mono<Void> removeUncalledUser(Long userId) {
+  public Mono<Void> removeReachMaxReceivedUser(Long userId) {
     return userRegInfoRepository
         .findById(userId)
         .flatMap(
@@ -184,14 +185,14 @@ public class GreetUserManager extends AbstractCache {
     return greetUsingQueue
         .poll()
         .flatMap(
-            user -> {
-              if (user != null) {
-                return userManager
+            user ->
+                userManager
                     .getUserOnlineStatus(user.getUserId())
                     .flatMap(
                         status -> {
                           if (user.getUserId() != currentUserId) {
                             if (status == UserOnlineStatus.FREE) {
+                              log.debug("用户{}在线，加入到被呼叫用户列表中", user.getUserId());
                               greetUsers.add(user);
                               return increaseReceiveTimes(user, maxReceiveTimes)
                                   .flatMap(
@@ -204,17 +205,20 @@ public class GreetUserManager extends AbstractCache {
                                                   maxReceiveTimes,
                                                   greetUsers));
                             } else {
+                              log.debug("用户{}不在线，从未呼叫队列中移除", user.getUserId());
                               uncalledUserSet.remove(user);
                             }
                           }
 
                           return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);
-                        });
-                // 使用中的列表已经弹完了
-              } else {
-                return Mono.just(greetUsers);
-              }
-            });
+                        }))
+        // 使用中的列表已经弹完了
+        .switchIfEmpty(
+            Mono.defer(
+                () -> {
+                  log.debug("共可发送打招呼消息给{}个用户", greetUsers.size());
+                  return Mono.just(greetUsers);
+                }));
   }
 
   private Mono<Boolean> increaseReceiveTimes(GreetUser user, int maxReceiveTimes) {
@@ -227,14 +231,15 @@ public class GreetUserManager extends AbstractCache {
               if (v == 1) {
                 return greetAtomicTimes
                     .expireAt(getExpireDate())
-                    .flatMap(s -> removeUncalledUser(user, v, maxReceiveTimes));
+                    .flatMap(s -> removeReachMaxReceivedUser(user, v, maxReceiveTimes));
               } else {
-                return removeUncalledUser(user, v, maxReceiveTimes);
+                return removeReachMaxReceivedUser(user, v, maxReceiveTimes);
               }
             });
   }
 
-  private Mono<Boolean> removeUncalledUser(GreetUser user, long receiveTimes, int maxReceiveTimes) {
+  private Mono<Boolean> removeReachMaxReceivedUser(
+      GreetUser user, long receiveTimes, int maxReceiveTimes) {
     // 如果次数达到最大接收次数，从新用户和未呼叫队列中移除
     if (receiveTimes >= maxReceiveTimes) {
       log.info("用户{}已达到最大接收招呼次数{}", user.getUserId(), maxReceiveTimes);

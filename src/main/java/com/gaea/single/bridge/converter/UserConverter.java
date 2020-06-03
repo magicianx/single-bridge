@@ -161,6 +161,7 @@ public class UserConverter {
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
+        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
         return res;
       };
 

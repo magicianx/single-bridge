@@ -42,34 +42,33 @@ public class YXMessageServiceImpl implements MessageService {
     String appId = DefaultSettingConstant.APP_ID;
 
     if (UserType.ANCHOR == userType) {
-
       return userRegInfoRepository
-          .listAuditPassedYunXinIds(osType.getCode(), appId, 0, 500)
+          .listAuditPassedInfos(osType.getCode(), appId, 0, 500)
           .collectList()
           .flatMap(
               users -> {
                 List<String> yunXinIds =
                     users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                return yxClient.sendBatchTextMsg(
-                    YxCcidConstant.ANCHOR_SECRETARY_CCID, yunXinIds, content);
+                return yxClient.sendMessage(
+                    YxCcidConstant.ANCHOR_SECRETARY_CCID, null, yunXinIds, content);
               });
     } else {
       Mono<Void> mono =
           userRegInfoRepository
-              .listUnAuditPassedYunXinIds(osType.getCode(), appId, 0, 100)
+              .listUnAuditPassedInfos(osType.getCode(), appId, 0, 100)
               .collectList()
               .flatMap(
                   users -> {
                     List<String> yunXinIds =
                         users.stream().map(UserRegInfo::getYunxinId).collect(Collectors.toList());
-                    return yxClient.sendBatchTextMsg(
-                        YxCcidConstant.USER_SECRETARY_CCID, yunXinIds, content);
+                    return yxClient.sendMessage(
+                        YxCcidConstant.USER_SECRETARY_CCID, null, yunXinIds, content);
                   });
       for (int i = 1; i < 33; i++) {
         mono =
             mono.then(
                 userRegInfoRepository
-                    .listUnAuditPassedYunXinIds(osType.getCode(), appId, i * 100, 100)
+                    .listUnAuditPassedInfos(osType.getCode(), appId, i * 100, 100)
                     .collectList()
                     .flatMap(
                         users -> {
@@ -77,8 +76,8 @@ public class YXMessageServiceImpl implements MessageService {
                               users.stream()
                                   .map(UserRegInfo::getYunxinId)
                                   .collect(Collectors.toList());
-                          return yxClient.sendBatchTextMsg(
-                              YxCcidConstant.USER_SECRETARY_CCID, yunXinIds, content);
+                          return yxClient.sendMessage(
+                              YxCcidConstant.USER_SECRETARY_CCID, null, yunXinIds, content);
                         }));
       }
       return mono;

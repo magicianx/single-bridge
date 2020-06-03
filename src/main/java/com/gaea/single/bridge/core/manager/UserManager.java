@@ -107,4 +107,14 @@ public class UserManager extends AbstractCache {
             })
         .then(bucket.delete().then(Mono.empty()));
   }
+
+  /**
+   * 用户是否为vip
+   *
+   * @param userId 用户id
+   * @return {@link Mono<Boolean>}
+   */
+  public Mono<Boolean> isVip(Long userId) {
+    return loboRedission.getMap(key(RedisConstant.USER_VIP_INFO, userId)).isExists();
+  }
 }
