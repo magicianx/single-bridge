@@ -51,7 +51,7 @@ public class VideoController extends BaseController {
           }
         };
     return greetUserManager
-        .removeReachMaxReceivedUser(req.getCalledId())
+        .removeUncalledUser(req.getCalledId())
         .then(
             loboClient.postForm(
                 exchange,

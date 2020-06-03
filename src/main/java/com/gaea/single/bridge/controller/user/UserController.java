@@ -18,6 +18,7 @@ import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
+import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.service.MessageService;
 import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.service.UserService;
@@ -173,10 +174,15 @@ public class UserController extends BaseController {
               if (ErrorCode.isSuccess(res.getCode())) {
                 return yxMessageService
                     .getMessageCount(res.getData().getId())
-                    .map(
+                    .flatMap(
                         count -> {
                           res.getData().setMessageCount(count);
-                          return res;
+                          if (res.getData().getUserType() == UserType.ANCHOR) {
+                            return userGreetService
+                                .removeGreetUser(res.getData().getId())
+                                .thenReturn(res);
+                          }
+                          return Mono.just(res);
                         });
               }
               return Mono.just(res);

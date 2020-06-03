@@ -37,13 +37,14 @@ public interface UserRegInfoRepository extends R2dbcRepository<UserRegInfo, Long
    * @return {@link Flux<UserRegInfo>}
    */
   @Query(
-      " select u.*\n"
+      "select u.*\n"
           + "from user_reg_info u\n"
+          + "         join user_social_info s on u.id = s.user_id\n"
           + "         join user_app_info a on u.id = a.user_id\n"
           + "where a.app_id = ?\n"
           + "  and u.status = 1\n"
+          + "  and s.is_video_audit != 2\n"
           + "  and date(u.create_time) between ? and ?\n"
-          + "order by create_time desc\n"
-          + "\n")
+          + "order by create_time desc\n")
   Flux<UserRegInfo> findNewRegisterUser(String appId, String startDate, String endDate);
 }

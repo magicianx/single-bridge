@@ -6,6 +6,7 @@ import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.core.manager.model.GreetUser;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
+import com.gaea.single.bridge.repository.mysql.UserSocialInfoRepository;
 import com.gaea.single.bridge.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RAtomicLongReactive;
@@ -29,6 +30,7 @@ import java.util.*;
 @Slf4j
 public class GreetUserManager extends AbstractCache {
   @Autowired private UserRegInfoRepository userRegInfoRepository;
+  @Autowired private UserSocialInfoRepository userSocialInfoRepository;
   @Autowired private UserManager userManager;
 
   private RScoredSortedSetReactive<GreetUser> newUserSet;
@@ -91,13 +93,33 @@ public class GreetUserManager extends AbstractCache {
     return newUserSet.removeRangeByScore(0, true, 0, true).then();
   }
 
-  public Mono<Void> removeReachMaxReceivedUser(Long userId) {
+  public Mono<Void> removeUncalledUser(Long userId) {
+    log.info("从新用户和未呼叫队列中移除用户{}", userId);
     return userRegInfoRepository
         .findById(userId)
         .flatMap(
             u -> {
               log.info("从未呼叫用户队列中删除用户{}", u.getId());
               return uncalledUserSet.remove(new GreetUser(u.getId(), u.getYunxinId())).then();
+            });
+  }
+
+  /**
+   * 移除用户
+   *
+   * @param userId 用户id
+   * @return {@link Mono<Void>}
+   */
+  public Mono<Void> removeUser(Long userId) {
+    return userRegInfoRepository
+        .findById(userId)
+        .flatMap(
+            user -> {
+              log.info("将用户{}从新用户和未呼叫队列中移除", userId);
+              GreetUser greetUser = new GreetUser(userId, user.getYunxinId());
+              return uncalledUserSet
+                  .remove(greetUser)
+                  .then(Mono.defer(() -> newUserSet.remove(greetUser).then()));
             });
   }
 
@@ -206,7 +228,12 @@ public class GreetUserManager extends AbstractCache {
                                                   greetUsers));
                             } else {
                               log.debug("用户{}不在线，从未呼叫队列中移除", user.getUserId());
-                              uncalledUserSet.remove(user);
+                              return uncalledUserSet
+                                  .remove(user)
+                                  .flatMap(
+                                      (v) ->
+                                          popGreetUser(
+                                              currentUserId, count, maxReceiveTimes, greetUsers));
                             }
                           }
 
