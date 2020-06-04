@@ -110,9 +110,9 @@ public class YxClient {
               // 是否需要漫游
               options.put("roam", false);
               // 是否存云端历史
-              options.put("history", true);
+              options.put("history", false);
               // 是否需要发送方多端同步
-              options.put("sendersync", false);
+              options.put("sendersync", true);
               // 是否需要抄送第三方
               options.put("route", false);
 
