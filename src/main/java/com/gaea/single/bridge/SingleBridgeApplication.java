@@ -7,7 +7,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
 
 @SpringBootApplication
 @EnableSwagger2WebFlux
-@EnableR2dbcRepositories
+@EnableR2dbcRepositories("com.gaea.single.bridge.repository")
 public class SingleBridgeApplication {
   public static void main(String[] args) {
     SpringApplication.run(SingleBridgeApplication.class, args);

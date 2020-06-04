@@ -1,13 +1,14 @@
 package com.gaea.single.bridge.controller.account;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
+import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
-import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,10 +22,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/account/pay", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,28 +63,16 @@ public class PayController extends BaseController {
   @GetMapping(value = "/v1/types.do")
   @ApiOperation(value = "获取支付方式列表")
   public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("type", getOsType(exchange).getCode());
-          }
-        };
-    return loboClient.postForm(
-        exchange,
-        LoboPathConst.PAY_WAYS,
-        data,
-        (obj) -> {
-          List<PayWay> payWays = new ArrayList<>();
-          JSONObject result = (JSONObject) obj;
-          // 微信支付通过服务端开启，lobo那边不能根据包名配置，开启会影响到lobo那边
-          payWays.add(PayWay.WECHAT_PAY);
-          if (LoboUtil.toBoolean(result.getInteger("isAlPay"))) {
-            payWays.add(PayWay.ALIPAY);
-          }
-          if (LoboUtil.toBoolean(result.getInteger("isIpadPay"))) {
-            payWays.add(PayWay.APPLE_PAY);
-          }
-          return payWays;
-        });
+    DictionaryProperties.Pay payConfig = DictionaryProperties.get().getPay();
+
+    List<PayWay> payWays;
+    if (OsType.IOS.equals(getOsType(exchange))) {
+      payWays =
+          payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+    } else {
+      payWays =
+          payConfig.getAndroidPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+    }
+    return Mono.just(Result.success(payWays));
   }
 }

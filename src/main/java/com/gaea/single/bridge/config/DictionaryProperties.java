@@ -33,6 +33,7 @@ public class DictionaryProperties implements IConfig {
   private AppStoreAudit appStoreAudit;
   private DrainagePackage drainagePackage;
   private User user;
+  private Pay pay;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
@@ -40,6 +41,7 @@ public class DictionaryProperties implements IConfig {
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
     this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
     this.user = getProperty(User.class, "user", properties);
+    this.pay = getProperty(Pay.class, "pay", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -97,6 +99,13 @@ public class DictionaryProperties implements IConfig {
     private String url;
     private String title;
     private String content;
+  }
+
+  @Getter
+  @Setter
+  public static class Pay {
+    private List<String> androidPayWays;
+    private List<String> iosPayWays;
   }
 
   @Getter
