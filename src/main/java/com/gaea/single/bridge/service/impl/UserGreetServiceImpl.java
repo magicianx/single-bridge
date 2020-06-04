@@ -6,22 +6,24 @@ import com.gaea.single.bridge.converter.UserGreetConverter;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.manager.AbstractCache;
 import com.gaea.single.bridge.core.manager.GreetUserManager;
+import com.gaea.single.bridge.core.manager.UserManager;
 import com.gaea.single.bridge.core.manager.model.GreetInfo;
-import com.gaea.single.bridge.core.manager.model.GreetUser;
-import com.gaea.single.bridge.core.yx.YxClient;
 import com.gaea.single.bridge.dto.user.GreetMessageRes;
 import com.gaea.single.bridge.dto.user.GreetStatusRes;
-import com.gaea.single.bridge.dto.user.SendGreetMessageRes;
+import com.gaea.single.bridge.dto.user.SendGreetUserMessageRes;
 import com.gaea.single.bridge.dto.user.UserGreetConfigRes;
 import com.gaea.single.bridge.entity.mongodb.SystemGreetMessage;
 import com.gaea.single.bridge.entity.mongodb.UserGreetConfig;
+import com.gaea.single.bridge.entity.mysql.model.UserBaseInfo;
 import com.gaea.single.bridge.enums.AnchorAuthStatus;
 import com.gaea.single.bridge.repository.mongodb.SystemGreetMessageRepository;
 import com.gaea.single.bridge.repository.mongodb.UserGreetConfigRepository;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
+import com.gaea.single.bridge.repository.mysql.UserCompositeRepository;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.repository.mysql.UserSocialInfoRepository;
 import com.gaea.single.bridge.service.UserGreetService;
+import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,10 +34,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /** @author cludy */
@@ -48,7 +47,8 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
   @Autowired private UserRegInfoRepository userRegInfoRepository;
   @Autowired private UserSocialInfoRepository userSocialInfoRepository;
   @Autowired private GreetUserManager greetUserManager;
-  @Autowired private YxClient yxClient;
+  @Autowired private UserManager userManager;
+  @Autowired private UserCompositeRepository userCompositeRepository;
 
   @Override
   public Mono<UserGreetConfigRes> getGreetConfig(Long userId) {
@@ -187,7 +187,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
   }
 
   @Override
-  public Mono<SendGreetMessageRes> sendGreetMessage(Long userId) {
+  public Mono<SendGreetUserMessageRes> sendGreetMessage(Long userId) {
     log.info("用户{}发送打招呼消息", userId);
     DictionaryProperties.GreetMessage greetConfig = DictionaryProperties.get().getGreetMessage();
 
@@ -200,34 +200,35 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                             greetUserManager
                                 .getGreetUsers(userId, greetConfig.getOneMaxSendGreetCount())
                                 .flatMap(
-                                    users -> {
-                                      if (users.isEmpty()) {
+                                    greetUserIds -> {
+                                      if (greetUserIds.isEmpty()) {
                                         return Mono.error(
                                             ErrorCode.UNAVAILABLE_GREET_USER
                                                 .newBusinessException());
                                       }
-                                      // 异步发送消息
-                                      sendGreetMessage(userId, users, messages)
-                                          .then(
-                                              Mono.defer(
-                                                  () ->
-                                                      singleRedission
-                                                          .getBucket(
-                                                              key(
-                                                                  RedisConstant.USER_GREET_INFO,
-                                                                  userId))
-                                                          .set(
-                                                              new GreetInfo(
-                                                                  greetInfo.getGreetTimes() + 1,
-                                                                  LocalDateTime.now()))))
-                                          .toFuture();
-                                      return Mono.just(
-                                          new SendGreetMessageRes(
-                                              greetConfig.getSendIntervalSecond()));
+                                      return getGreetUserMessages(userId, greetUserIds, messages)
+                                          .flatMap(
+                                              v ->
+                                                  singleRedission
+                                                      .getBucket(
+                                                          key(
+                                                              RedisConstant.USER_GREET_INFO,
+                                                              userId))
+                                                      .set(
+                                                          new GreetInfo(
+                                                              greetInfo.getGreetTimes() + 1,
+                                                              LocalDateTime.now()))
+                                                      .thenReturn(
+                                                          new SendGreetUserMessageRes(
+                                                              greetConfig.getSendIntervalSecond(),
+                                                              v)));
                                     })
                                 .switchIfEmpty(
-                                    Mono.error(
-                                        ErrorCode.UNAVAILABLE_GREET_USER.newBusinessException()))));
+                                    Mono.defer(
+                                        () ->
+                                            Mono.error(
+                                                ErrorCode.UNAVAILABLE_GREET_USER
+                                                    .newBusinessException())))));
   }
 
   @Override
@@ -243,28 +244,21 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   @Override
   public Mono<Void> addGreetUser(Long userId, boolean isNew) {
-    return userRegInfoRepository
-        .findById(userId)
-        .flatMap(
-            u -> {
-              if (isNew) {
-                return greetUserManager.addGreetUser(
-                    new GreetUser(u.getId(), u.getYunxinId()), isNew);
-              } else {
-                return userSocialInfoRepository
-                    .findByUserId(userId)
-                    .flatMap(
-                        s -> {
-                          // 主播不加入队列
-                          if (AnchorAuthStatus.ofCode(s.getIsVideoAudit()).isAuditPass()) {
-                            log.info("用户{}为主播，不加入打招呼用户队列", userId);
-                            return Mono.empty();
-                          }
-                          return greetUserManager.addGreetUser(
-                              new GreetUser(u.getId(), u.getYunxinId()), isNew);
-                        });
-              }
-            });
+    if (isNew) {
+      return greetUserManager.addGreetUser(userId, isNew);
+    } else {
+      return userSocialInfoRepository
+          .findByUserId(userId)
+          .flatMap(
+              s -> {
+                // 主播不加入队列
+                if (AnchorAuthStatus.ofCode(s.getIsVideoAudit()).isAuditPass()) {
+                  log.info("用户{}为主播，不加入打招呼用户队列", userId);
+                  return Mono.empty();
+                }
+                return greetUserManager.addGreetUser(userId, isNew);
+              });
+    }
   }
 
   @Override
@@ -272,37 +266,49 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     return greetUserManager.removeGreetUser(userId);
   }
 
-  private Mono<Void> sendGreetMessage(
-      Long userId, Collection<GreetUser> users, List<String> messages) {
-    return userRegInfoRepository
-        .findById(userId)
+  private Mono<List<SendGreetUserMessageRes.GreetUserMessage>> getGreetUserMessages(
+      Long userId, Set<Long> greetUserIds, List<String> messages) {
+    log.info(
+        "用户{}发送打招呼消息给用户: {}",
+        userId,
+        greetUserIds.stream().map(Object::toString).collect(Collectors.joining(",")));
+    return userCompositeRepository
+        .listBaseInfoByUserIds(greetUserIds)
+        .collectList()
         .flatMap(
-            regInfo ->
-                userSocialInfoRepository
-                    .findByUserId(userId)
-                    .flatMap(
-                        socialInfo -> {
-                          log.info(
-                              "发送打招呼消息给用户: "
-                                  + users.stream()
-                                      .map(u -> String.valueOf(u.getUserId()))
-                                      .collect(Collectors.joining(",")));
-                          int messageIndex = 0;
-                          List<Mono<Void>> monos = new ArrayList<>();
-                          for (GreetUser greetUser : users) {
-                            if (messageIndex == messages.size()) {
-                              messageIndex = 0;
-                            }
-                            String message = messages.get(messageIndex++);
-                            monos.add(
-                                yxClient.sendMessage(
-                                    regInfo.getYunxinId(),
-                                    socialInfo,
-                                    Collections.singletonList(greetUser.getYunxinId()),
-                                    message));
-                          }
-                          return Mono.when(monos);
-                        }));
+            baseInfos -> {
+              List<Mono<SendGreetUserMessageRes.GreetUserMessage>> monos = new ArrayList<>();
+              int messageIndex = 0;
+              for (UserBaseInfo baseInfo : baseInfos) {
+                if (messageIndex == messages.size()) {
+                  messageIndex = 0;
+                }
+                String message = messages.get(messageIndex++);
+                monos.add(
+                    userManager
+                        .isVip(baseInfo.getUserId())
+                        .map(
+                            isVip -> {
+                              SendGreetUserMessageRes.GreetUserMessage greetUserMessage =
+                                  new SendGreetUserMessageRes.GreetUserMessage();
+                              greetUserMessage.setUserId(baseInfo.getUserId());
+                              greetUserMessage.setNickName(baseInfo.getNickName());
+                              greetUserMessage.setPortraitUrl(
+                                  LoboUtil.getImageUrl(baseInfo.getPortrait()));
+                              greetUserMessage.setYunXinId(baseInfo.getYunXinId());
+                              greetUserMessage.setMessage(message);
+                              greetUserMessage.setIsVip(isVip);
+
+                              return greetUserMessage;
+                            }));
+              }
+              return Mono.zip(
+                  monos,
+                  v ->
+                      Arrays.stream(v)
+                          .map(item -> (SendGreetUserMessageRes.GreetUserMessage) item)
+                          .collect(Collectors.toList()));
+            });
   }
 
   private Mono<List<String>> getGreetMessages(Long userId) {

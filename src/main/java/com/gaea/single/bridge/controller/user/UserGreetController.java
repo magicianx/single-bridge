@@ -68,7 +68,8 @@ public class UserGreetController extends BaseController {
 
   @PostMapping(value = "/v1/send.do")
   @ApiOperation("发送打招呼消息")
-  public Mono<Result<SendGreetMessageRes>> sendGreetMessage(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<SendGreetUserMessageRes>> sendGreetUserMessage(
+      @ApiIgnore ServerWebExchange exchange) {
     return userGreetService.sendGreetMessage(getUserId(exchange)).map(Result::success);
   }
 

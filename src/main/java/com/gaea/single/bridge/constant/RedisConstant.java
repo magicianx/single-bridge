@@ -1,6 +1,5 @@
 package com.gaea.single.bridge.constant;
 
-import com.gaea.single.bridge.core.manager.model.GreetUser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -32,21 +31,21 @@ public final class RedisConstant {
   /**
    * 可以发送打招呼消息的新注册用户列表 <br>
    * type: zset <br>
-   * value: {@link GreetUser}
+   * value: Long
    */
   public static final String USER_GREET_NEW = "user:greet_new";
 
   /**
    * 可以发送打招呼消息的打开app后5分钟内未通话用户列表 <br>
    * type: zset <br>
-   * value: {@link GreetUser}
+   * value: Long
    */
   public static final String USER_GREET_UNCALLED = "user:greet_uncalled";
 
   /**
    * 正在使用的可以发送打招呼消息的用户列表 <br>
    * type: zset <br>
-   * value: {@link GreetUser}
+   * value: Long
    */
   public static final String USER_GREET_USING = "user:greet_using";
 
