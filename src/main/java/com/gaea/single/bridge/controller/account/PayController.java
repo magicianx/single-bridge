@@ -1,11 +1,13 @@
 package com.gaea.single.bridge.controller.account;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
+import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
@@ -20,10 +22,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/account/pay", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,6 +66,18 @@ public class PayController extends BaseController {
     List<PayWay> payWays = new ArrayList<>();
     payWays.add(PayWay.LEGEND_SHOP_PAY);
     payWays.add(PayWay.ALIPAY);
+    return Mono.just(Result.success(payWays));
+  public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
+    DictionaryProperties.Pay payConfig = DictionaryProperties.get().getPay();
+
+    List<PayWay> payWays;
+    if (OsType.IOS.equals(getOsType(exchange))) {
+      payWays =
+          payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+    } else {
+      payWays =
+          payConfig.getAndroidPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+    }
     return Mono.just(Result.success(payWays));
   }
 }

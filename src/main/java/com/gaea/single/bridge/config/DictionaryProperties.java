@@ -34,6 +34,7 @@ public class DictionaryProperties implements IConfig {
   private DrainagePackage drainagePackage;
   private User user;
   private GreetMessage greetMessage;
+  private Pay pay;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
@@ -42,6 +43,7 @@ public class DictionaryProperties implements IConfig {
     this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
     this.user = getProperty(User.class, "user", properties);
     this.greetMessage = getProperty(GreetMessage.class, "greetMessage", properties);
+    this.pay = getProperty(Pay.class, "pay", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -103,6 +105,13 @@ public class DictionaryProperties implements IConfig {
 
   @Getter
   @Setter
+  public static class Pay {
+    private List<String> androidPayWays;
+    private List<String> iosPayWays;
+  }
+
+  @Getter
+  @Setter
   public static class AppStoreAudit {
     private Long userColumnId; // android审核展示的此栏目，ios目前没有用
     private String password;
@@ -114,6 +123,7 @@ public class DictionaryProperties implements IConfig {
   public static class Lobo {
     private String host;
     private String iosAuditHost;
+    private String appId;
     private String bossHost;
     private String userSecretaryId;
     private String anchorSecretaryId;
