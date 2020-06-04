@@ -91,6 +91,7 @@ public class AppController extends BaseController {
               if (ErrorCode.isSuccess(res.getCode()) && userId != null) {
                 return userService
                     .initUser(userId)
+                    .then(Mono.defer(() -> userGreetService.initGreetConfig(userId)))
                     .then(Mono.defer(() -> userGreetService.addGreetUser(userId, false)))
                     .thenReturn(res);
               }

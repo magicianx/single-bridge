@@ -8,10 +8,12 @@ import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.platform.config.ConfigAgent;
 import org.redisson.api.RAtomicLongReactive;
 import org.redisson.api.RQueueReactive;
 import org.redisson.api.RScoredSortedSetReactive;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +29,7 @@ import java.util.*;
  */
 @Component
 @Slf4j
+@DependsOn("configAgent")
 public class GreetUserManager extends AbstractCache {
   @Autowired private UserRegInfoRepository userRegInfoRepository;
   @Autowired private UserManager userManager;

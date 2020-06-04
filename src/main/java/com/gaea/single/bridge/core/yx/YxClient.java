@@ -110,7 +110,7 @@ public class YxClient {
               // 是否需要漫游
               options.put("roam", false);
               // 是否存云端历史
-              options.put("history", false);
+              options.put("history", true);
               // 是否需要发送方多端同步
               options.put("sendersync", false);
               // 是否需要抄送第三方
@@ -120,6 +120,7 @@ public class YxClient {
               ext.put("nickname", fromSocialInfo.getNickName());
               ext.put("headurl", LoboUtil.getImageUrl(fromSocialInfo.getPortrait()));
               ext.put("netid", fromYunXinId);
+              ext.put("userid", fromSocialInfo.getUserId());
               ext.put(
                   "userType",
                   AnchorAuthStatus.ofCode(fromSocialInfo.getIsVideoAudit()).isAuditPass()

@@ -8,4 +8,6 @@ import reactor.core.publisher.Mono;
 public interface UserGreetConfigRepository
     extends ReactiveMongoRepository<UserGreetConfig, String> {
   Mono<UserGreetConfig> findByUserId(Long userId);
+
+  Mono<Long> countByUserId(Long userId);
 }

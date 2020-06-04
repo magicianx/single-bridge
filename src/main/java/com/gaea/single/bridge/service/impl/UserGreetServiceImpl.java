@@ -57,26 +57,35 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     return userGreetConfigRepository
         .findByUserId(userId)
         .flatMap(config -> allMessageMono.map(messages -> Pair.of(config, messages)))
-        .switchIfEmpty(
-            Mono.defer(
-                () ->
-                    // 不存在则创建
-                    allMessageMono.flatMap(
-                        systemMessages -> {
-                          List<String> systemIds =
-                              systemMessages.stream()
-                                  .map(SystemGreetMessage::getId)
-                                  .collect(Collectors.toList());
-
-                          UserGreetConfig config = new UserGreetConfig();
-                          config.setUserId(userId);
-                          config.setCustomMessages(Collections.emptyList());
-                          config.setSystemMessageIds(systemIds);
-                          return userGreetConfigRepository
-                              .save(config)
-                              .map(saved -> Pair.of(saved, systemMessages));
-                        })))
         .map(UserGreetConverter.toUserGreetConfigRes::convert);
+  }
+
+  @Override
+  public Mono<Void> initGreetConfig(Long userId) {
+    Mono<List<SystemGreetMessage>> allMessageMono =
+        systemGreetMessageRepository.findAll().collectList();
+    return userGreetConfigRepository
+        .countByUserId(userId)
+        .flatMap(
+            count -> {
+              if (count == 0) {
+                // 不存在则创建
+                return allMessageMono.flatMap(
+                    systemMessages -> {
+                      List<String> systemIds =
+                          systemMessages.stream()
+                              .map(SystemGreetMessage::getId)
+                              .collect(Collectors.toList());
+
+                      UserGreetConfig config = new UserGreetConfig();
+                      config.setUserId(userId);
+                      config.setCustomMessages(Collections.emptyList());
+                      config.setSystemMessageIds(systemIds);
+                      return userGreetConfigRepository.save(config).then();
+                    });
+              }
+              return Mono.empty();
+            });
   }
 
   @Override

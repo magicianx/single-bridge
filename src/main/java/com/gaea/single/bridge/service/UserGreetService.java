@@ -29,4 +29,6 @@ public interface UserGreetService {
   Mono<Void> addGreetUser(Long userId, boolean isNew);
 
   Mono<Void> removeGreetUser(Long userId);
+
+  Mono<Void> initGreetConfig(Long userId);
 }
