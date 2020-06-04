@@ -62,14 +62,8 @@ public class PayController extends BaseController {
 
   @GetMapping(value = "/v1/types.do")
   @ApiOperation(value = "获取支付方式列表")
-  public Mono<Result<List<PayWay>>> getPayWays() {
-    List<PayWay> payWays = new ArrayList<>();
-    payWays.add(PayWay.LEGEND_SHOP_PAY);
-    payWays.add(PayWay.ALIPAY);
-    return Mono.just(Result.success(payWays));
   public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
     DictionaryProperties.Pay payConfig = DictionaryProperties.get().getPay();
-
     List<PayWay> payWays;
     if (OsType.IOS.equals(getOsType(exchange))) {
       payWays =
