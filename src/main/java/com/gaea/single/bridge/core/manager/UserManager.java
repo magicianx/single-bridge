@@ -1,6 +1,7 @@
 package com.gaea.single.bridge.core.manager;
 
 import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.entity.mongodb.User;
 import com.gaea.single.bridge.enums.BoolType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
@@ -23,6 +24,23 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserManager extends AbstractCache {
   @Autowired private UserRepository userRepository;
+
+  /**
+   * 获取用户信息
+   *
+   * @param userId 用户id
+   * @return
+   */
+  public Mono<User> getUser(Long userId) {
+    return userRepository
+        .findById(userId)
+        .switchIfEmpty(
+            Mono.defer(
+                () -> {
+                  log.info("正在创建用户初始化信息: " + userId);
+                  return userRepository.save(new User(userId, true, true));
+                }));
+  }
 
   /**
    * 获取用户在线状态
@@ -76,8 +94,7 @@ public class UserManager extends AbstractCache {
         .switchIfEmpty(
             Mono.defer(
                 () ->
-                    userRepository
-                        .findById(userId)
+                    getUser(userId)
                         .flatMap(
                             user ->
                                 bucket
@@ -98,8 +115,7 @@ public class UserManager extends AbstractCache {
   public Mono<Void> setPositionStatus(Long userId, boolean isEnable) {
     String key = key(RedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = singleRedission.getBucket(key, LongCodec.INSTANCE);
-    return userRepository
-        .findById(userId)
+    return getUser(userId)
         .flatMap(
             user -> {
               user.setIsEnablePosition(isEnable);
@@ -115,6 +131,8 @@ public class UserManager extends AbstractCache {
    * @return {@link Mono<Boolean>}
    */
   public Mono<Boolean> isVip(Long userId) {
-    return loboRedission.getMap(key(RedisConstant.USER_VIP_INFO, userId)).isExists();
+    return loboRedission
+        .getMap(key(RedisConstant.USER_VIP_INFO, userId), StringCodec.INSTANCE)
+        .isExists();
   }
 }

@@ -4,6 +4,7 @@ import com.gaea.single.bridge.dto.user.GreetMessageRes;
 import com.gaea.single.bridge.dto.user.GreetStatusRes;
 import com.gaea.single.bridge.dto.user.SendGreetUserMessageRes;
 import com.gaea.single.bridge.dto.user.UserGreetConfigRes;
+import com.gaea.single.bridge.entity.mongodb.UserGreetConfig;
 import reactor.core.publisher.Mono;
 
 /**

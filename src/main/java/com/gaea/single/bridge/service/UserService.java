@@ -19,12 +19,4 @@ public interface UserService {
    * @return {@link Mono<Boolean>}
    */
   Mono<Void> switchPositionStatus(Long userId, boolean isEnable);
-
-  /**
-   * 初始化用户
-   *
-   * @param userId 用户id
-   * @return {@link Mono<Void>}
-   */
-  Mono<Void> initUser(Long userId);
 }

@@ -20,7 +20,6 @@ import com.gaea.single.bridge.repository.mongodb.SystemGreetMessageRepository;
 import com.gaea.single.bridge.repository.mongodb.UserGreetConfigRepository;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.repository.mysql.UserCompositeRepository;
-import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.repository.mysql.UserSocialInfoRepository;
 import com.gaea.single.bridge.service.UserGreetService;
 import com.gaea.single.bridge.util.LoboUtil;
@@ -44,7 +43,6 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
   @Autowired private UserRepository userRepository;
   @Autowired private UserGreetConfigRepository userGreetConfigRepository;
   @Autowired private SystemGreetMessageRepository systemGreetMessageRepository;
-  @Autowired private UserRegInfoRepository userRegInfoRepository;
   @Autowired private UserSocialInfoRepository userSocialInfoRepository;
   @Autowired private GreetUserManager greetUserManager;
   @Autowired private UserManager userManager;
@@ -69,6 +67,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
         .flatMap(
             count -> {
               if (count == 0) {
+                log.info("正在初始化用户{}打招呼消息配置", userId);
                 // 不存在则创建
                 return allMessageMono.flatMap(
                     systemMessages -> {
@@ -130,8 +129,8 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   @Override
   public Mono<GreetStatusRes> getGreetStatus(Long userId) {
-    return userRepository
-        .findById(userId)
+    return userManager
+        .getUser(userId)
         .flatMap(
             user -> {
               RBucketReactive<GreetInfo> greetInfoBucket =
@@ -233,8 +232,8 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   @Override
   public Mono<Void> setGreetStatus(Long userId, boolean isEnable) {
-    return userRepository
-        .findById(userId)
+    return userManager
+        .getUser(userId)
         .flatMap(
             user -> {
               user.setIsEnablePosition(isEnable);
@@ -347,8 +346,8 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
 
   private Mono<GreetInfo> validateIsGreetable(
       Long userId, DictionaryProperties.GreetMessage greetConfig) {
-    return userRepository
-        .findById(userId)
+    return userManager
+        .getUser(userId)
         .flatMap(
             user -> {
               if (!user.getIsEnableGreet()) {

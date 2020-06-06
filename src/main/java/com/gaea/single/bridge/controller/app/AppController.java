@@ -78,7 +78,7 @@ public class AppController extends BaseController {
               DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
 
               return new AppInfoRes(
-                  "1",
+                  getAppId(),
                   isAuditPass ? 1234567890 : 0,
                   DictionaryProperties.get().getAppStoreAudit().getUserColumnId(),
                   lobo.getUserSecretaryId(),
@@ -89,9 +89,8 @@ public class AppController extends BaseController {
             res -> {
               Long userId = getUserId(exchange);
               if (ErrorCode.isSuccess(res.getCode()) && userId != null) {
-                return userService
-                    .initUser(userId)
-                    .then(Mono.defer(() -> userGreetService.initGreetConfig(userId)))
+                return userGreetService
+                    .initGreetConfig(userId)
                     .then(Mono.defer(() -> userGreetService.addGreetUser(userId, false)))
                     .thenReturn(res);
               }

@@ -5,7 +5,6 @@ import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.dto.user.GuildInviteInfoRes;
 import com.gaea.single.bridge.dto.user.ProcessGuildInviteReq;
 import com.gaea.single.bridge.enums.GuildInviteStatus;
 import com.google.common.collect.ImmutableMap;
@@ -39,9 +38,9 @@ public class GuildUserController extends BaseController {
   @Autowired
   private LoboClient bossClient;
 
-  @GetMapping(value = "/v1/invite.do")
-  @ApiOperation(value = "获取用户公会邀请信息")
-  public Mono<Result<GuildInviteInfoRes>> getUserGrade(@ApiIgnore ServerWebExchange exchange) {
+  @GetMapping(value = "/v1/invite_status.do")
+  @ApiOperation(value = "获取用户公会邀请状态")
+  public Mono<Result<GuildInviteStatus>> getInviteStatus(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data =
         ImmutableMap.<String, Object>builder().put("userId", getUserId(exchange)).build();
     return bossClient.postForm(
@@ -50,11 +49,10 @@ public class GuildUserController extends BaseController {
         data,
         (obj) -> {
           JSONObject result = (JSONObject) obj;
-          return new GuildInviteInfoRes(
-              result.getLong("userId"),
-              result.getString("nickName"),
-              result.getString("companyName"),
-              GuildInviteStatus.ofCode(result.getInteger("comStatus")));
+          if (result == null) {
+            return GuildInviteStatus.REFUSED;
+          }
+          return GuildInviteStatus.ofCode(result.getInteger("comStatus"));
         });
   }
 
@@ -65,7 +63,11 @@ public class GuildUserController extends BaseController {
     Map<String, Object> data =
         ImmutableMap.<String, Object>builder()
             .put("userId", getUserId(exchange))
-            .put("status", req.getIsAgree() ? "1" : "3")
+            .put(
+                "status",
+                req.getIsAgree()
+                    ? GuildInviteStatus.JOINED.getCode()
+                    : GuildInviteStatus.REFUSED.getCode())
             .build();
     return bossClient.postForm(exchange, LoboPathConst.UPDATE_GUILD_AUTH_INFO, data, null);
   }

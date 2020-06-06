@@ -297,7 +297,10 @@ public class UserController extends BaseController {
           LoginRes res = result.getData();
           if (ErrorCode.isSuccess(result.getCode())) {
             return userGreetService
-                .addGreetUser(res.getId(), res.getIsRegister())
+                .initGreetConfig(res.getId())
+                .then(
+                    Mono.defer(
+                        () -> userGreetService.addGreetUser(res.getId(), res.getIsRegister())))
                 .thenReturn(result);
           }
           return Mono.just(result);

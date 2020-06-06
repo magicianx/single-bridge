@@ -1,15 +1,21 @@
 package com.gaea.single.bridge.config.filter;
 
 import com.gaea.single.bridge.config.ServiceProperties;
-import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.redisson.api.RMapReactive;
 import org.redisson.api.RedissonReactiveClient;
+import org.redisson.client.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -26,42 +32,64 @@ import java.util.stream.Collectors;
  */
 //@Component
 @Slf4j
-public class AuthFilter implements WebFilter {
-//  @Qualifier("loboRedissonReactiveClient")
+public class AuthFilter extends AbstractFilter implements WebFilter {
+  private static final String ALL_METHOD_MATCH = "*";
+
+  @Qualifier("loboRedissonReactiveClient")
   @Autowired
   private RedissonReactiveClient redissonClient;
 
   @Autowired private ServiceProperties serviceProperties;
-
-  private List<Pair<HttpMethod, String>> sessionAuthRequests;
+  private List<Pair<String, String>> authRequests;
+  private PathMatcher pathMatcher = new AntPathMatcher();
 
   @PostConstruct
   public void init() {
-    this.sessionAuthRequests = resolveSessionAuthRequests();
+    this.authRequests = resolveSessionAuthRequests();
   }
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-    if (sessionAuthRequests == null || sessionAuthRequests.isEmpty() || !isNeedAuth(exchange)) {
+    if (authRequests == null || authRequests.isEmpty() || !isNeedAuth(exchange)) {
       return chain.filter(exchange);
     }
 
     String session = exchange.getAttribute(CommonHeaderConst.SESSION);
     String userId = exchange.getAttribute(CommonHeaderConst.USER_ID);
-
-    if (StringUtils.isNotBlank(session)) {
-
-      RMapReactive<String, String> userInfo = redissonClient.getMap(RedisConstant.USER_LOGIN_INFO);
-//      userInfo.get("lastLoginSession").map(loginSession -> loginSession.equals(session));
+    log.info("正在过滤认证用户{}session: {}", userId, session);
+    if (StringUtils.isBlank(session) || StringUtils.isBlank(userId)) {
+      return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
     }
-    return chain.filter(exchange);
+    RMapReactive<String, String> userInfo =
+        redissonClient.getMap(RedisConstant.USER_LOGIN_INFO + userId, StringCodec.INSTANCE);
+    return userInfo
+        .get("lastLoginSession")
+        .flatMap(
+            loginSession -> {
+              if (!loginSession.equals(session)) {
+                log.info("用户{}session不正确", userId);
+                return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
+              }
+              return chain.filter(exchange);
+            })
+        .switchIfEmpty(
+            Mono.defer(
+                () -> {
+                  log.info("用户{}session不存在", userId);
+                  return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
+                }));
   }
 
   private boolean isNeedAuth(ServerWebExchange exchange) {
     HttpMethod method = exchange.getRequest().getMethod();
-    String path = exchange.getRequest().getPath().contextPath().value();
-    return this.sessionAuthRequests.stream()
-        .anyMatch(r -> r.getLeft() == method || r.getRight().equals(path));
+    String path = exchange.getRequest().getPath().pathWithinApplication().value();
+    return this.authRequests.stream()
+        .anyMatch(
+            r -> {
+              boolean methodMatched =
+                  ALL_METHOD_MATCH.equals(r.getLeft()) || method.matches(r.getLeft());
+              return methodMatched && pathMatcher.match(r.getRight(), path);
+            });
   }
 
   /**
@@ -69,13 +97,13 @@ public class AuthFilter implements WebFilter {
    *
    * @return
    */
-  private List<Pair<HttpMethod, String>> resolveSessionAuthRequests() {
+  private List<Pair<String, String>> resolveSessionAuthRequests() {
     return serviceProperties.getAuth().getSession().stream()
         .map(
             def -> {
               String[] attrs = def.split(" ");
 
-              return Pair.of(HttpMethod.valueOf(attrs[0]), attrs[1]);
+              return Pair.of(attrs[0], attrs[1]);
             })
         .collect(Collectors.toList());
   }

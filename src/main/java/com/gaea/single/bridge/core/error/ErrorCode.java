@@ -17,7 +17,8 @@ public enum ErrorCode {
   UNAVAILABLE_GREET_MESSAGE(1006, "请先选择打招呼文案! "),
   GREET_TIME_LIMIT(1008, "发送时间限制"),
   NOT_OPENED_GREET(1009, "未开启打招呼功能"),
-  UNAVAILABLE_GREET_USER(1010, "今天在线的用户已被全部发送完 请明天再来吧!");
+  UNAVAILABLE_GREET_USER(1010, "今天在线的用户已被全部发送完 请明天再来吧!"),
+  INVALID_SESSION(10016, "session过期，请重新登录!");
 
   private int code;
   private String message;
