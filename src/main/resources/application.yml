@@ -14,7 +14,8 @@ service:
     appSecret: 1832c6417bc8
   auth:
     session:
-      - POST /user/position.do
+      - '* /user/position/**' # 定位相关功能
+      - '* /user/greet/**' # 打招呼相关功能
 ---
 spring:
   profiles: dev
