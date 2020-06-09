@@ -3,6 +3,7 @@ package com.gaea.single.bridge.converter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.*;
 import com.gaea.single.bridge.util.DateUtil;
@@ -83,7 +84,7 @@ public class UserConverter {
         res.setCity(
             StringUtils.isNotBlank(result.getString("address"))
                 ? result.getString("address")
-                : "火星");
+                : DefaultSettingConstant.UNKNOWN_POSITION);
         res.setIntro(result.getString("intro"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
@@ -160,6 +161,7 @@ public class UserConverter {
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
+        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
         return res;
       };
 
@@ -212,6 +214,7 @@ public class UserConverter {
         res.setAuditStatus(AuditStatus.ofCode(result.getInteger("status")));
         res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
         res.setPraiseTimes(result.getLong("praiseTimes"));
+        res.setGratuityMoney(result.getLong("rewardTotalMoney"));
         return res;
       };
 
@@ -229,6 +232,21 @@ public class UserConverter {
                 result.getBigDecimal("duration").multiply(LoboUtil.MONEY_EXCHANGE_RATE),
                 2,
                 RoundingMode.FLOOR));
+        return res;
+      };
+
+  public static final Converter<Object, ViewRecordItemRes> toViewRecordItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        ViewRecordItemRes res = new ViewRecordItemRes();
+        res.setUserId(result.getLong("overUserId"));
+        res.setNickName(result.getString("nickName"));
+        res.setPortraitUrl(result.getString("overUserIdHeadUrl"));
+        res.setGradeIconUrl(result.getString("gradeIcon"));
+        res.setYunXinId(result.getString("yunxinId"));
+        res.setViewTimestamp(result.getLong("createTime"));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isSupperVip")));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("userStatus")));
         return res;
       };
 

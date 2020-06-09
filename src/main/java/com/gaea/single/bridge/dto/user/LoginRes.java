@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.AnchorAuthStatus;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import io.swagger.annotations.ApiModel;
@@ -38,4 +39,7 @@ public class LoginRes {
 
   @ApiModelProperty(value = "是否注册", required = true)
   private Boolean isRegister;
+
+  @ApiModelProperty(value = "认证状态", required = true)
+  private AnchorAuthStatus authStatus;
 }

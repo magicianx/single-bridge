@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @ConfigurationProperties("service")
 @Getter
 @Setter
@@ -13,6 +15,7 @@ public class ServiceProperties {
   private String appStaticHome;
   private AppVersion appVersion;
   private Yx yx;
+  private Auth auth;
 
   @Getter
   @Setter
@@ -37,5 +40,11 @@ public class ServiceProperties {
     private String host;
     private String appKey;
     private String appSecret;
+  }
+
+  @Getter
+  @Setter
+  public static class Auth {
+    private List<String> session;
   }
 }

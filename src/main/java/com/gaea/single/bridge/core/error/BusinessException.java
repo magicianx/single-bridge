@@ -1,4 +1,4 @@
-package com.gaea.single.bridge.core;
+package com.gaea.single.bridge.core.error;
 
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.core.lobo;
 
 import com.gaea.single.bridge.constant.CommonHeaderConst;
-import com.gaea.single.bridge.core.BusinessException;
+import com.gaea.single.bridge.core.error.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;

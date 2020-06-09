@@ -2,11 +2,11 @@ package com.gaea.single.bridge.core.lobo;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.core.BusinessException;
+import com.gaea.single.bridge.core.error.BusinessException;
 import com.gaea.single.bridge.dto.LoboResult;
 import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

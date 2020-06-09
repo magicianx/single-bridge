@@ -1,9 +1,9 @@
 package com.gaea.single.bridge.service.impl;
 
 import com.gaea.single.bridge.config.DictionaryProperties;
-import com.gaea.single.bridge.entity.UserSocialInfo;
+import com.gaea.single.bridge.entity.mysql.UserSocialInfo;
 import com.gaea.single.bridge.enums.AuditStatus;
-import com.gaea.single.bridge.repository.UserSocialInfoRepository;
+import com.gaea.single.bridge.repository.mysql.UserSocialInfoRepository;
 import com.gaea.single.bridge.service.UserSocialInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

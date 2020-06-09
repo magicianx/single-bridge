@@ -5,7 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.dto.media.CreateVideoOrderRes;
 import com.gaea.single.bridge.dto.media.ValidateVideoOrderRes;
 import com.gaea.single.bridge.dto.media.VideoEndInfoRes;
+import com.gaea.single.bridge.dto.media.VideoShowItemRes;
 import com.gaea.single.bridge.dto.user.LabelRes;
+import com.gaea.single.bridge.enums.FollowStatus;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
@@ -110,4 +114,34 @@ public class VideoConverter {
     }
     return null;
   }
+
+  public static final Converter<Object, VideoShowItemRes> toVideoShowItemRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+
+        VideoShowItemRes res = new VideoShowItemRes();
+        res.setVideoId(result.getLong("id"));
+        res.setCoverUrl(result.getString("coverUrl"));
+        res.setVideoUrl(result.getString("videoUrl"));
+        res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
+        res.setPraiseTimes(result.getLong("praiseTimes"));
+        res.setGratuityMoney(result.getLong("rewardTotalMoney"));
+
+        VideoShowItemRes.UserInfo userInfo = new VideoShowItemRes.UserInfo();
+        userInfo.setUserId(result.getLong("userId"));
+        userInfo.setNickName(result.getString("nickName"));
+        userInfo.setIntro(result.getString("intruduction"));
+        userInfo.setPortraitUrl(result.getString("portrait"));
+        userInfo.setGradeIcon(result.getString("gradeIcon"));
+
+        Integer followStatus = result.getInteger("followStatus");
+        userInfo.setFollowStatus(
+            followStatus != null ? FollowStatus.ofCode(followStatus) : FollowStatus.UNFOLLOW);
+        userInfo.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
+        userInfo.setYunXinId(result.getString("yunxinId"));
+
+        res.setUserInfo(userInfo);
+
+        return res;
+      };
 }

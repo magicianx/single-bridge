@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.controller;
 
-import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.core.ComplexAppVersionFactory;
 import com.gaea.single.bridge.dto.PageReq;
 import com.gaea.single.bridge.enums.OsType;
@@ -26,7 +26,7 @@ public abstract class BaseController {
   }
 
   protected String getAppId() {
-    return DictionaryProperties.get().getLobo().getAppId();
+    return DefaultSettingConstant.APP_ID;
   }
 
   protected String getChannelId(ServerWebExchange exchange) {
@@ -62,11 +62,13 @@ public abstract class BaseController {
   }
 
   protected Map<String, Object> getPageData(PageReq pageReq) {
-    return new HashMap<String, Object>() {
-      {
-        put("pageNo", pageReq.getPageNum());
-        put("pageSize", pageReq.getPageSize());
-      }
-    };
+    return getPageData(pageReq.getPageNum(), pageReq.getPageSize());
+  }
+
+  protected Map<String, Object> getPageData(int pageNum, int pageSize) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("pageNo", pageNum);
+    data.put("pageSize", pageSize);
+    return data;
   }
 }

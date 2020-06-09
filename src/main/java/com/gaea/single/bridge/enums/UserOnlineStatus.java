@@ -7,11 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum UserOnlineStatus implements Metadata {
-  OFFLINE(0, "下线"),
   UN_DISTURB(1, "勿扰"),
   FREE(2, "空闲"),
-  CHATTING(3, "忙碌"),
-  ONLINE(4, "上线");
+  CHATTING(3, "忙碌");
 
   private int code;
   private String desc;

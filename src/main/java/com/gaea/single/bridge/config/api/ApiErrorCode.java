@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.config.api;
 
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

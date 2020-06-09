@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -13,9 +14,13 @@ public class JsonUtils {
    * @return json字符串
    */
   public static String toJsonString(Object obj) {
-    return JSONObject.toJSONString(obj, SerializerFeature.WriteMapNullValue);
+    return JSON.toJSONString(obj, SerializerFeature.WriteMapNullValue);
   }
 
+  /** 将对象转换为json字节数组 */
+  public static byte[] toJsonBytes(Object obj) {
+    return JSON.toJSONBytes(obj);
+  }
   /**
    * 将json转化为对象
    *
@@ -24,7 +29,7 @@ public class JsonUtils {
    * @return 实例对象
    */
   public static <T> T toObject(String json, Class<T> cls) {
-    return JSONObject.parseObject(json, cls);
+    return JSON.parseObject(json, cls);
   }
 
   /**
@@ -34,7 +39,7 @@ public class JsonUtils {
    * @return {@link JSONObject}
    */
   public static JSONObject toJsonObject(String json) {
-    return JSONObject.parseObject(json);
+    return JSON.parseObject(json);
   }
 
   /**
@@ -54,6 +59,6 @@ public class JsonUtils {
    * @return {@link JSONArray}
    */
   public static JSONArray toJsonArray(Object obj) {
-    return JSONObject.parseArray(toJsonString(obj));
+    return JSON.parseArray(toJsonString(obj));
   }
 }

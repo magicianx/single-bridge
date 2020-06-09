@@ -3,7 +3,7 @@ package com.gaea.single.bridge.controller.media;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.media.BatchSendTextMsgReq;
-import com.gaea.single.bridge.error.ErrorCode;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.service.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

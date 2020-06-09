@@ -4,11 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.app.AppInfoRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
+import com.gaea.single.bridge.service.UserGreetService;
+import com.gaea.single.bridge.service.UserService;
 import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +38,9 @@ public class AppController extends BaseController {
   @Qualifier("iosAuditClient")
   private LoboClient iosAuditClient;
 
+  @Autowired private UserService userService;
   @Autowired private LoboClient loboClient;
+  @Autowired private UserGreetService userGreetService;
 
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
@@ -56,27 +61,40 @@ public class AppController extends BaseController {
 
     LoboClient client = isAndroid ? loboClient : iosAuditClient; // ios使用的是测试环境的接口
 
-    return client.postForm(
-        exchange,
-        path,
-        data,
-        (obj) -> {
-          boolean isAuditPass = true;
-          if (obj != null) {
-            isAuditPass =
-                isAndroid
-                    ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
-                    : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
-          }
+    return client
+        .postForm(
+            exchange,
+            path,
+            data,
+            (obj) -> {
+              boolean isAuditPass = true;
+              if (obj != null) {
+                isAuditPass =
+                    isAndroid
+                        ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
+                        : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
+              }
 
-          DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
+              DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
 
-          return new AppInfoRes(
-              "1",
-              isAuditPass ? 1234567890 : 0,
-              DictionaryProperties.get().getAppStoreAudit().getUserColumnId(),
-              lobo.getUserSecretaryId(),
-              lobo.getAnchorSecretaryId());
-        });
+              return new AppInfoRes(
+                  getAppId(),
+                  isAuditPass ? 1234567890 : 0,
+                  DictionaryProperties.get().getAppStoreAudit().getUserColumnId(),
+                  lobo.getUserSecretaryId(),
+                  lobo.getAnchorSecretaryId());
+            })
+        // 由于android更新不需要重新登录，暂时在获取app信息时初始化用户，后面移到登录接口中
+        .flatMap(
+            res -> {
+              Long userId = getUserId(exchange);
+              if (ErrorCode.isSuccess(res.getCode()) && userId != null) {
+                return userGreetService
+                    .initGreetConfig(userId)
+                    .then(Mono.defer(() -> userGreetService.addGreetUser(userId, false)))
+                    .thenReturn(res);
+              }
+              return Mono.just(res);
+            });
   }
 }

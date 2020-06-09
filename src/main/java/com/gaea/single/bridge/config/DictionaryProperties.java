@@ -33,6 +33,7 @@ public class DictionaryProperties implements IConfig {
   private AppStoreAudit appStoreAudit;
   private DrainagePackage drainagePackage;
   private User user;
+  private GreetMessage greetMessage;
   private Pay pay;
 
   public DictionaryProperties(Properties properties) {
@@ -41,6 +42,7 @@ public class DictionaryProperties implements IConfig {
     this.appStoreAudit = getProperty(AppStoreAudit.class, "appStoreAudit", properties);
     this.drainagePackage = getProperty(DrainagePackage.class, "drainagePackage", properties);
     this.user = getProperty(User.class, "user", properties);
+    this.greetMessage = getProperty(GreetMessage.class, "greetMessage", properties);
     this.pay = getProperty(Pay.class, "pay", properties);
   }
 
@@ -122,6 +124,7 @@ public class DictionaryProperties implements IConfig {
     private String host;
     private String iosAuditHost;
     private String appId;
+    private String bossHost;
     private String userSecretaryId;
     private String anchorSecretaryId;
     private String imgHost;
@@ -139,6 +142,23 @@ public class DictionaryProperties implements IConfig {
   public static class DrainagePackage {
     private String downloadUrl;
     private String advertImgUrl;
+  }
+
+  @Getter
+  @Setter
+  public static class GreetMessage {
+    /** 最多可拥有消息数量，包含系统和自定义 */
+    private Integer maxMessageCount;
+    /** 每次发送最多打招呼消息数量 */
+    private Integer oneMaxSendGreetCount;
+    /** 消息发送间隔秒数 */
+    private Integer sendIntervalSecond;
+    /** 最大接收打招呼次数 */
+    private Integer maxReceiveGreetTimes;
+    /** 注册多少天内为新用户 */
+    private Integer newUserDays;
+    /** 打开app多少秒未拨打视频为未呼叫用户 */
+    private Integer uncalledUserSecond;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

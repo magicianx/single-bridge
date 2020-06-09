@@ -11,9 +11,6 @@ import com.gaea.single.bridge.core.yx.YxClient;
 import org.platform.config.ConfigAgent;
 import org.platform.config.ConfigBuilder;
 import org.platform.config.ConfigManager;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonReactiveClient;
-import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +69,13 @@ public class ServiceConfig implements WebFluxConfigurer {
   }
 
   @Bean
+  @DependsOn("configAgent")
+  public WebClient bossWebClient() {
+    String host = DictionaryProperties.get().getLobo().getBossHost();
+    return WebClient.builder().baseUrl(host).build();
+  }
+
+  @Bean
   public LoboResultExchanger loboResultExchanger() {
     return new DefaultLoboResultExchanger();
   }
@@ -88,31 +92,14 @@ public class ServiceConfig implements WebFluxConfigurer {
   }
 
   @Bean
+  public LoboClient bossClient(@Autowired @Qualifier("bossWebClient") WebClient webClient) {
+    return new LoboClient(webClient, new DefaultLoboResultExchanger());
+  }
+
+  @Bean
   public ObjectMapper objectMapper() {
     return new ObjectMapper()
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-  }
-
-  @Bean
-  public RedissonReactiveClient redissonReactiveClient(RedisProperties redisProperties) {
-    Config config = new Config();
-    String prefix = "redis://";
-    if (redisProperties.isSsl()) {
-      prefix = "rediss://";
-    }
-    config
-        .useSingleServer()
-        .setAddress(prefix + redisProperties.getHost() + ":" + redisProperties.getPort())
-        .setConnectTimeout((int) redisProperties.getTimeout().toMillis())
-        .setDatabase(redisProperties.getDatabase())
-        .setPassword(redisProperties.getPassword());
-    return Redisson.createReactive(config);
-  }
-
-  @Bean
-  public YxClient yxClient() {
-    ServiceProperties.Yx yx = serviceProperties.getYx();
-    return new YxClient(yx.getHost(), yx.getAppKey(), yx.getAppSecret());
   }
 }

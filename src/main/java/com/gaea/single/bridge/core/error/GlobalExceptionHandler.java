@@ -1,6 +1,5 @@
-package com.gaea.single.bridge.error;
+package com.gaea.single.bridge.core.error;
 
-import com.gaea.single.bridge.core.BusinessException;
 import com.gaea.single.bridge.dto.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -20,7 +19,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 

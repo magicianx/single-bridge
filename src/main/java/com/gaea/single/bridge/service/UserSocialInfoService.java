@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.service;
 
-import com.gaea.single.bridge.entity.UserSocialInfo;
+import com.gaea.single.bridge.entity.mysql.UserSocialInfo;
 import reactor.core.publisher.Mono;
 
 public interface UserSocialInfoService {

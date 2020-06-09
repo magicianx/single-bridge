@@ -24,4 +24,13 @@ public enum AnchorAuthStatus implements Metadata {
     }
     return null;
   }
+
+  /**
+   * 是否认证通过
+   *
+   * @return boolean
+   */
+  public boolean isAuditPass() {
+    return this == AnchorAuthStatus.AUTHED;
+  }
 }
