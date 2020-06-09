@@ -94,17 +94,25 @@ logging:
 spring:
   profiles: prod
   redis:
-    database: 0
-    host: localhost
-    port: 6379
-    ssl: false
-    timeout: 200 # 单位ms
+    single:
+      database: 0
+      host: localhost
+      port: 6379
+      ssl: false
+      timeout: 200 # 单位ms
+    lobo:
+      cluster:
+        nodes: node3:6001,node3:6002,node3:6003,node4:6001,node4:6002,node4:6003
   r2dbc:
     url: r2dbc:pool:mysql://10.13.208.3:3306/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: appuser2
     password: password
     pool:
       validation-query: SELECT 1
+  data:
+    mongodb:
+      uri: mongodb://singler:password@localhost:27017/single_bridge
+
 service:
   config:
     server: http://gw.sc-gaea.com:30012
@@ -117,4 +125,3 @@ service:
 
 logging:
   config: logback-spring.xml
-
