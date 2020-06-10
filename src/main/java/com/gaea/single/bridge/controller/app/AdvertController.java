@@ -7,7 +7,6 @@ import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.app.PopupAdvertRes;
 import com.gaea.single.bridge.enums.AdvertType;
-import com.gaea.single.bridge.util.LoboUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +47,7 @@ public class AdvertController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           if (result != null) {
-            AdvertType advertType =
-                LoboUtil.toBoolean2(result.getInteger("isExternalLink"))
-                    ? AdvertType.OUTER
-                    : AdvertType.INNER;
-
+            AdvertType advertType = AdvertType.ofCode(result.getInteger("isExternalLink"));
             return new PopupAdvertRes(
                 result.getString("title"),
                 advertType,
