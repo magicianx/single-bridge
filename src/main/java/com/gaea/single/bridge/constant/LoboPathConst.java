@@ -164,4 +164,6 @@ public final class LoboPathConst {
   public static final String USER_GUILD_AUTH_INFO = "/bossapi/partnerCompany/getAuthInfo.do";
   /** 加入或拒绝加入公会 */
   public static final String UPDATE_GUILD_AUTH_INFO = "/bossapi/partnerCompany/updateAuthInfo.do";
+  /** 设置用户备注 */
+  public static final String SET_USER_REMARK = "/user/saveUserRemarksInfo.do";
 }
