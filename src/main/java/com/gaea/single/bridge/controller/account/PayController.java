@@ -22,6 +22,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +66,21 @@ public class PayController extends BaseController {
   public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
     DictionaryProperties.Pay payConfig = DictionaryProperties.get().getPay();
     List<PayWay> payWays;
-    if (OsType.IOS.equals(getOsType(exchange))) {
-      payWays =
-          payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+
+    if (getUserId(exchange) == 1781298) {
+      payWays = Arrays.asList(PayWay.ALIPAY, PayWay.LEGEND_SHOP_PAY);
     } else {
-      payWays =
-          payConfig.getAndroidPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+      if (OsType.IOS.equals(getOsType(exchange))) {
+        payWays =
+            payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+      } else {
+        payWays =
+            payConfig.getAndroidPayWays().stream()
+                .map(PayWay::valueOf)
+                .collect(Collectors.toList());
+      }
     }
+
     return Mono.just(Result.success(payWays));
   }
 }
