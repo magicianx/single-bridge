@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 安全过滤器
+ * 认证过滤器
  *
  * @author cludy
  */
-//@Component
+@Component
 @Slf4j
 public class AuthFilter extends AbstractFilter implements WebFilter {
   private static final String ALL_METHOD_MATCH = "*";
@@ -64,6 +64,7 @@ public class AuthFilter extends AbstractFilter implements WebFilter {
         redissonClient.getMap(RedisConstant.USER_LOGIN_INFO + userId, StringCodec.INSTANCE);
     return userInfo
         .get("lastLoginSession")
+        .defaultIfEmpty("")
         .flatMap(
             loginSession -> {
               if (!loginSession.equals(session)) {
@@ -71,13 +72,7 @@ public class AuthFilter extends AbstractFilter implements WebFilter {
                 return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
               }
               return chain.filter(exchange);
-            })
-        .switchIfEmpty(
-            Mono.defer(
-                () -> {
-                  log.info("用户{}session不存在", userId);
-                  return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
-                }));
+            });
   }
 
   private boolean isNeedAuth(ServerWebExchange exchange) {

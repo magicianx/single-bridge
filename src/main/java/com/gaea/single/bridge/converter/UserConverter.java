@@ -79,7 +79,8 @@ public class UserConverter {
         res.setPortraitUrl(result.getString("portrait"));
         res.setGradeIconUrl(result.getString("gradeIcon"));
         res.setPrice(userType == UserType.ANCHOR ? result.getInteger("price") : null);
-        res.setGender(GenderType.ofCode(result.getInteger("sex")));
+        Optional.ofNullable(result.getInteger("sex"))
+            .ifPresent(v -> res.setGender(GenderType.ofCode(v)));
         res.setAge(result.getInteger("age"));
         res.setCity(
             StringUtils.isNotBlank(result.getString("address"))
@@ -154,7 +155,8 @@ public class UserConverter {
         res.setId(result.getLong("userId"));
         res.setSession(result.getString("session"));
         res.setYunXinId(result.getString("yunxinAccid"));
-        res.setGender(GenderType.ofCode(result.getInteger("sex")));
+        Optional.ofNullable(result.getInteger("sex"))
+            .ifPresent(v -> res.setGender(GenderType.ofCode(v)));
         res.setFullPhoneNum(result.getString("mobilePhone"));
         if (StringUtils.isNotBlank(result.getString("birthday"))) {
           res.setBirthday(DateUtil.toSingleDate(result.getString("birthday")));
