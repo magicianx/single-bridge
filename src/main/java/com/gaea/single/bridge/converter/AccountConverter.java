@@ -1,15 +1,17 @@
 package com.gaea.single.bridge.converter;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
-import com.gaea.single.bridge.dto.account.IncomeRes;
-import com.gaea.single.bridge.dto.account.OrderDetailRes;
-import com.gaea.single.bridge.dto.account.WechatPayRes;
+import com.gaea.single.bridge.dto.account.*;
 import com.gaea.single.bridge.enums.GiftType;
 import com.gaea.single.bridge.enums.OrderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountConverter {
   public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
@@ -68,6 +70,36 @@ public class AccountConverter {
         res.setTimestamp(result.getString("timestamp"));
         res.setMchId(result.getString("partnerid"));
         res.setNonceStr(result.getString("noncestr"));
+        return res;
+      };
+
+  public static final Converter<Object, RankMenuRes> toRankGroupRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+
+        List<RankMenuRes.Menu> menus =
+            result.getJSONArray("child").stream()
+                .map(
+                    i -> {
+                      JSONObject item = (JSONObject) i;
+                      return new RankMenuRes.Menu(item.getLong("menuId"), item.getString("name"));
+                    })
+                .collect(Collectors.toList());
+
+        return new RankMenuRes(result.getString("name"), menus);
+      };
+
+  public static final Converter<Object, RankUserRes> toRankUserRes =
+      (obj) -> {
+        JSONObject result = ((JSONArray) obj).getJSONObject(0);
+        RankUserRes res = new RankUserRes();
+        res.setUserId(result.getLong("userId"));
+        res.setNickName(result.getString("nickName"));
+        res.setPortraitUrl(result.getString("portrait"));
+        res.setRanking(result.getInteger("ranking"));
+        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
+        res.setGradeIconUrl(result.getString("gradeIcon"));
+        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isVip")));
         return res;
       };
 }

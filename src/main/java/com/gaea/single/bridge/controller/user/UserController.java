@@ -435,16 +435,6 @@ public class UserController extends BaseController {
         .defaultIfEmpty(Result.success(PageRes.empty()));
   }
 
-  @PostMapping(value = "/v1/remark.do", consumes = MediaType.APPLICATION_JSON_VALUE)
-  @ApiOperation(value = "设置用户备注")
-  public Mono<Result<Void>> setUserRemark(
-      @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody SetUserRemarkReq req) {
-    Map<String, Object> data = new HashMap<>();
-    data.put("remarksUserId", req.getUserId());
-    data.put("remarks", req.getRemark());
-    return loboClient.postForm(exchange, LoboPathConst.SET_USER_REMARK, data, null);
-  }
-
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
       ServerWebExchange exchange, UpdateUserReq req, List<Integer> loboErrorCodes) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();

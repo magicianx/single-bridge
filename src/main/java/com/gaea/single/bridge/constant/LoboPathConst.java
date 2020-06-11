@@ -166,4 +166,10 @@ public final class LoboPathConst {
   public static final String UPDATE_GUILD_AUTH_INFO = "/bossapi/partnerCompany/updateAuthInfo.do";
   /** 设置用户备注 */
   public static final String SET_USER_REMARK = "/user/saveUserRemarksInfo.do";
+  /** 获取用户备注列表 */
+  public static final String GET_USER_REMARK_LIST = "/user/getUserRemarksInfo.do";
+  /** 获取排名菜单列表 */
+  public static final String GET_RANK_MENU_LIST = "/mapper/rank/rankingListMenu";
+  /** 获取排行榜列表 */
+  public static final String GET_RANK_LIST = "/mapper/rank/list";
 }

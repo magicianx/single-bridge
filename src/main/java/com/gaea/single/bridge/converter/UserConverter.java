@@ -237,6 +237,15 @@ public class UserConverter {
         return res;
       };
 
+  public static final Converter<Object, UserRemarkRes> toUserRemarkRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        UserRemarkRes res = new UserRemarkRes();
+        res.setUserId(result.getLong("remarksUserId"));
+        res.setRemark(result.getString("remarks"));
+        return res;
+      };
+
   public static final Converter<Object, ViewRecordItemRes> toViewRecordItemRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
