@@ -10,11 +10,13 @@ import com.gaea.single.bridge.dto.account.RankMenuRes;
 import com.gaea.single.bridge.dto.account.RankUserRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -46,7 +48,9 @@ public class RankController extends BaseController {
   @GetMapping(value = "/v1/rank.net")
   @ApiOperation(value = "获取排行榜用户列表")
   public Mono<Result<PageRes<RankUserRes>>> getRankUserList(
-      @ApiIgnore ServerWebExchange exchange, Integer pageNo, String menuId) {
+      @ApiIgnore ServerWebExchange exchange,
+      @ApiParam(value = "页号", required = true) @RequestParam("pageNo") Integer pageNo,
+      @ApiParam(value = "菜单id", required = true) @RequestParam("menuId") String menuId) {
     Map<String, Object> data = new HashMap<>();
     data.put("pageNo", pageNo);
     data.put("appId", getAppId());
