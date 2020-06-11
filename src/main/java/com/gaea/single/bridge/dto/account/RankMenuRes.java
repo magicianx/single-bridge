@@ -15,6 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class RankMenuRes {
   @ApiModelProperty(value = "菜单名称", required = true)
+  private Long menuId;
+
+  @ApiModelProperty(value = "菜单名称", required = true)
   private String name;
 
   @ApiModelProperty(value = "子菜单列表", required = true)

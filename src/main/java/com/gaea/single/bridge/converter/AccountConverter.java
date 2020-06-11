@@ -86,7 +86,7 @@ public class AccountConverter {
                     })
                 .collect(Collectors.toList());
 
-        return new RankMenuRes(result.getString("name"), menus);
+        return new RankMenuRes(null, result.getString("name"), menus);
       };
 
   public static final Converter<Object, RankUserRes> toRankUserRes =
