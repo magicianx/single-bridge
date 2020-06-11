@@ -32,7 +32,7 @@ import java.util.Map;
 public class RankController extends BaseController {
   @Autowired private LoboClient loboClient;
 
-  @GetMapping(value = "/v1/menu.do")
+  @GetMapping(value = "/v1/menu.net")
   @ApiOperation(value = "获取排行榜菜单列表")
   public Mono<Result<List<RankMenuRes>>> getRankMenuList(@ApiIgnore ServerWebExchange exchange) {
     Map<String, Object> data = new HashMap<>();
@@ -43,7 +43,7 @@ public class RankController extends BaseController {
         exchange, LoboPathConst.GET_RANK_MENU_LIST, data, AccountConverter.toRankGroupRes);
   }
 
-  @GetMapping(value = "/v1/rank.do")
+  @GetMapping(value = "/v1/rank.net")
   @ApiOperation(value = "获取排行榜用户列表")
   public Mono<Result<PageRes<RankUserRes>>> getRankUserList(
       @ApiIgnore ServerWebExchange exchange, Integer pageNo, String menuId) {
