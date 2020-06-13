@@ -4,10 +4,9 @@ import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.AccountConverter;
 import com.gaea.single.bridge.core.lobo.LoboClient;
-import com.gaea.single.bridge.dto.PageRes;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.RankMenuRes;
-import com.gaea.single.bridge.dto.account.RankUserRes;
+import com.gaea.single.bridge.dto.account.RankingRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,18 +46,19 @@ public class RankController extends BaseController {
 
   @GetMapping(value = "/v1/rank.net")
   @ApiOperation(value = "获取排行榜用户列表")
-  public Mono<Result<PageRes<RankUserRes>>> getRankUserList(
+  public Mono<Result<RankingRes>> getRankUserList(
       @ApiIgnore ServerWebExchange exchange,
-      @ApiParam(value = "页号", required = true) @RequestParam("pageNo") Integer pageNo,
       @ApiParam(value = "菜单id", required = true) @RequestParam("menuId") String menuId) {
     Map<String, Object> data = new HashMap<>();
-    data.put("pageNo", pageNo);
+    data.put("pageNo", 1);
     data.put("appId", getAppId());
     data.put("menuId", menuId);
-    data.put("pageSize", menuId);
+    data.put("pageSize", 30);
     data.put("userId", getUserId(exchange));
 
-    return loboClient.getForPage(
-        exchange, LoboPathConst.GET_RANK_LIST, data, null, AccountConverter.toRankUserRes);
+    return loboClient
+        .getForPage(
+            exchange, LoboPathConst.GET_RANK_LIST, data, null, AccountConverter.toRankUserRes)
+        .map(res -> Result.success(new RankingRes("消费5000钻石即可上榜", res.getData().getRecords())));
   }
 }

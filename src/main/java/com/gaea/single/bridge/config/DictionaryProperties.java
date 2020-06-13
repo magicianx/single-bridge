@@ -35,6 +35,7 @@ public class DictionaryProperties implements IConfig {
   private User user;
   private GreetMessage greetMessage;
   private Pay pay;
+  private Ranking ranking;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
@@ -44,6 +45,7 @@ public class DictionaryProperties implements IConfig {
     this.user = getProperty(User.class, "user", properties);
     this.greetMessage = getProperty(GreetMessage.class, "greetMessage", properties);
     this.pay = getProperty(Pay.class, "pay", properties);
+    this.ranking = getProperty(Ranking.class, "ranking", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -159,6 +161,16 @@ public class DictionaryProperties implements IConfig {
     private Integer newUserDays;
     /** 打开app多少秒未拨打视频为未呼叫用户 */
     private Integer uncalledUserSecond;
+  }
+
+  /** 排名配置 */
+  @Getter
+  @Setter
+  public static class Ranking {
+    /** 消费提示文案 */
+    private String userTipText;
+    /** 收入提示文案 */
+    private String anchorTipText;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

@@ -89,10 +89,10 @@ public class AccountConverter {
         return new RankMenuRes(null, result.getString("name"), menus);
       };
 
-  public static final Converter<Object, RankUserRes> toRankUserRes =
+  public static final Converter<Object, RankingRes.RankUser> toRankUserRes =
       (obj) -> {
         JSONObject result = ((JSONArray) obj).getJSONObject(0);
-        RankUserRes res = new RankUserRes();
+        RankingRes.RankUser res = new RankingRes.RankUser();
         res.setUserId(result.getLong("userId"));
         res.setNickName(result.getString("nickName"));
         res.setPortraitUrl(result.getString("portrait"));

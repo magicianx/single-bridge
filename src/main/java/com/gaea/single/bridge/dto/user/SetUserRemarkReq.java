@@ -17,6 +17,5 @@ public class SetUserRemarkReq {
   private Long userId;
 
   @ApiModelProperty(value = "备注", required = true)
-  @NotBlank
   private String remark;
 }
