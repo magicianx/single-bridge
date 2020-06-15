@@ -12,7 +12,9 @@ import org.platform.config.core.kernel.ConfigPool;
 import org.platform.config.core.kernel.IConfig;
 import org.platform.config.core.kernel.set.CFile;
 import org.platform.config.core.kernel.set.SingleConfigSet;
+import org.springframework.integration.util.PoolItemNotAvailableException;
 
+import java.io.PipedReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -171,6 +173,8 @@ public class DictionaryProperties implements IConfig {
     private String userTipText;
     /** 收入提示文案 */
     private String anchorTipText;
+    /** 显示数量 */
+    private Integer size;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

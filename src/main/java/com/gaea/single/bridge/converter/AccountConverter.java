@@ -2,10 +2,12 @@ package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.dto.account.*;
 import com.gaea.single.bridge.enums.GiftType;
 import com.gaea.single.bridge.enums.OrderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
@@ -89,17 +91,39 @@ public class AccountConverter {
         return new RankMenuRes(null, result.getString("name"), menus);
       };
 
-  public static final Converter<Object, RankingRes.RankUser> toRankUserRes =
+  public static final Converter<Object, RankingRes> toRankingRes =
       (obj) -> {
-        JSONObject result = ((JSONArray) obj).getJSONObject(0);
-        RankingRes.RankUser res = new RankingRes.RankUser();
-        res.setUserId(result.getLong("userId"));
-        res.setNickName(result.getString("nickName"));
-        res.setPortraitUrl(result.getString("portrait"));
-        res.setRanking(result.getInteger("ranking"));
-        res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
-        res.setGradeIconUrl(result.getString("gradeIcon"));
-        res.setIsVip(LoboUtil.toBoolean(result.getInteger("isVip")));
-        return res;
+        JSONObject result = (JSONObject) obj;
+        JSONArray users = result.getJSONArray("users");
+        Long differDiamonds = result.getLong("differDiamonds");
+        UserType userType = UserType.ofCode(result.getInteger("userType"));
+
+        String tipText = null;
+        if (differDiamonds != null && userType != null) {
+          DictionaryProperties.Ranking rankingConfig = DictionaryProperties.get().getRanking();
+          String template =
+              UserType.ANCHOR.equals(userType)
+                  ? rankingConfig.getAnchorTipText()
+                  : rankingConfig.getUserTipText();
+          tipText = String.format(template, differDiamonds);
+        }
+
+        List<RankingRes.RankUser> rankUsers =
+            users.stream()
+                .map(
+                    u -> {
+                      JSONObject user = (JSONObject) u;
+                      RankingRes.RankUser rankUser = new RankingRes.RankUser();
+                      rankUser.setUserId(user.getLong("userId"));
+                      rankUser.setNickName(user.getString("nickName"));
+                      rankUser.setPortraitUrl(user.getString("portrait"));
+                      rankUser.setRanking(user.getInteger("ranking"));
+                      rankUser.setOnlineStatus(UserOnlineStatus.ofCode(user.getInteger("status")));
+                      rankUser.setGradeIconUrl(user.getString("gradeIcon"));
+                      rankUser.setIsVip(LoboUtil.toBoolean(user.getInteger("isVip")));
+                      return rankUser;
+                    })
+                .collect(Collectors.toList());
+        return new RankingRes(tipText, rankUsers);
       };
 }

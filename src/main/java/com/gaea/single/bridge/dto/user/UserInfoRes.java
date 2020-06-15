@@ -67,4 +67,7 @@ public class UserInfoRes {
 
   @ApiModelProperty(value = "是否绑定手机号", required = true)
   private Boolean isBindPhone;
+
+  @ApiModelProperty(value = "是否为公会主播, 普通用户为false")
+  private Boolean isGuildAnchor;
 }

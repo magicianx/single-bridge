@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.controller.account;
 
+import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.AccountConverter;
@@ -50,15 +51,10 @@ public class RankController extends BaseController {
       @ApiIgnore ServerWebExchange exchange,
       @ApiParam(value = "菜单id", required = true) @RequestParam("menuId") String menuId) {
     Map<String, Object> data = new HashMap<>();
-    data.put("pageNo", 1);
-    data.put("appId", getAppId());
     data.put("menuId", menuId);
-    data.put("pageSize", 30);
-    data.put("userId", getUserId(exchange));
+    data.put("size", DictionaryProperties.get().getRanking().getSize());
 
-    return loboClient
-        .getForPage(
-            exchange, LoboPathConst.GET_RANK_LIST, data, null, AccountConverter.toRankUserRes)
-        .map(res -> Result.success(new RankingRes("消费5000钻石即可上榜", res.getData().getRecords())));
+    return loboClient.get(
+        exchange, LoboPathConst.GET_RANK_LIST, data, AccountConverter.toRankingRes);
   }
 }
