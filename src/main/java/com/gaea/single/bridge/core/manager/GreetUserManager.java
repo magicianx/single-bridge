@@ -3,6 +3,7 @@ package com.gaea.single.bridge.core.manager;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.util.DateUtil;
@@ -19,6 +20,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * 打招呼用户管理
@@ -187,6 +189,12 @@ public class GreetUserManager extends AbstractCache {
 
   private Mono<Set<Long>> popGreetUser(
       Long currentUserId, int count, int maxReceiveTimes, Set<Long> greetUsers) {
+    Function<Long, Mono<Set<Long>>> removeUserAction =
+        (userId) ->
+            uncalledUserSet
+                .remove(userId)
+                .flatMap((v) -> popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers));
+
     return greetUsingQueue
         .poll()
         .flatMap(
@@ -197,26 +205,34 @@ public class GreetUserManager extends AbstractCache {
                         status -> {
                           if (!userId.equals(currentUserId)) {
                             if (status == UserOnlineStatus.FREE) {
-                              log.debug("用户{}在线，加入到被呼叫列表中", userId);
-                              return increaseReceiveTimes(userId, maxReceiveTimes)
+                              return userManager
+                                  .getUserGender(userId)
                                   .flatMap(
-                                      success -> {
-                                        if (success) {
-                                          greetUsers.add(userId);
+                                      genderType -> {
+                                        if (GenderType.MALE.equals(genderType)) {
+                                          log.debug("用户{}加入到被呼叫列表中", userId);
+                                          return increaseReceiveTimes(userId, maxReceiveTimes)
+                                              .flatMap(
+                                                  success -> {
+                                                    if (success) {
+                                                      greetUsers.add(userId);
+                                                    }
+                                                    return greetUsers.size() == count
+                                                        ? Mono.just(greetUsers)
+                                                        : popGreetUser(
+                                                            currentUserId,
+                                                            count,
+                                                            maxReceiveTimes,
+                                                            greetUsers);
+                                                  });
+                                        } else {
+                                          log.info("用户{}为女性，从未呼叫队列中移除", userId);
+                                          return removeUserAction.apply(userId);
                                         }
-                                        return greetUsers.size() == count
-                                            ? Mono.just(greetUsers)
-                                            : popGreetUser(
-                                                currentUserId, count, maxReceiveTimes, greetUsers);
                                       });
                             } else {
                               log.debug("用户{}不在线，从未呼叫队列中移除", userId);
-                              return uncalledUserSet
-                                  .remove(userId)
-                                  .flatMap(
-                                      (v) ->
-                                          popGreetUser(
-                                              currentUserId, count, maxReceiveTimes, greetUsers));
+                              return removeUserAction.apply(userId);
                             }
                           }
                           return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);

@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RedisConstant {
   /**
+   * 用户信息 + userId<br>
+   * type: Map
+   */
+  public static final String USER_INFO = "user:info:";
+
+  /**
    * 用户开启定位状态 + userId<br>
    * type: Integer
    */

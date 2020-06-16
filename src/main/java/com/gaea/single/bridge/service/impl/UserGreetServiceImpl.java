@@ -16,6 +16,7 @@ import com.gaea.single.bridge.entity.mongodb.SystemGreetMessage;
 import com.gaea.single.bridge.entity.mongodb.UserGreetConfig;
 import com.gaea.single.bridge.entity.mysql.model.UserBaseInfo;
 import com.gaea.single.bridge.enums.AnchorAuthStatus;
+import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.repository.mongodb.SystemGreetMessageRepository;
 import com.gaea.single.bridge.repository.mongodb.UserGreetConfigRepository;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
@@ -246,16 +247,25 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     if (isNew) {
       return greetUserManager.addGreetUser(userId, isNew);
     } else {
-      return userSocialInfoRepository
-          .findByUserId(userId)
+      return userManager
+          .getUserGender(userId)
           .flatMap(
-              s -> {
-                // 主播不加入队列
-                if (AnchorAuthStatus.ofCode(s.getIsVideoAudit()).isAuditPass()) {
-                  log.info("用户{}为主播，不加入打招呼用户队列", userId);
-                  return Mono.empty();
+              genderType -> {
+                if (GenderType.MALE == genderType) {
+                  return userSocialInfoRepository
+                      .findByUserId(userId)
+                      .flatMap(
+                          s -> {
+                            // 主播不加入队列
+                            if (AnchorAuthStatus.ofCode(s.getIsVideoAudit()).isAuditPass()) {
+                              log.info("用户{}为主播，不加入打招呼用户队列", userId);
+                              return Mono.empty();
+                            }
+                            return greetUserManager.addGreetUser(userId, isNew);
+                          });
                 }
-                return greetUserManager.addGreetUser(userId, isNew);
+                log.info("用户{}为女性，不加入打招呼用户队列", userId);
+                return Mono.empty();
               });
     }
   }
