@@ -2,11 +2,16 @@ package com.gaea.single.bridge.core.manager;
 
 import com.gaea.single.bridge.constant.RedisConstant;
 import com.gaea.single.bridge.entity.mongodb.User;
+import com.gaea.single.bridge.entity.mysql.UserPersonalInfo;
 import com.gaea.single.bridge.enums.BoolType;
+import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
+import com.gaea.single.bridge.repository.mysql.UserPersonalInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucketReactive;
+import org.redisson.api.RMapReactive;
+import org.redisson.client.codec.IntegerCodec;
 import org.redisson.client.codec.LongCodec;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,23 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserManager extends AbstractCache {
   @Autowired private UserRepository userRepository;
+  @Autowired private UserPersonalInfoRepository userPersonalInfoRepository;
+
+  /**
+   * 获取用户性别
+   *
+   * @param userId 用户id
+   * @return {@link RMapReactive<String, String>}
+   */
+  public Mono<GenderType> getUserGender(Long userId) {
+    return loboRedission
+        .getMap(RedisConstant.USER_INFO + userId, IntegerCodec.INSTANCE)
+        .get("sex")
+        .switchIfEmpty(
+            Mono.defer(
+                () -> userPersonalInfoRepository.findById(userId).map(UserPersonalInfo::getSex)))
+        .map(type -> GenderType.ofCode((Integer) type));
+  }
 
   /**
    * 获取用户信息
