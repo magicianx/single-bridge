@@ -140,6 +140,7 @@ public class UserConverter {
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
+        res.setIsGuildAnchor(LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
         Integer isVideoAudit = result.getInteger("isVideoAudit");
         res.setAuthStatus(
             isVideoAudit != null ? AnchorAuthStatus.ofCode(isVideoAudit) : AnchorAuthStatus.UNAUTH);

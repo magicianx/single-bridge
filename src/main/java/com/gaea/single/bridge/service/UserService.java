@@ -19,12 +19,4 @@ public interface UserService {
    * @return {@link Mono<Boolean>}
    */
   Mono<Void> switchPositionStatus(Long userId, boolean isEnable);
-
-  /**
-   * 是否为公会用户
-   *
-   * @param userId 用户id
-   * @return {@link Mono<Boolean>}
-   */
-  Mono<Boolean> isGuildUser(Long userId);
 }

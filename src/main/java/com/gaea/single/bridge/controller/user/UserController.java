@@ -155,23 +155,17 @@ public class UserController extends BaseController {
         .flatMap(
             res -> {
               if (ErrorCode.isSuccess(res.getCode())) {
-                return userService
-                    .isGuildUser(res.getData().getId())
+                return yxMessageService
+                    .getMessageCount(res.getData().getId())
                     .flatMap(
-                        isGuildUser -> {
-                          res.getData().setIsGuildAnchor(isGuildUser);
-                          return yxMessageService
-                              .getMessageCount(res.getData().getId())
-                              .flatMap(
-                                  count -> {
-                                    res.getData().setMessageCount(count);
-                                    if (res.getData().getUserType() == UserType.ANCHOR) {
-                                      return userGreetService
-                                          .removeGreetUser(res.getData().getId())
-                                          .thenReturn(res);
-                                    }
-                                    return Mono.just(res);
-                                  });
+                        count -> {
+                          res.getData().setMessageCount(count);
+                          if (res.getData().getUserType() == UserType.ANCHOR) {
+                            return userGreetService
+                                .removeGreetUser(res.getData().getId())
+                                .thenReturn(res);
+                          }
+                          return Mono.just(res);
                         });
               }
               return Mono.just(res);

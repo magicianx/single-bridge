@@ -22,9 +22,4 @@ public class UserServiceImpl implements UserService {
   public Mono<Void> switchPositionStatus(Long userId, boolean isEnable) {
     return userManager.setPositionStatus(userId, isEnable);
   }
-
-  @Override
-  public Mono<Boolean> isGuildUser(Long userId) {
-    return userManager.isGuildUser(userId);
-  }
 }

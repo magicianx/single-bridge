@@ -7,7 +7,6 @@ import com.gaea.single.bridge.enums.BoolType;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
-import com.gaea.single.bridge.repository.mysql.PartnerCompanyUserRepository;
 import com.gaea.single.bridge.repository.mysql.UserPersonalInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucketReactive;
@@ -31,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 public class UserManager extends AbstractCache {
   @Autowired private UserRepository userRepository;
   @Autowired private UserPersonalInfoRepository userPersonalInfoRepository;
-  @Autowired private PartnerCompanyUserRepository partnerCompanyUserRepository;
 
   /**
    * 获取用户性别
@@ -158,15 +156,5 @@ public class UserManager extends AbstractCache {
     return loboRedission
         .getMap(key(RedisConstant.USER_VIP_INFO, userId), StringCodec.INSTANCE)
         .isExists();
-  }
-
-  /**
-   * 是否为公会用户
-   *
-   * @param userId 用户id
-   * @return {@link Mono<Boolean>}
-   */
-  public Mono<Boolean> isGuildUser(Long userId) {
-    return partnerCompanyUserRepository.countByUserId(userId).map(count -> count > 0);
   }
 }
