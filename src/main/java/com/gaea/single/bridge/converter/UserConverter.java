@@ -136,11 +136,15 @@ public class UserConverter {
         res.setBalance(result.getLong("money"));
         res.setIsPerfectBirthday(result.getInteger("isPerfectAge") == 1);
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
-        res.setUserType(UserType.ofCode(result.getInteger("userType")));
+
+        UserType userType = UserType.ofCode(result.getInteger("userType"));
+        res.setUserType(userType);
+        res.setIsGuildAnchor(
+            UserType.ANCHOR.equals(userType)
+                && LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
-        res.setIsGuildAnchor(LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
         Integer isVideoAudit = result.getInteger("isVideoAudit");
         res.setAuthStatus(
             isVideoAudit != null ? AnchorAuthStatus.ofCode(isVideoAudit) : AnchorAuthStatus.UNAUTH);

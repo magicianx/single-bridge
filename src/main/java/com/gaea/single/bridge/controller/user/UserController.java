@@ -358,9 +358,12 @@ public class UserController extends BaseController {
         return Mono.error(ErrorCode.AGE_LESS_THAN_LIMIT.newBusinessException());
       }
     }
+    Integer appVersion = getAppIntVersion(exchange);
+
     List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
-      return callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes)
+      return callUpdateUserInfo(
+              exchange, appVersion, 1, "nickName", req.getNickName(), loboErrorCodes)
           .flatMap(
               result -> {
                 boolean auditing = false;
@@ -376,14 +379,15 @@ public class UserController extends BaseController {
                   auditing = true;
                 }
                 List<Mono<Result<Object>>> monos =
-                    getUpdateOtherInfoMonos(exchange, req, loboErrorCodes);
+                    getUpdateOtherInfoMonos(exchange, appVersion, req, loboErrorCodes);
                 if (monos.isEmpty() && auditing) {
                   return Mono.error(ErrorCode.USER_INFO_AUDITING.newBusinessException());
                 }
                 return modifyUserOtherInfo(auditing, monos);
               });
     }
-    return modifyUserOtherInfo(false, getUpdateOtherInfoMonos(exchange, req, loboErrorCodes));
+    return modifyUserOtherInfo(
+        false, getUpdateOtherInfoMonos(exchange, appVersion, req, loboErrorCodes));
   }
 
   @GetMapping(value = "/v1/portrait.do")
@@ -436,18 +440,23 @@ public class UserController extends BaseController {
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
-      ServerWebExchange exchange, UpdateUserReq req, List<Integer> loboErrorCodes) {
+      ServerWebExchange exchange,
+      Integer appVersion,
+      UpdateUserReq req,
+      List<Integer> loboErrorCodes) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
     if (req.getIntro() != null) {
-      monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro(), loboErrorCodes));
+      monos.add(
+          callUpdateUserInfo(exchange, appVersion, 2, "intro", req.getIntro(), loboErrorCodes));
     }
     if (req.getGender() != null) {
-      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender().getCode(), null));
+      monos.add(
+          callUpdateUserInfo(exchange, appVersion, 3, "sex", req.getGender().getCode(), null));
     }
     if (req.getBirthday() != null) {
       monos.add(
           callUpdateUserInfo(
-              exchange, 4, "birthday", DateUtil.toLoboDate(req.getBirthday()), null));
+              exchange, appVersion, 4, "birthday", DateUtil.toLoboDate(req.getBirthday()), null));
     }
     if (req.getPortrait() != null) {
       monos.add(callUploadUserPortrait(exchange, req.getPortrait()));
@@ -498,6 +507,7 @@ public class UserController extends BaseController {
 
   private Mono<Result<Object>> callUpdateUserInfo(
       ServerWebExchange exchange,
+      Integer appVersion,
       int type,
       String name,
       Object value,
@@ -506,6 +516,7 @@ public class UserController extends BaseController {
     data.put(name, value);
     data.put("type", type);
     data.put("key", type); // key和type的值相同
+    data.put("appVersion", appVersion); // key和type的值相同
     return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null, loboErrorCodes);
   }
 

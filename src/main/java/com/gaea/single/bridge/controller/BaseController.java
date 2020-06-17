@@ -41,6 +41,11 @@ public abstract class BaseController {
     return exchange.getAttribute(CommonHeaderConst.APP_VERSION);
   }
 
+  protected Integer getAppIntVersion(ServerWebExchange exchange) {
+    String appVersion = getAppVersion(exchange);
+    return appVersion != null ? Integer.valueOf(appVersion.replace(".", "")) : null;
+  }
+
   protected String getSession(ServerWebExchange exchange) {
     return exchange.getAttribute(CommonHeaderConst.SESSION);
   }
