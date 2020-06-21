@@ -47,6 +47,7 @@ public class VideoController extends BaseController {
             put("sellerId", req.getCalledId());
             put("callType", MediaCallType.DIRECT.getCode());
             put("orderType", MediaOrderType.VIDEO.getCode());
+            put("appId", getAppId());
             put("key", "key");
           }
         };
