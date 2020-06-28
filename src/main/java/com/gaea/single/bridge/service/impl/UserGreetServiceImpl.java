@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.service.impl;
 
 import com.gaea.single.bridge.config.DictionaryProperties;
-import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.constant.SingleRedisConstant;
 import com.gaea.single.bridge.converter.UserGreetConverter;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.manager.AbstractCache;
@@ -135,7 +135,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
         .flatMap(
             user -> {
               RBucketReactive<GreetInfo> greetInfoBucket =
-                  singleRedission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
+                  singleRedission.getBucket(key(SingleRedisConstant.USER_GREET_INFO, userId));
 
               return greetInfoBucket
                   .get()
@@ -212,7 +212,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                                                   singleRedission
                                                       .getBucket(
                                                           key(
-                                                              RedisConstant.USER_GREET_INFO,
+                                                              SingleRedisConstant.USER_GREET_INFO,
                                                               userId))
                                                       .set(
                                                           new GreetInfo(
@@ -364,7 +364,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
                 throw ErrorCode.NOT_OPENED_GREET.newBusinessException();
               }
               RBucketReactive<GreetInfo> greetInfoBucket =
-                  singleRedission.getBucket(key(RedisConstant.USER_GREET_INFO, userId));
+                  singleRedission.getBucket(key(SingleRedisConstant.USER_GREET_INFO, userId));
               return greetInfoBucket
                   .get()
                   .map(

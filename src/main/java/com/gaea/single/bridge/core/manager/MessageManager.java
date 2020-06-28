@@ -1,6 +1,6 @@
 package com.gaea.single.bridge.core.manager;
 
-import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.constant.SingleRedisConstant;
 import org.redisson.api.RAtomicLongReactive;
 import org.redisson.api.RBucketReactive;
 import org.redisson.client.codec.LongCodec;
@@ -17,7 +17,7 @@ public class MessageManager extends AbstractCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> getMessageCount(Long userId, int count) {
-    String key = key(RedisConstant.USER_MESSAGE_COUNT, userId);
+    String key = key(SingleRedisConstant.USER_MESSAGE_COUNT, userId);
     RBucketReactive<Long> bucket = singleRedission.getBucket(key, LongCodec.INSTANCE);
     return bucket
         .trySet((long) count)
@@ -43,7 +43,7 @@ public class MessageManager extends AbstractCache {
    * @return 剩余消息数量
    */
   public Mono<Integer> decrMessageCount(Long userId) {
-    String key = key(RedisConstant.USER_MESSAGE_COUNT, userId);
+    String key = key(SingleRedisConstant.USER_MESSAGE_COUNT, userId);
     RAtomicLongReactive value = singleRedission.getAtomicLong(key);
 
     return value

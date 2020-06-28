@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum DeviceType implements Metadata {
-  IOS(1, "安卓"),
-  ANDROID(2, "IOS");
+  ANDROID(1, "安卓"),
+  IOS(2, "IOS");
 
   private int code;
   private String desc;

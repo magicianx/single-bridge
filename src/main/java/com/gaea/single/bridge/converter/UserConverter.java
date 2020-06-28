@@ -141,7 +141,7 @@ public class UserConverter {
         res.setUserType(userType);
         res.setIsGuildAnchor(
             UserType.ANCHOR.equals(userType)
-                && LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
+                && !LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));

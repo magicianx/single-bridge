@@ -2,9 +2,10 @@ package com.gaea.single.bridge.core.manager;
 
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.DefaultSettingConstant;
-import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.constant.SingleRedisConstant;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserRealOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +41,10 @@ public class GreetUserManager extends AbstractCache {
 
   @PostConstruct
   public void init() {
-    this.newUserSet = singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_NEW));
+    this.newUserSet = singleRedission.getScoredSortedSet(key(SingleRedisConstant.USER_GREET_NEW));
     this.uncalledUserSet =
-        singleRedission.getScoredSortedSet(key(RedisConstant.USER_GREET_UNCALLED));
-    this.greetUsingQueue = singleRedission.getQueue(key(RedisConstant.USER_GREET_USING));
+        singleRedission.getScoredSortedSet(key(SingleRedisConstant.USER_GREET_UNCALLED));
+    this.greetUsingQueue = singleRedission.getQueue(key(SingleRedisConstant.USER_GREET_USING));
     initGreetUser().subscribe();
   }
 
@@ -56,7 +57,7 @@ public class GreetUserManager extends AbstractCache {
    */
   public Mono<Void> addGreetUser(Long userId, boolean isNewUser) {
     return singleRedission
-        .getAtomicLong(key(RedisConstant.USER_GREET_TIMES, userId))
+        .getAtomicLong(key(SingleRedisConstant.USER_GREET_TIMES, userId))
         .get()
         .flatMap(
             v -> {
@@ -200,11 +201,11 @@ public class GreetUserManager extends AbstractCache {
         .flatMap(
             userId ->
                 userManager
-                    .getUserOnlineStatus(userId)
+                    .getUserRealOnlineStatus(userId)
                     .flatMap(
                         status -> {
                           if (!userId.equals(currentUserId)) {
-                            if (status == UserOnlineStatus.FREE) {
+                            if (status == UserRealOnlineStatus.ONLINE) {
                               return userManager
                                   .getUserGender(userId)
                                   .flatMap(
@@ -236,7 +237,11 @@ public class GreetUserManager extends AbstractCache {
                             }
                           }
                           return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);
-                        }))
+                        })
+                    .switchIfEmpty(Mono.defer(() -> {
+                        log.debug("用户{}在线状态未知，从未呼叫队列中移除", userId);
+                        return removeUserAction.apply(userId);
+                    })))
         // 使用中的列表已经弹完了
         .switchIfEmpty(
             Mono.defer(
@@ -248,7 +253,7 @@ public class GreetUserManager extends AbstractCache {
 
   private Mono<Boolean> increaseReceiveTimes(Long userId, int maxReceiveTimes) {
     RAtomicLongReactive greetAtomicTimes =
-        singleRedission.getAtomicLong(key(RedisConstant.USER_GREET_TIMES, userId));
+        singleRedission.getAtomicLong(key(SingleRedisConstant.USER_GREET_TIMES, userId));
     return greetAtomicTimes
         .incrementAndGet()
         .flatMap(
