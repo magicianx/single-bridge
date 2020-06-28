@@ -1,15 +1,19 @@
 package com.gaea.single.bridge.converter;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.dto.account.GratuityGiftItemRes;
-import com.gaea.single.bridge.dto.account.IncomeRes;
-import com.gaea.single.bridge.dto.account.OrderDetailRes;
-import com.gaea.single.bridge.dto.account.WechatPayRes;
+import com.gaea.single.bridge.config.DictionaryProperties;
+import com.gaea.single.bridge.dto.account.*;
 import com.gaea.single.bridge.enums.GiftType;
 import com.gaea.single.bridge.enums.OrderType;
+import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserType;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountConverter {
   public static final Converter<Object, GratuityGiftItemRes> toGratuityGiftItemRes =
@@ -69,5 +73,57 @@ public class AccountConverter {
         res.setMchId(result.getString("partnerid"));
         res.setNonceStr(result.getString("noncestr"));
         return res;
+      };
+
+  public static final Converter<Object, RankMenuRes> toRankGroupRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+
+        List<RankMenuRes.Menu> menus =
+            result.getJSONArray("child").stream()
+                .map(
+                    i -> {
+                      JSONObject item = (JSONObject) i;
+                      return new RankMenuRes.Menu(item.getLong("menuId"), item.getString("name"));
+                    })
+                .collect(Collectors.toList());
+
+        return new RankMenuRes(null, result.getString("name"), menus);
+      };
+
+  public static final Converter<Object, RankingRes> toRankingRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        JSONArray users = result.getJSONArray("users");
+        Long differDiamonds = result.getLong("differDiamonds");
+        UserType userType = UserType.ofCode(result.getInteger("userType"));
+
+        String tipText = null;
+        if (differDiamonds != null && userType != null) {
+          DictionaryProperties.Ranking rankingConfig = DictionaryProperties.get().getRanking();
+          String template =
+              UserType.ANCHOR.equals(userType)
+                  ? rankingConfig.getAnchorTipText()
+                  : rankingConfig.getUserTipText();
+          tipText = String.format(template, differDiamonds);
+        }
+
+        List<RankingRes.RankUser> rankUsers =
+            users.stream()
+                .map(
+                    u -> {
+                      JSONObject user = (JSONObject) u;
+                      RankingRes.RankUser rankUser = new RankingRes.RankUser();
+                      rankUser.setUserId(user.getLong("userId"));
+                      rankUser.setNickName(user.getString("nickName"));
+                      rankUser.setPortraitUrl(user.getString("portrait"));
+                      rankUser.setRanking(user.getInteger("ranking"));
+                      rankUser.setOnlineStatus(UserOnlineStatus.ofCode(user.getInteger("status")));
+                      rankUser.setGradeIconUrl(user.getString("gradeIcon"));
+                      rankUser.setIsVip(LoboUtil.toBoolean(user.getInteger("isVip")));
+                      return rankUser;
+                    })
+                .collect(Collectors.toList());
+        return new RankingRes(tipText, rankUsers);
       };
 }

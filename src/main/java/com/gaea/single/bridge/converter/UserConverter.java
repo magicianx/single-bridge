@@ -136,7 +136,12 @@ public class UserConverter {
         res.setBalance(result.getLong("money"));
         res.setIsPerfectBirthday(result.getInteger("isPerfectAge") == 1);
         res.setIsPerfectGender(result.getInteger("isPerfectSex") == 1);
-        res.setUserType(UserType.ofCode(result.getInteger("userType")));
+
+        UserType userType = UserType.ofCode(result.getInteger("userType"));
+        res.setUserType(userType);
+        res.setIsGuildAnchor(
+            UserType.ANCHOR.equals(userType)
+                && !LoboUtil.toBoolean(result.getInteger("overseeIncomeStatus")));
         res.setInviteCode(result.getString("inviteCode"));
         res.setFansNum(result.getInteger("fansNum"));
         res.setFollowNum(result.getInteger("followNum"));
@@ -234,6 +239,15 @@ public class UserConverter {
                 result.getBigDecimal("duration").multiply(LoboUtil.MONEY_EXCHANGE_RATE),
                 2,
                 RoundingMode.FLOOR));
+        return res;
+      };
+
+  public static final Converter<Object, UserRemarkRes> toUserRemarkRes =
+      (obj) -> {
+        JSONObject result = (JSONObject) obj;
+        UserRemarkRes res = new UserRemarkRes();
+        res.setUserId(result.getLong("remarksUserId"));
+        res.setRemark(result.getString("remarks"));
         return res;
       };
 

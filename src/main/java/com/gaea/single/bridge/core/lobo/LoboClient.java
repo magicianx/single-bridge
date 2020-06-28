@@ -329,6 +329,7 @@ public class LoboClient {
     if (params != null) {
       String pathParams =
           params.entrySet().stream()
+              .filter(entry -> entry.getKey() != null && entry.getValue() != null)
               .map(entry -> entry.getKey() + "=" + entry.getValue())
               .collect(Collectors.joining("&"));
       return path + "?" + pathParams;

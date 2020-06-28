@@ -2,7 +2,7 @@ package com.gaea.single.bridge.config.filter;
 
 import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
-import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.constant.LoboRedisConstant;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ public class AuthFilter extends AbstractFilter implements WebFilter {
       return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
     }
     RMapReactive<String, String> userInfo =
-        redissonClient.getMap(RedisConstant.USER_LOGIN_INFO + userId, StringCodec.INSTANCE);
+        redissonClient.getMap(LoboRedisConstant.USER_LOGIN_INFO + userId, StringCodec.INSTANCE);
     return userInfo
         .get("lastLoginSession")
         .defaultIfEmpty("")

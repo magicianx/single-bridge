@@ -61,13 +61,9 @@ public class UserController extends BaseController {
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
   public Mono<Result<List<UserColumnRes>>> getUserColumns(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("appId", getAppId());
-            put("userId", getUserId(exchange));
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("appId", getAppId());
+    data.put("userId", getUserId(exchange));
     return loboClient.postForm(
         exchange, LoboPathConst.USER_COLUMN_LIST, data, UserConverter.toUserColumnResList);
   }
@@ -91,18 +87,13 @@ public class UserController extends BaseController {
   public Mono<Result<UserProfileRes>> getUserProfile(
       @ApiParam(value = "用户id", required = true) @NotNull @RequestParam Long userId,
       @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("appId", getAppId());
+    data.put("profileId", userId);
+
     Mono<Result<UserProfileRes>> profileMono =
         loboClient
-            .postForm(
-                exchange,
-                LoboPathConst.USER_PROFILE,
-                new HashMap<String, Object>() {
-                  {
-                    put("appId", getAppId());
-                    put("profileId", userId);
-                  }
-                },
-                UserConverter.toUserProfileRes)
+            .postForm(exchange, LoboPathConst.USER_PROFILE, data, UserConverter.toUserProfileRes)
             .flatMap(
                 result -> {
                   if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
@@ -121,15 +112,7 @@ public class UserController extends BaseController {
 
     Mono<Result<List<AlbumItemRes>>> albumMono =
         loboClient.postFormForList(
-            exchange,
-            LoboPathConst.USER_ALBUM,
-            new HashMap<String, Object>() {
-              {
-                put("profileId", userId);
-              }
-            },
-            UserConverter.toAlbumItemRes);
-
+            exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
     return Mono.zip(
             profileMono,
             albumMono,
@@ -213,13 +196,9 @@ public class UserController extends BaseController {
   public Mono<Result<PageRes<BlackUserRes>>> removeBlackUser(
       @ApiIgnore ServerWebExchange exchange,
       @ApiParam(value = "用户id", required = true) @RequestParam("userId") @NotNull Long userId) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("blackId", userId);
-            put("type", "2");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("blackId", userId);
+    data.put("type", "2");
     return loboClient.postForm(exchange, LoboPathConst.REMOVE_BLACK_USER, data, null);
   }
 
@@ -229,54 +208,44 @@ public class UserController extends BaseController {
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody LoginReq req) {
     Mono<Result<LoginRes>> mono;
     if (req.getType() == LoginType.PHONE_DIRECT) {
-      Map<String, Object> data =
-          new HashMap<String, Object>() {
-            {
-              put("os", getOsType(exchange).getCode());
-              put("appId", getAppId());
-              put("channel", getChannelId(exchange));
-              put("deviceNo", getDeviceNo(exchange));
-              put("token", req.getAccessToken());
-            }
-          };
+      Map<String, Object> data = new HashMap<>();
+      data.put("os", getOsType(exchange).getCode());
+      data.put("appId", getAppId());
+      data.put("channel", getChannelId(exchange));
+      data.put("deviceNo", getDeviceNo(exchange));
+      data.put("token", req.getAccessToken());
+
       mono = loboClient.postForm(exchange, LoboPathConst.ONE_LOGIN, data, UserConverter.toLoginRes);
     } else {
       replaceToPasswordLoginForAudit(req);
 
-      Map<String, Object> data =
-          new HashMap<String, Object>() {
-            {
-              put("type", req.getType().getCode());
-              put("os", getOsType(exchange).getCode());
-              put("openId", req.getOpenId());
-              put("imageUrl", req.getPortraitUrl());
-              put("appId", getAppId());
-              put("channel", getChannelId(exchange));
-              put("deviceNo", getDeviceNo(exchange));
-              put("accessToken", req.getAccessToken());
-              put("userName", req.getNickName());
-              put("version", getAppVersion(exchange));
-              put("userMobile", req.getPhoneNum());
-              put("password", req.getPassword());
-              put("smsCode", req.getSmsCode());
-            }
-          };
+      Map<String, Object> data = new HashMap<>();
+      data.put("type", req.getType().getCode());
+      data.put("os", getOsType(exchange).getCode());
+      data.put("openId", req.getOpenId());
+      data.put("imageUrl", req.getPortraitUrl());
+      data.put("appId", getAppId());
+      data.put("channel", getChannelId(exchange));
+      data.put("deviceNo", getDeviceNo(exchange));
+      data.put("accessToken", req.getAccessToken());
+      data.put("userName", req.getNickName());
+      data.put("version", getAppVersion(exchange));
+      data.put("userMobile", req.getPhoneNum());
+      data.put("password", req.getPassword());
+      data.put("smsCode", req.getSmsCode());
+
       mono =
           loboClient.postForm(exchange, LoboPathConst.USER_LOGIN, data, UserConverter.toLoginRes);
     }
     if (StringUtils.isNotBlank(req.getInviteCode())) {
+      Map<String, Object> data = new HashMap<>();
+      data.put("inviteCode", req.getInviteCode());
+      data.put("key", "key");
       mono =
           mono.flatMap(
               (result) -> {
                 if (ErrorCode.isSuccess(result.getCode())) {
                   log.info("登录成功，用户{}即将绑定邀请码: {}", result.getData().getId(), req.getInviteCode());
-                  Map<String, Object> data =
-                      new HashMap<String, Object>() {
-                        {
-                          put("inviteCode", req.getInviteCode());
-                          put("key", "key");
-                        }
-                      };
                   exchange
                       .getAttributes()
                       .put(CommonHeaderConst.USER_ID, result.getData().getId().toString());
@@ -309,25 +278,21 @@ public class UserController extends BaseController {
 
   @PostMapping(value = "/v1/cancel.do")
   @ApiOperation(value = "用户注销")
-  public Mono<Result<Object>> cancel(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<Object>> cancel() {
     return Mono.just(Result.success());
   }
 
   @PostMapping(value = "/v1/logout.do")
   @ApiOperation(value = "用户退出登录")
-  public Mono<Result<LoginRes>> logout(@ApiIgnore ServerWebExchange exchange) {
+  public Mono<Result<LoginRes>> logout() {
     return Mono.just(Result.success());
   }
 
   @GetMapping(value = "/v1/album.do")
   @ApiOperation(value = "获取用户相册列表")
   public Mono<Result<List<AlbumItemRes>>> getUserAlbum(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("profileId", getUserId(exchange));
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("profileId", getUserId(exchange));
     return loboClient.postFormForList(
         exchange, LoboPathConst.USER_ALBUM, data, UserConverter.toAlbumItemRes);
   }
@@ -343,12 +308,9 @@ public class UserController extends BaseController {
   @ApiOperation(value = "上传相册图片")
   public Mono<Result<List<AlbumItemRes>>> uploadAlbumImg(
       @Valid UploadAlbumReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("file", req.getImg());
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("file", req.getImg());
+
     return loboClient.postForm(
         exchange,
         LoboPathConst.UPLOAD_ALBUM_IMG,
@@ -373,21 +335,13 @@ public class UserController extends BaseController {
   @ApiOperation(value = "删除相册图片")
   public Mono<Result<Object>> removeAlbumImg(
       @ApiIgnore ServerWebExchange exchange, @Valid DeleteAlbumReq req) {
-    String urls =
-        JsonUtils.toJsonString(
-            Collections.singletonList(
-                new HashMap<String, Object>() {
-                  {
-                    put("url", req.getImgUrl());
-                    put("status", req.getStatus().getCode());
-                  }
-                }));
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("urls", urls);
-          }
-        };
+    Map<String, Object> url = new HashMap<>();
+    url.put("url", req.getImgUrl());
+    url.put("status", req.getStatus().getCode());
+
+    String urls = JsonUtils.toJsonString(Collections.singletonList(url));
+    Map<String, Object> data = new HashMap<>();
+    data.put("urls", urls);
     return loboClient.postForm(exchange, LoboPathConst.DELETE_ALBUM_IMG, data, null);
   }
 
@@ -404,9 +358,12 @@ public class UserController extends BaseController {
         return Mono.error(ErrorCode.AGE_LESS_THAN_LIMIT.newBusinessException());
       }
     }
+    Integer appVersion = getAppIntVersion(exchange);
+
     List<Integer> loboErrorCodes = Collections.singletonList(1005);
     if (req.getNickName() != null) {
-      return callUpdateUserInfo(exchange, 1, "nickName", req.getNickName(), loboErrorCodes)
+      return callUpdateUserInfo(
+              exchange, appVersion, 1, "nickName", req.getNickName(), loboErrorCodes)
           .flatMap(
               result -> {
                 boolean auditing = false;
@@ -422,14 +379,15 @@ public class UserController extends BaseController {
                   auditing = true;
                 }
                 List<Mono<Result<Object>>> monos =
-                    getUpdateOtherInfoMonos(exchange, req, loboErrorCodes);
+                    getUpdateOtherInfoMonos(exchange, appVersion, req, loboErrorCodes);
                 if (monos.isEmpty() && auditing) {
                   return Mono.error(ErrorCode.USER_INFO_AUDITING.newBusinessException());
                 }
                 return modifyUserOtherInfo(auditing, monos);
               });
     }
-    return modifyUserOtherInfo(false, getUpdateOtherInfoMonos(exchange, req, loboErrorCodes));
+    return modifyUserOtherInfo(
+        false, getUpdateOtherInfoMonos(exchange, appVersion, req, loboErrorCodes));
   }
 
   @GetMapping(value = "/v1/portrait.do")
@@ -450,16 +408,12 @@ public class UserController extends BaseController {
   @ApiOperation(value = "上报用户位置")
   public Mono<Result<Void>> uploadUserAddress(
       @ApiIgnore ServerWebExchange exchange, @Valid @RequestBody UploadUserAddressReq req) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("province", req.getProvince());
-            put("city", req.getCity());
-            put("latitude", req.getLatitude());
-            put("longitude", req.getLongitude());
-            put("key", getAppId());
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("province", req.getProvince());
+    data.put("city", req.getCity());
+    data.put("latitude", req.getLatitude());
+    data.put("longitude", req.getLongitude());
+    data.put("key", getAppId());
     return loboClient.postForm(exchange, LoboPathConst.UPLOAD_USER_ADDRESS, data, null);
   }
 
@@ -486,18 +440,23 @@ public class UserController extends BaseController {
   }
 
   private List<Mono<Result<Object>>> getUpdateOtherInfoMonos(
-      ServerWebExchange exchange, UpdateUserReq req, List<Integer> loboErrorCodes) {
+      ServerWebExchange exchange,
+      Integer appVersion,
+      UpdateUserReq req,
+      List<Integer> loboErrorCodes) {
     List<Mono<Result<Object>>> monos = new ArrayList<>();
     if (req.getIntro() != null) {
-      monos.add(callUpdateUserInfo(exchange, 2, "intro", req.getIntro(), loboErrorCodes));
+      monos.add(
+          callUpdateUserInfo(exchange, appVersion, 2, "intro", req.getIntro(), loboErrorCodes));
     }
     if (req.getGender() != null) {
-      monos.add(callUpdateUserInfo(exchange, 3, "sex", req.getGender().getCode(), null));
+      monos.add(
+          callUpdateUserInfo(exchange, appVersion, 3, "sex", req.getGender().getCode(), null));
     }
     if (req.getBirthday() != null) {
       monos.add(
           callUpdateUserInfo(
-              exchange, 4, "birthday", DateUtil.toLoboDate(req.getBirthday()), null));
+              exchange, appVersion, 4, "birthday", DateUtil.toLoboDate(req.getBirthday()), null));
     }
     if (req.getPortrait() != null) {
       monos.add(callUploadUserPortrait(exchange, req.getPortrait()));
@@ -548,6 +507,7 @@ public class UserController extends BaseController {
 
   private Mono<Result<Object>> callUpdateUserInfo(
       ServerWebExchange exchange,
+      Integer appVersion,
       int type,
       String name,
       Object value,
@@ -556,6 +516,7 @@ public class UserController extends BaseController {
     data.put(name, value);
     data.put("type", type);
     data.put("key", type); // key和type的值相同
+    data.put("appVersion", appVersion); // key和type的值相同
     return loboClient.postForm(exchange, LoboPathConst.EDIT_USER_INFO, data, null, loboErrorCodes);
   }
 

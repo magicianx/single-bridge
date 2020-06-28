@@ -1,11 +1,12 @@
 package com.gaea.single.bridge.core.manager;
 
-import com.gaea.single.bridge.constant.RedisConstant;
+import com.gaea.single.bridge.constant.LoboRedisConstant;
 import com.gaea.single.bridge.entity.mongodb.User;
 import com.gaea.single.bridge.entity.mysql.UserPersonalInfo;
 import com.gaea.single.bridge.enums.BoolType;
 import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
+import com.gaea.single.bridge.enums.UserRealOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.repository.mysql.UserPersonalInfoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class UserManager extends AbstractCache {
    */
   public Mono<GenderType> getUserGender(Long userId) {
     return loboRedission
-        .getMap(RedisConstant.USER_INFO + userId, IntegerCodec.INSTANCE)
+        .getMap(LoboRedisConstant.USER_INFO + userId, IntegerCodec.INSTANCE)
         .get("sex")
         .switchIfEmpty(
             Mono.defer(
@@ -72,7 +73,7 @@ public class UserManager extends AbstractCache {
    */
   public Mono<UserOnlineStatus> getUserOnlineStatus(Long userId) {
     return loboRedission
-        .getSet(RedisConstant.USER_UN_DISTURB)
+        .getSet(LoboRedisConstant.USER_UN_DISTURB)
         .contains(userId)
         .flatMap(
             dnd -> {
@@ -80,7 +81,7 @@ public class UserManager extends AbstractCache {
                 return Mono.just(UserOnlineStatus.UN_DISTURB);
               }
               return loboRedission
-                  .getSet(RedisConstant.USER_FREE, StringCodec.INSTANCE)
+                  .getSet(LoboRedisConstant.USER_FREE, StringCodec.INSTANCE)
                   .contains(userId)
                   .flatMap(
                       free -> {
@@ -88,7 +89,7 @@ public class UserManager extends AbstractCache {
                           return Mono.just(UserOnlineStatus.FREE);
                         }
                         return loboRedission
-                            .getSet(RedisConstant.USER_BUSY)
+                            .getSet(LoboRedisConstant.USER_BUSY)
                             .contains(userId)
                             .flatMap(
                                 busy -> {
@@ -102,12 +103,24 @@ public class UserManager extends AbstractCache {
   }
 
   /**
+   * 获取用户的真实在线状态
+   *
+   * @return {@link Mono<UserRealOnlineStatus>}
+   */
+  public Mono<UserRealOnlineStatus> getUserRealOnlineStatus(Long userId) {
+    return loboRedission
+        .getBucket(LoboRedisConstant.USER_REAL_STATUS + userId, StringCodec.INSTANCE)
+        .get()
+        .map(index -> UserRealOnlineStatus.ofIndex(Integer.valueOf(index.toString())).orElse(null));
+  }
+
+  /**
    * 获取用户开启定位状态
    *
    * @param userId ¬用户id
    */
   public Mono<Boolean> getPositionStatus(Long userId) {
-    String key = key(RedisConstant.USER_POSITION_STATUS, userId);
+    String key = key(LoboRedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = singleRedission.getBucket(key, LongCodec.INSTANCE);
 
     return bucket
@@ -135,7 +148,7 @@ public class UserManager extends AbstractCache {
    * @param isEnable 是否开启定位
    */
   public Mono<Void> setPositionStatus(Long userId, boolean isEnable) {
-    String key = key(RedisConstant.USER_POSITION_STATUS, userId);
+    String key = key(LoboRedisConstant.USER_POSITION_STATUS, userId);
     RBucketReactive<Long> bucket = singleRedission.getBucket(key, LongCodec.INSTANCE);
     return getUser(userId)
         .flatMap(
@@ -154,7 +167,7 @@ public class UserManager extends AbstractCache {
    */
   public Mono<Boolean> isVip(Long userId) {
     return loboRedission
-        .getMap(key(RedisConstant.USER_VIP_INFO, userId), StringCodec.INSTANCE)
+        .getMap(key(LoboRedisConstant.USER_VIP_INFO, userId), StringCodec.INSTANCE)
         .isExists();
   }
 }

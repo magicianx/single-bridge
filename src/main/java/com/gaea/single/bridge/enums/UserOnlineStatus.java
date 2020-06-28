@@ -3,7 +3,11 @@ package com.gaea.single.bridge.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/** 用户在线状态 */
+/**
+ * 用户在线状态
+ *
+ * @author cludy
+ */
 @AllArgsConstructor
 @Getter
 public enum UserOnlineStatus implements Metadata {
