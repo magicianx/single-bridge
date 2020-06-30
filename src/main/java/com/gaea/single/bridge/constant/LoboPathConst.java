@@ -172,4 +172,6 @@ public final class LoboPathConst {
   public static final String GET_RANK_MENU_LIST = "/mapper/rank/single/menu.net";
   /** 获取排行榜列表 */
   public static final String GET_RANK_LIST = "/mapper/rank/single/list.net";
+  /** 设置封面视频 */
+  public static final String SET_COVER_VIDEO = "/vod/videoCenter/updateIsCover.do";
 }

@@ -37,4 +37,7 @@ public class UserVideoItemRes {
 
   @ApiModelProperty(value = "打赏礼物金额(钻石)", required = true)
   private Long gratuityMoney;
+
+  @ApiModelProperty(value = "是否为封面视频", required = true)
+  private Boolean isCover;
 }

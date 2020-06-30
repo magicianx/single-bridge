@@ -35,14 +35,10 @@ public class AlipayController extends BaseController {
   @ApiOperation(value = "解绑支付宝账号")
   public Mono<Result<Object>> unbindAlipayAccount(
       @RequestBody @Valid UnbindAlipayReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("userMobile", req.getPhoneNum());
-            put("smsCode", req.getSmsCode());
-            put("key", "------");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("userMobile", req.getPhoneNum());
+    data.put("smsCode", req.getSmsCode());
+    data.put("key", "------");
     return loboClient.postForm(exchange, LoboPathConst.UNBIND_ALIPAY_ACCOUNT, data, null);
   }
 
@@ -51,25 +47,17 @@ public class AlipayController extends BaseController {
   @ApiOperation(value = "绑定支付宝账号")
   public Mono<Result<Object>> bindAlipayAccount(
       @RequestBody @Valid BindAlipayReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("authCode", req.getAuthCode());
-            put("key", "-----");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("authCode", req.getAuthCode());
+    data.put("key", "-----");
     return loboClient.postForm(exchange, LoboPathConst.BIND_ALIPAY_ACCOUNT, data, null);
   }
 
   @GetMapping(value = "/v1/auth_sign.do")
   @ApiOperation(value = "获取支付宝授权签名")
   public Mono<Result<String>> getAlipayAuthSign(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "-----");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "-----");
     return loboClient.get(exchange, LoboPathConst.ALIPAY_AUTH_SIGN, data, (obj) -> (String) obj);
   }
 
@@ -78,18 +66,15 @@ public class AlipayController extends BaseController {
   @ApiOperation(value = "获取支付宝支付签名")
   public Mono<Result<String>> getAlipayPaySign(
       @Valid GetPaySignReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("money", req.getDiamonds());
-            put("os", getOsType(exchange).getCode());
-            put("packageName", getPackageName(exchange));
-            put("type", req.getScene().getCode());
-            put("version", getAppVersion(exchange));
-            put("key", Md5Utils.encrypt("huoaquazhifubaoachongz" + req.getDiamonds()));
-            put("configId", req.getOptionId()); // vip充值时需要传vip支付配追id, 钱包充值不需要传
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("money", req.getDiamonds());
+    data.put("os", getOsType(exchange).getCode());
+    data.put("packageName", getPackageName(exchange));
+    data.put("type", req.getScene().getCode());
+    data.put("version", getAppVersion(exchange));
+    data.put("key", Md5Utils.encrypt("huoaquazhifubaoachongz" + req.getDiamonds()));
+    data.put("configId", req.getOptionId()); // vip充值时需要传vip支付配追id, 钱包充值不需要传
+
     return loboClient.get(exchange, LoboPathConst.ALIPAY_PAY_SIGN, data, (obj) -> (String) obj);
   }
 
@@ -97,13 +82,10 @@ public class AlipayController extends BaseController {
   @ApiOperation(value = "手动绑定支付宝账号")
   public Mono<Result<Object>> manualBindAlipayAccount(
       @RequestBody @Valid ManualBindAlipayReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("alipayId", req.getAlipayAccount());
-            put("key", "-----");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("alipayId", req.getAlipayAccount());
+    data.put("key", "-----");
+    
     return loboClient.postForm(exchange, LoboPathConst.MANUAL_BIND_ALIPAY_ACCOUNT, data, null);
   }
 }

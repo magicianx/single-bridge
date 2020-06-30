@@ -21,9 +21,10 @@ public class ShareConverter {
         res.setRewardAmount(LoboUtil.toMoney(result.getBigDecimal("totalMoney")));
         res.setInviteCount(result.getInteger("shareNum"));
 
-        boolean isBindAlipay = result.getInteger("isBindAlipay") == 1;
+        boolean isBindAlipay = LoboUtil.toBoolean(result.getInteger("isBindAlipay"));
         BigDecimal leastAmount = LoboUtil.toMoney(result.getBigDecimal("leastMoney"));
         boolean withdrawable = withdrawableAmount.compareTo(leastAmount) > 0 && isBindAlipay;
+        res.setIsBindAlipay(isBindAlipay);
         res.setWithdrawable(withdrawable);
         res.setRechargePercentage(result.getFloat("payPercentage"));
         res.setIncomePercentage(result.getFloat("incomePercentage"));

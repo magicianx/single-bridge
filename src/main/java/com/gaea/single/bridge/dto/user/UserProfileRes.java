@@ -67,6 +67,9 @@ public class UserProfileRes {
   @ApiModelProperty("简介")
   private String intro;
 
+  @ApiModelProperty("封面视频")
+  private String coverVideoUrl;
+
   @ApiModelProperty(value = "相册列表", required = true)
   private List<String> photos;
 

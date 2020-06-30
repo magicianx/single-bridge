@@ -110,22 +110,22 @@ public class PlatformController extends BaseController {
   @ApiOperation(value = "获取引流包弹窗广告")
   public Mono<Result<DpPopupAdvertRes>> getDpPopupAdvert(@ApiIgnore ServerWebExchange exchange) {
     if (getOsType(exchange) == OsType.IOS) {
-      Map<String, Object> data =
-          new HashMap<String, Object>() {
-            {
-              put("version", getAppVersion(exchange));
-              put("packageName", getPackageName(exchange));
-              put("single", "single");
-            }
-          };
+      Map<String, Object> data = new HashMap<>();
+      data.put("version", getAppVersion(exchange));
+      data.put("packageName", getPackageName(exchange));
+      data.put("single", "single");
 
       return iosAuditClient.postForm(
           exchange,
           LoboPathConst.CHECK_IOS_AUDIT_STATUS,
           data,
           (obj) -> {
-            Integer auditStatus = ((JSONObject) obj).getInteger("auditStatus");
-            boolean isAuditPass = LoboUtil.toBoolean2(auditStatus);
+            boolean isAuditPass = true;
+            if (obj != null) {
+              Integer auditStatus = ((JSONObject) obj).getInteger("auditStatus");
+              isAuditPass = auditStatus == null || LoboUtil.toBoolean2(auditStatus);
+            }
+
             if (isAuditPass) {
               DictionaryProperties.DrainagePackage drainagePackage =
                   DictionaryProperties.get().getDrainagePackage();

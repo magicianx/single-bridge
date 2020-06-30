@@ -42,15 +42,12 @@ public class ShareController extends BaseController {
   @ApiOperation(value = "获取分享奖励排行榜")
   public Mono<Result<List<ShareRankingRes>>> getShareRanking(
       @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "123");
-            put("pageNo", "1");
-            put("pageSize", "10");
-            put("total", "0");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "123");
+    data.put("pageNo", "1");
+    data.put("pageSize", "10");
+    data.put("total", "0");
+
     return loboClient.postFormForList(
         exchange,
         LoboPathConst.SHARE_RANKING,
@@ -68,12 +65,9 @@ public class ShareController extends BaseController {
   @GetMapping(value = "/v1/info.do")
   @ApiOperation(value = "获取分销信息")
   public Mono<Result<ShareInfoRes>> getShareInfo(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "123");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "123");
+
     return loboClient.postForm(
         exchange, LoboPathConst.SHARE_INFO, data, ShareConverter.toShareInfoRes);
   }
@@ -82,14 +76,11 @@ public class ShareController extends BaseController {
   @ApiOperation(value = "获取分享奖励记录")
   public Mono<Result<PageRes<ShareRewardRecordRes>>> getShareRewardRecord(
       @Valid PageReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "123");
-            put("pageNo", req.getPageNum());
-            put("pageSize", req.getPageSize());
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "123");
+    data.put("pageNo", req.getPageNum());
+    data.put("pageSize", req.getPageSize());
+
     return loboClient.postFormForPage(
         exchange,
         LoboPathConst.SHARE_REWARD_RECORD,
@@ -102,14 +93,11 @@ public class ShareController extends BaseController {
   @ApiOperation(value = "获取分享邀请记录")
   public Mono<Result<PageRes<ShareInviteRecordRes>>> getShareInviteRecord(
       @Valid PageReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "123");
-            put("pageNo", req.getPageNum());
-            put("pageSize", req.getPageSize());
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "123");
+    data.put("pageNo", req.getPageNum());
+    data.put("pageSize", req.getPageSize());
+
     return loboClient.postFormForPage(
         exchange,
         LoboPathConst.SHARE_INVITE_RECORD,
@@ -123,13 +111,10 @@ public class ShareController extends BaseController {
   @ApiOperation(value = "分销提现")
   public Mono<Result<Object>> withdraw(
       @Valid @RequestBody WithdrawReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("key", "key");
-            put("money", LoboUtil.toDiamonds(req.getMoney()));
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("key", "key");
+    data.put("money", LoboUtil.toDiamonds(req.getMoney()));
+
     return loboClient.postForm(exchange, LoboPathConst.SHARE_WITHDRAW, data, null);
   }
 

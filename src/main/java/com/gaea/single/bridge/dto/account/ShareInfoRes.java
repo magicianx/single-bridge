@@ -31,4 +31,7 @@ public class ShareInfoRes {
 
   @ApiModelProperty(value = "收益持续天数", required = true)
   private Integer profitDurationDays;
+
+  @ApiModelProperty(value = "是否绑定支付宝账号", required = true)
+  private Boolean isBindAlipay;
 }

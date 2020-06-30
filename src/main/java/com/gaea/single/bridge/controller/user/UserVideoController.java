@@ -3,13 +3,10 @@ package com.gaea.single.bridge.controller.user;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.UserConverter;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
-import com.gaea.single.bridge.dto.user.DeleteVideoReq;
-import com.gaea.single.bridge.dto.user.PraiseVideoReq;
-import com.gaea.single.bridge.dto.user.UploadVideoReq;
-import com.gaea.single.bridge.dto.user.UserVideoItemRes;
-import com.gaea.single.bridge.core.error.ErrorCode;
+import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.util.JsonUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -70,20 +67,15 @@ public class UserVideoController extends BaseController {
         JsonUtils.toJsonString(
             req.stream()
                 .map(
-                    video ->
-                        new HashMap<String, Object>() {
-                          {
-                            put("unid", video.getCloudFileId());
-                            put("status", video.getAuditStatus().getCode());
-                          }
-                        })
+                    video -> {
+                      Map<String, Object> item = new HashMap<>();
+                      item.put("unid", video.getCloudFileId());
+                      item.put("status", video.getAuditStatus().getCode());
+                      return item;
+                    })
                 .collect(Collectors.toList()));
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("obj", obj);
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("obj", obj);
     return loboClient.postForm(exchange, LoboPathConst.DELETE_VIDEO, data, null);
   }
 
@@ -91,12 +83,8 @@ public class UserVideoController extends BaseController {
   @ApiOperation(value = "视频点赞")
   public Mono<Result<Object>> praiseVideo(
       @RequestBody @Valid PraiseVideoReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("videoUnId", req.getId());
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("videoUnId", req.getId());
     return loboClient.postForm(exchange, LoboPathConst.PRAISE_VIDEO, data, null);
   }
 
@@ -111,15 +99,23 @@ public class UserVideoController extends BaseController {
   @ApiOperation(value = "上传视频")
   public Mono<Result<String>> uploadVideo(
       @RequestBody @Valid UploadVideoReq req, @ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("unid", req.getCloudFileId());
-            put("coverUrl", req.getCoverUrl());
-            put("videoUrl", req.getVideoUrl());
-            put("key", "----");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("unid", req.getCloudFileId());
+    data.put("coverUrl", req.getCoverUrl());
+    data.put("videoUrl", req.getVideoUrl());
+    data.put("key", "----");
     return loboClient.postForm(exchange, LoboPathConst.UPLOAD_VIDEO, data, null);
+  }
+
+  @PostMapping(value = "/v1/cover.do", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ApiOperation(value = "设置封面视频")
+  public Mono<Result<String>> setCoverVideo(
+      @RequestBody @Valid SetCoverVideoReq req, @ApiIgnore ServerWebExchange exchange) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("isCover", req.getIsCover() ? "1" : "2");
+    data.put("id", req.getVideoId());
+    data.put("userId", getUserId(exchange));
+
+    return loboClient.postForm(exchange, LoboPathConst.SET_COVER_VIDEO, data, null);
   }
 }

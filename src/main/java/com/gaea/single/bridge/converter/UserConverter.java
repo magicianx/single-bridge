@@ -96,9 +96,10 @@ public class UserConverter {
                 .orElse(FollowStatus.UNFOLLOW));
 
         List<String> photos = new ArrayList<>();
-        if (result.getJSONArray("photos") != null) {
-          result.getJSONArray("photos").forEach(photo -> photos.add((String) photo));
-        }
+        Optional.ofNullable(result.getJSONArray("photos"))
+            .ifPresent(v -> v.forEach(photo -> photos.add((String) photo)));
+        Optional.ofNullable(result.getString("videoUrl")).ifPresent(res::setCoverVideoUrl);
+
         res.setPhotos(photos);
 
         Optional.ofNullable(result.getJSONArray("labels"))
@@ -118,6 +119,7 @@ public class UserConverter {
         Optional.ofNullable(result.getJSONArray("giftIcons"))
             .map(icons -> icons.stream().map(icon -> (String) icon).collect(Collectors.toList()))
             .ifPresent(res::setGiftIcons);
+
         return res;
       };
 
@@ -222,6 +224,7 @@ public class UserConverter {
         res.setIsPraise(LoboUtil.toBoolean(result.getInteger("isPriase")));
         res.setPraiseTimes(result.getLong("praiseTimes"));
         res.setGratuityMoney(result.getLong("rewardTotalMoney"));
+        res.setIsCover(LoboUtil.toBoolean(result.getInteger("isCover")));
         return res;
       };
 

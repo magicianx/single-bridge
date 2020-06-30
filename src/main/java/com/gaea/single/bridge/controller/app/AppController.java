@@ -28,6 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/app", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +73,9 @@ public class AppController extends BaseController {
                 isAuditPass =
                     isAndroid
                         ? AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS
-                        : !LoboUtil.toBoolean(((JSONObject) obj).getInteger("auditStatus"));
+                        : Optional.ofNullable(((JSONObject) obj).getInteger("auditStatus"))
+                            .map(LoboUtil::toBoolean2)
+                            .orElse(true);
               }
 
               DictionaryProperties.Lobo lobo = DictionaryProperties.get().getLobo();
