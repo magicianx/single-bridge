@@ -1,0 +1,40 @@
+spring:
+  redis:
+    single:
+      database: 0
+      host: localhost
+      port: 6379
+      ssl: false
+      timeout: 200 # 单位ms
+    lobo:
+      host: localhost
+  r2dbc:
+    url: r2dbc:pool:mysql://oa:3312/lobo?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: appuser
+    password: password
+    pool:
+      initial-size: 10
+      max-size: 10
+      validation-query: SELECT 1
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/single_bridge
+
+service:
+  auth:
+    session:
+      - '* /user/position/**' # 定位相关功能
+      - '* /user/greet/**' # 打招呼相关功能
+  config:
+    server: http://192.168.10.29:30012
+    group: SingleBridge
+    module: Single
+    branch: TEST
+    secretKey: f8f661c1fe7c4be0b33405f9f47c4880
+  api.enable: true
+  reportImgPath: /Users/cludy/project/lanbright/single-bridge/src/main/resources/report.jpg
+
+logging:
+  level:
+    org.springframework: debug
+    com.gaea: debug

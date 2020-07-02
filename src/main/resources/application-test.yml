@@ -1,0 +1,13 @@
+spring:
+  redis:
+    single:
+      cluster:
+        nodes: gnode2:6000, gnode2:6001, gnode2:6002
+    lobo:
+      cluster:
+        nodes: gnode2:6000, gnode2:6001, gnode2:6002
+
+logging:
+  level:
+    org.springframework: debug
+    com.gaea: debug
