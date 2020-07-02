@@ -61,6 +61,15 @@ public class UserConverter {
         res.setIsVip(
             userType == UserType.GENERAL_USER
                 && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
+        res.setAge(result.getInteger("age"));
+        Optional.ofNullable(result.getInteger("sex"))
+            .ifPresent(v -> res.setGender(GenderType.ofCode(v)));
+
+        String city = result.getString("address");
+        if (StringUtils.isBlank(city)) {
+          city = DefaultSettingConstant.UNKNOWN_POSITION;
+        }
+        res.setCity(city);
         return res;
       };
 

@@ -56,6 +56,7 @@ public class AccountConverter {
         res.setAmount(result.getString("moneyString"));
         res.setVideoDurationSecond(result.getInteger("duration"));
         res.setTime(DateUtil.toSingleDatetime(result.getLong("createTime")));
+        res.setTradeUserId(result.getLong("tradeUserId"));
         res.setTradeUserShowId(result.getString("tradeUserShowId"));
         res.setTradeUserNickName(result.getString("tradeUserNickName"));
         res.setTradeUserPortraitUrl(result.getString("tradeUserPortrait"));

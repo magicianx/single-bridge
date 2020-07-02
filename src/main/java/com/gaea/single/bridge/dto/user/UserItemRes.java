@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.user;
 
+import com.gaea.single.bridge.enums.GenderType;
 import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserType;
 import io.swagger.annotations.ApiModel;
@@ -46,4 +47,13 @@ public class UserItemRes {
 
   @ApiModelProperty(value = "是否为vip, 只有当此用户为普通用户时返回对应的状态，为主播时永远为false", required = true)
   private Boolean isVip;
+
+  @ApiModelProperty(value = "性别", required = true)
+  private GenderType gender;
+
+  @ApiModelProperty(value = "城市", required = true)
+  private String city;
+
+  @ApiModelProperty(value = "年龄", required = true)
+  private Integer age;
 }
