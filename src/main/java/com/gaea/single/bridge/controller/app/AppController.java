@@ -45,15 +45,11 @@ public class AppController extends BaseController {
   @GetMapping(value = "/v1/info.net")
   @ApiOperation(value = "获取app信息")
   public Mono<Result<AppInfoRes>> getAppInfo(@ApiIgnore ServerWebExchange exchange) {
-    Map<String, Object> data =
-        new HashMap<String, Object>() {
-          {
-            put("version", getAppVersion(exchange));
-            put("packageName", getPackageName(exchange));
-            put("channelId", getChannelId(exchange));
-            put("single", "single");
-          }
-        };
+    Map<String, Object> data = new HashMap<>();
+    data.put("version", getAppVersion(exchange));
+    data.put("packageName", getPackageName(exchange));
+    data.put("channelId", getChannelId(exchange));
+    data.put("single", "single");
 
     boolean isAndroid = OsType.ANDROID == getOsType(exchange);
     String path =
