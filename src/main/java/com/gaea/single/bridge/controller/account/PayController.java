@@ -8,9 +8,11 @@ import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
+import com.gaea.single.bridge.dto.account.RechargeGiftRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
+import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,7 +60,8 @@ public class PayController extends BaseController {
           return new PayAmountOptionRes(
               result.getLong("id"),
               result.getInteger("rechargeMoney"),
-              result.getInteger("status"),
+              // lobo用的status字段作为金额
+              result.getBigDecimal("status"),
               result.getInteger("giftId"));
         });
   }
@@ -116,5 +119,23 @@ public class PayController extends BaseController {
               }
               return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
             });
+  }
+
+  @GetMapping(value = "/v1/gifts.net")
+  @ApiOperation(value = "获取充值礼包列表")
+  public Mono<Result<List<RechargeGiftRes>>> getRechargeGifts(
+      @ApiIgnore ServerWebExchange exchange) {
+    return loboClient.postFormForList(
+        exchange,
+        LoboPathConst.GET_RECHARGE_GIFTS,
+        null,
+        (obj) -> {
+          JSONObject result = (JSONObject) obj;
+          return new RechargeGiftRes(
+              result.getLong("configId"),
+              LoboUtil.toMoney(result.getBigDecimal("rechargeMoney")),
+              result.getInteger("rechargeMoney"),
+              result.getInteger("giveVipDays"));
+        });
   }
 }
