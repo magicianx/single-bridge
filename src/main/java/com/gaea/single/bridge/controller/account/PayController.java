@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
+import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
 import com.gaea.single.bridge.util.Md5Utils;
@@ -65,22 +67,54 @@ public class PayController extends BaseController {
   @ApiOperation(value = "获取支付方式列表")
   public Mono<Result<List<PayWay>>> getPayWays(@ApiIgnore ServerWebExchange exchange) {
     DictionaryProperties.Pay payConfig = DictionaryProperties.get().getPay();
-    List<PayWay> payWays;
 
+    // 测试人员展示所有支付方式，方便测试
     if (getUserId(exchange) == 1781298) {
-      payWays = Arrays.asList(PayWay.ALIPAY, PayWay.LEGEND_SHOP_PAY);
+      return Mono.just(Result.success(Arrays.asList(PayWay.ALIPAY, PayWay.LEGEND_SHOP_PAY)));
     } else {
       if (OsType.IOS.equals(getOsType(exchange))) {
-        payWays =
+        List<PayWay> payWays =
             payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
+        return Mono.just(Result.success(payWays));
       } else {
-        payWays =
-            payConfig.getAndroidPayWays().stream()
-                .map(PayWay::valueOf)
-                .collect(Collectors.toList());
+        return getAndroidAuditStatus(exchange)
+            .map(
+                auditPass ->
+                    payConfig.getAndroidPayWays().stream()
+                        .map(PayWay::valueOf)
+                        // 安卓审核中不展示小羊商城支付
+                        .filter(payWay -> payWay == PayWay.LEGEND_SHOP_PAY ? auditPass : true)
+                        .collect(Collectors.toList()))
+            .map(Result::success);
       }
     }
+  }
 
-    return Mono.just(Result.success(payWays));
+  /**
+   * 获取安卓审核状态, true: 审核通过 false: 审核未通过
+   *
+   * @param exchange {@link ServerWebExchange}
+   * @return {@link Mono<Boolean>}
+   */
+  private Mono<Boolean> getAndroidAuditStatus(ServerWebExchange exchange) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("version", getAppVersion(exchange));
+    data.put("packageName", getPackageName(exchange));
+    data.put("channelId", getChannelId(exchange));
+    data.put("single", "single");
+
+    return loboClient
+        .postForm(
+            exchange,
+            LoboPathConst.CHECK_ANDROID_AUDIT_STATUS,
+            data,
+            (obj) -> obj == null || AuditStatus.ofCode((Integer) obj) == AuditStatus.PASS)
+        .flatMap(
+            r -> {
+              if (r.isSuccess()) {
+                return Mono.just(r.getData());
+              }
+              return Mono.error(ErrorCode.INNER_ERROR.newBusinessException());
+            });
   }
 }

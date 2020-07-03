@@ -35,4 +35,8 @@ public class Result<T> {
   public static <T> Result<T> error(int code, String message) {
     return new Result<>(code, null, message);
   }
+
+  public boolean isSuccess() {
+    return this.code == ErrorCode.SUCCESS.getCode();
+  }
 }
