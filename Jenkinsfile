@@ -9,7 +9,7 @@ Pipeline {
     stages {
         stage('Build for dev') {
             when {
-                branch 'dev'
+                branch 'cicd'
             }
             steps {
                 sh 'mvn -B -DskipTests clean package'
