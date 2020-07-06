@@ -12,7 +12,7 @@ pipeline {
                 branch 'cicd'
             }
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -U -DskipTests clean package'
            }
         }
 
@@ -21,7 +21,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -u -DskipTests clean package'
             }
         }
 
