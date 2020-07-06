@@ -21,7 +21,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'mvn -B -u -DskipTests clean package'
+                sh 'mvn -B -U -DskipTests clean package'
             }
         }
 
