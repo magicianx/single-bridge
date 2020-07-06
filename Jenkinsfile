@@ -1,7 +1,7 @@
 Pipeline {
     agent {
         docker {
-            image 'maven：3-alpine'
+            image 'maven:3-alpine'
             args '-v /home/sa/.m2:/root/.m2'
         }
     }
@@ -12,9 +12,17 @@ Pipeline {
                 branch 'cicd'
             }
             steps {
-                sh 'echo a'
                 sh 'mvn -B -DskipTests clean package'
            }
+        }
+
+        stage('Build for master') {
+            when {
+                branch 'master'
+            }
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
         }
 
 
