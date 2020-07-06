@@ -132,10 +132,10 @@ public class PayController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new RechargeGiftRes(
-              result.getLong("configId"),
-              LoboUtil.toMoney(result.getBigDecimal("rechargeMoney")),
-              result.getInteger("rechargeMoney"),
-              result.getInteger("giveVipDays"));
+              result.getLong("id"),
+              LoboUtil.toMoney(result.getBigDecimal("money")),
+              result.getInteger("giftDiamonds"),
+              result.getInteger("giftVipDays"));
         });
   }
 }

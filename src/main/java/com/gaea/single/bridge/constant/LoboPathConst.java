@@ -175,5 +175,5 @@ public final class LoboPathConst {
   /** 设置封面视频 */
   public static final String SET_COVER_VIDEO = "/vod/videoCenter/updateIsCover.do";
   /** 获取充值礼包列表 */
-  public static final String GET_RECHARGE_GIFTS = "/basic/gift/getValidGiftConfigs";
+  public static final String GET_RECHARGE_GIFTS = "/basic/recharge/getValidGiftConfigs";
 }
