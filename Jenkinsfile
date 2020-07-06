@@ -17,15 +17,6 @@ Pipeline {
            }
         }
 
-        stage('Build for master') {
-            when {
-                branch 'master'
-            }
-            steps {
-                sh 'mvn -B -DskipTests clean package'
-            }
-        }
-
 
     }
 }
