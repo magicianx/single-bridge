@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.controller.gratuity;
 
+import com.gaea.single.bridge.dto.Result;
 import com.gaea.single.bridge.dto.gratuity.GratuityGiftRes;
 import com.gaea.single.bridge.service.GratuityService;
 import io.swagger.annotations.Api;
@@ -27,8 +28,8 @@ public class GratuityGiftController {
 
   @GetMapping(value = "/v1/list.net")
   @ApiOperation(value = "获取主播被打赏礼物列表")
-  public Mono<List<GratuityGiftRes>> getGratuityGifts(
+  public Mono<Result<List<GratuityGiftRes>>> getGratuityGifts(
       @ApiParam(value = "主播id", required = true) @NotNull @RequestParam("userId") Long userId) {
-    return gratuityService.getGratuityGifts(userId);
+    return gratuityService.getGratuityGifts(userId).map(Result::success);
   }
 }
