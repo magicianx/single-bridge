@@ -12,6 +12,7 @@ Pipeline {
                 branch 'cicd'
             }
             steps {
+                sh 'echo a'
                 sh 'mvn -B -DskipTests clean package'
            }
         }
