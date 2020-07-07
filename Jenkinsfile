@@ -12,7 +12,9 @@ pipeline {
                 branch 'cicd'
             }
             steps {
-                sh 'mvn -B -U -DskipTests clean package'
+                configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
+                    sh 'mvn -B -DskipTests clean package'
+                }
            }
         }
 
@@ -21,7 +23,9 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'mvn -B -U -DskipTests clean package'
+                configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
+                    sh 'mvn -B -DskipTests clean package'
+                }
             }
         }
 
