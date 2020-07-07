@@ -25,6 +25,7 @@ public class GratuityServiceImpl implements GratuityService {
             item ->
                 new GratuityGiftRes(
                     item.getGiftId(),
+                    item.getGiftName(),
                     LoboUtil.getImageUrl(item.getGiftIconUrl()),
                     item.getGiftNum()))
         .collectList();
