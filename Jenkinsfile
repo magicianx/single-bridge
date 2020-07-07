@@ -13,7 +13,7 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-                    sh 'mvn -B -DskipTests clean package'
+                    sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
                 }
            }
         }
@@ -24,7 +24,7 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-                    sh 'mvn -B -DskipTests clean package'
+                    sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
                 }
             }
         }
