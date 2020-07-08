@@ -45,6 +45,7 @@ pipeline {
         }
     }
 
+
     options {
         gitLabConnection('GITLAB')
     }
