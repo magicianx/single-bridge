@@ -20,7 +20,7 @@ public class GratuityDetailDao {
   public Flux<GratuityGiftCount> statisticGratuityGiftCounts(Long userId) {
     return databaseClient
         .execute(
-            "select count(*) gift_num, gratuity_config_id gift_id, c.picture_url icon_url\n"
+            "select count(*) gift_num, gratuity_config_id gift_id, c.picture_name gift_name, c.picture_url icon_url\n"
                 + "from gratuity_detail g\n"
                 + "         join order_gratuity_detail o on g.id = o.gratuity_detail_id\n"
                 + "         join boss.base_gratuity_config c on g.gratuity_config_id = c.id\n"

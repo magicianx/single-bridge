@@ -16,6 +16,7 @@ import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -26,10 +27,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -80,6 +78,10 @@ public class PayController extends BaseController {
             payConfig.getIosPayWays().stream().map(PayWay::valueOf).collect(Collectors.toList());
         return Mono.just(Result.success(payWays));
       } else {
+        // 如果没有传渠道id， 只返回支付宝支付
+        if (StringUtils.isEmpty(getChannelId(exchange))) {
+          return Mono.just(Result.success(Collections.singletonList(PayWay.ALIPAY)));
+        }
         return getAndroidAuditStatus(exchange)
             .map(
                 auditPass ->
@@ -132,10 +134,10 @@ public class PayController extends BaseController {
         (obj) -> {
           JSONObject result = (JSONObject) obj;
           return new RechargeGiftRes(
-              result.getLong("configId"),
-              LoboUtil.toMoney(result.getBigDecimal("rechargeMoney")),
-              result.getInteger("rechargeMoney"),
-              result.getInteger("giveVipDays"));
+              result.getLong("id"),
+              LoboUtil.toMoney(result.getBigDecimal("money")),
+              result.getInteger("giftDiamonds"),
+              result.getInteger("giftVipDays"));
         });
   }
 }
