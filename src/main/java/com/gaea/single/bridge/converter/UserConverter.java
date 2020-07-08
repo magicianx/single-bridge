@@ -107,8 +107,13 @@ public class UserConverter {
         List<String> photos = new ArrayList<>();
         Optional.ofNullable(result.getJSONArray("photos"))
             .ifPresent(v -> v.forEach(photo -> photos.add((String) photo)));
-        Optional.ofNullable(result.getString("videoUrl")).ifPresent(res::setCoverVideoUrl);
-
+        // Optional.ofNullable(result.getString("videoUrl")).ifPresent(res::setCoverVideoUrl);
+        JSONArray photosArray = result.getJSONArray("photos");
+        if (LoboUtil.toBoolean(result.getInteger("isHaveSmallVideo"))
+            && photosArray != null
+            && photosArray.size() > 0) {
+          res.setCoverVideoUrl(photosArray.getString(0));
+        }
         res.setPhotos(photos);
 
         Optional.ofNullable(result.getJSONArray("labels"))
