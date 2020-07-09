@@ -12,6 +12,7 @@ import com.gaea.single.bridge.dto.account.RechargeGiftRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
+import com.gaea.single.bridge.service.PayService;
 import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 @Validated
 public class PayController extends BaseController {
   @Autowired private LoboClient loboClient;
+  @Autowired private PayService payService;
   private final String key = Md5Utils.encrypt("huoquchongzhijinelieb");
 
   @GetMapping(value = "/v1/options.do")
@@ -140,4 +142,10 @@ public class PayController extends BaseController {
               result.getInteger("giftVipDays"));
         });
   }
+
+    @GetMapping(value = "/v1/first_recharge.do")
+    @ApiOperation(value = "用户是否为第一次充值/开通VIP")
+    public Mono<Result<Boolean>> isFirstRecharge(@ApiIgnore ServerWebExchange exchange) {
+        return payService.isFirstRecharge(getUserId(exchange)).map(Result::success);
+    }
 }
