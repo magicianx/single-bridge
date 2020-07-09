@@ -23,9 +23,9 @@ pipeline {
            }
         }
 
-        stage('Build for master') {
+        stage('Build for cicd2') {
             when {
-                branch 'master'
+                branch 'cicd2'
             }
             steps {
                 configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
@@ -33,6 +33,8 @@ pipeline {
                 }
             }
         }
+
+
     }
 
     post {
