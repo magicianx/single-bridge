@@ -24,11 +24,6 @@ public class PayServiceImpl implements PayService {
 
   @Override
   public Mono<Boolean> isFirstRecharge(Long userId) {
-    /*return Mono.defer(() -> {
-      Mono<Integer> privilegeBuyCount = orderBuyPrivilegeRepository.buyCount(userId);
-      Mono<Integer> rechargeBuyCount = orderRechargeDetailRepository.buyCount(userId);
-      return privilegeBuyCount.zipWith(rechargeBuyCount, Integer::sum);
-    }).map(count -> count == 0);*/
     return orderRechargeDetailRepository
         .buyCount(userId)
         .flatMap(
