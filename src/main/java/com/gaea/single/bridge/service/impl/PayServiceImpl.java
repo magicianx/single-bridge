@@ -33,8 +33,8 @@ public class PayServiceImpl implements PayService {
         .buyCount(userId)
         .flatMap(
             rCount ->
-                rCount == 0
-                    ? Mono.just(true)
+                rCount > 0
+                    ? Mono.just(false)
                     : orderBuyPrivilegeRepository.buyCount(userId).map(pCount -> pCount == 0));
   }
 }
