@@ -111,7 +111,7 @@ public class UserConverter {
         JSONArray photosArray = result.getJSONArray("photos");
         if (LoboUtil.toBoolean(result.getInteger("isHaveSmallVideo"))
             && photosArray != null && !photosArray.isEmpty()) {
-          res.setCoverVideoPhoto(photosArray.getString(0));
+          res.setCoverVideoPhotoUrl(photosArray.getString(0));
         }
         res.setPhotos(photos);
 
