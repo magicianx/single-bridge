@@ -143,9 +143,9 @@ public class PayController extends BaseController {
         });
   }
 
-    @GetMapping(value = "/v1/first_recharge.do")
-    @ApiOperation(value = "用户是否为第一次充值(包括开通VIP)")
-    public Mono<Result<Boolean>> isFirstRecharge(@ApiIgnore ServerWebExchange exchange) {
+    @GetMapping(value = "/v1/first_pay.do")
+    @ApiOperation(value = "用户是否为第一次充值(包括开通VIP)，用于支付后判断")
+    public Mono<Result<Boolean>> isFirstPay(@ApiIgnore ServerWebExchange exchange) {
         return payService.isFirstRecharge(getUserId(exchange)).map(Result::success);
     }
 }

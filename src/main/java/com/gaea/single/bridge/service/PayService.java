@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public interface PayService {
 
   /**
-   * 用户是否为第一次充值/开通VIP
+   * 用户是否为第一次充值(包括开通VIP)
    *
    * @param userId 用户id
    * @return Mono<Boolean>
