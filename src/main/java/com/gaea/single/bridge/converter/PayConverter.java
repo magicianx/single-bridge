@@ -1,7 +1,7 @@
 package com.gaea.single.bridge.converter;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaea.single.bridge.dto.account.RechargeGiftRes;
+import com.gaea.single.bridge.dto.account.FirstRechargeGiftConfigRes;
 import com.gaea.single.bridge.util.LoboUtil;
 import org.springframework.core.convert.converter.Converter;
 
@@ -11,10 +11,10 @@ import org.springframework.core.convert.converter.Converter;
  */
 public class PayConverter {
 
-  public static final Converter<Object, RechargeGiftRes.RechargeGift> toRechargeGiftRes =
+  public static final Converter<Object, FirstRechargeGiftConfigRes.RechargeGift> toRechargeGiftRes =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
-          return new RechargeGiftRes.RechargeGift(
+          return new FirstRechargeGiftConfigRes.RechargeGift(
             result.getLong("id"),
             LoboUtil.toMoney(result.getBigDecimal("money")),
             result.getInteger("giftDiamonds"),

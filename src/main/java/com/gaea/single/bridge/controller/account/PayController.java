@@ -5,16 +5,16 @@ import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
 import com.gaea.single.bridge.converter.PayConverter;
+import com.gaea.single.bridge.core.error.BusinessException;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
+import com.gaea.single.bridge.dto.account.FirstRechargeGiftConfigRes;
 import com.gaea.single.bridge.dto.account.PayAmountOptionRes;
-import com.gaea.single.bridge.dto.account.RechargeGiftRes;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
 import com.gaea.single.bridge.service.PayService;
-import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -126,21 +126,23 @@ public class PayController extends BaseController {
             });
   }
 
-  @GetMapping(value = "/v1/gifts.net")
-  @ApiOperation(value = "获取充值礼包列表")
-  public Mono<Result<RechargeGiftRes>> getRechargeGifts(@ApiIgnore ServerWebExchange exchange) {
+  @GetMapping(value = "/v1/first_recharge_gift.net")
+  @ApiOperation(value = "获取首值礼包配置")
+  public Mono<Result<FirstRechargeGiftConfigRes>> getFirstRechargeGiftConfig(
+      @ApiIgnore ServerWebExchange exchange) {
     return loboClient
         .postFormForList(
-            exchange, LoboPathConst.GET_RECHARGE_GIFTS, null, PayConverter.toRechargeGiftRes)
-        .map(
+            exchange, LoboPathConst.GET_FIRST_RECHARGE_GIFT_CONFIG, null, PayConverter.toRechargeGiftRes)
+        .flatMap(
             res -> {
-              RechargeGiftRes rechargeGiftRes =
-                  new RechargeGiftRes(DictionaryProperties.get().getFirstRecharge().getDesc(), res.getData());
-              Result<RechargeGiftRes> result = new Result<>();
-              result.setCode(res.getCode());
-              result.setMessage(res.getMessage());
-              result.setData(rechargeGiftRes);
-              return result;
+              if (!res.isSuccess()) {
+                return Mono.error(new BusinessException(res.getCode(), res.getMessage()));
+              }
+
+              FirstRechargeGiftConfigRes rechargeGiftRes =
+                  new FirstRechargeGiftConfigRes(
+                      DictionaryProperties.get().getFirstRecharge().getDesc(), res.getData());
+              return Mono.just(Result.success(rechargeGiftRes));
             });
   }
 

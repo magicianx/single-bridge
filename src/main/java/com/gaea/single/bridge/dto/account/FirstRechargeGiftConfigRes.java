@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 充值礼包信息
+ * 首值礼包配置信息
  *
  * @author cludy
  */
@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RechargeGiftRes {
+public class FirstRechargeGiftConfigRes {
 
   @ApiModelProperty(value = "首充说明", required = true)
   private String desc;

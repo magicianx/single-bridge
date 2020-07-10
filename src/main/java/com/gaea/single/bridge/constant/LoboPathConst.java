@@ -174,6 +174,6 @@ public final class LoboPathConst {
   public static final String GET_RANK_LIST = "/mapper/rank/single/list.net";
   /** 设置封面视频 */
   public static final String SET_COVER_VIDEO = "/vod/videoCenter/updateIsCover.do";
-  /** 获取充值礼包列表 */
-  public static final String GET_RECHARGE_GIFTS = "/basic/recharge/getValidGiftConfigs";
+  /** 获取首充礼包列表 */
+  public static final String GET_FIRST_RECHARGE_GIFT_CONFIG = "/basic/recharge/getValidGiftConfigs";
 }
