@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.LoboPathConst;
 import com.gaea.single.bridge.controller.BaseController;
+import com.gaea.single.bridge.converter.PayConverter;
 import com.gaea.single.bridge.core.error.ErrorCode;
 import com.gaea.single.bridge.core.lobo.LoboClient;
 import com.gaea.single.bridge.dto.Result;
@@ -127,21 +128,20 @@ public class PayController extends BaseController {
 
   @GetMapping(value = "/v1/gifts.net")
   @ApiOperation(value = "获取充值礼包列表")
-  public Mono<Result<List<RechargeGiftRes>>> getRechargeGifts(
-      @ApiIgnore ServerWebExchange exchange) {
-    return loboClient.postFormForList(
-        exchange,
-        LoboPathConst.GET_RECHARGE_GIFTS,
-        null,
-        (obj) -> {
-          JSONObject result = (JSONObject) obj;
-          return new RechargeGiftRes(
-              result.getLong("id"),
-              LoboUtil.toMoney(result.getBigDecimal("money")),
-              result.getInteger("giftDiamonds"),
-              result.getInteger("giftVipDays"),
-              DictionaryProperties.get().getFirstRecharge().getDesc());
-        });
+  public Mono<Result<RechargeGiftRes>> getRechargeGifts(@ApiIgnore ServerWebExchange exchange) {
+    return loboClient
+        .postFormForList(
+            exchange, LoboPathConst.GET_RECHARGE_GIFTS, null, PayConverter.toRechargeGiftRes)
+        .map(
+            res -> {
+              RechargeGiftRes rechargeGiftRes =
+                  new RechargeGiftRes(DictionaryProperties.get().getFirstRecharge().getDesc(), res.getData());
+              Result<RechargeGiftRes> result = new Result<>();
+              result.setCode(res.getCode());
+              result.setMessage(res.getMessage());
+              result.setData(rechargeGiftRes);
+              return result;
+            });
   }
 
   @GetMapping(value = "/v1/first_recharge.do")
