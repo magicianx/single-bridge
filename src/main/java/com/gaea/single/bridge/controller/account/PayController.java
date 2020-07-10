@@ -132,7 +132,10 @@ public class PayController extends BaseController {
       @ApiIgnore ServerWebExchange exchange) {
     return loboClient
         .postFormForList(
-            exchange, LoboPathConst.GET_FIRST_RECHARGE_GIFT_CONFIG, null, PayConverter.toRechargeGiftRes)
+            exchange,
+            LoboPathConst.GET_FIRST_RECHARGE_GIFT_CONFIG,
+            null,
+            PayConverter.toRechargeGift)
         .flatMap(
             res -> {
               if (!res.isSuccess()) {

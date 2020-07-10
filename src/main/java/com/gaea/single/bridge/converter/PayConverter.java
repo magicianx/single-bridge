@@ -14,7 +14,7 @@ public class PayConverter {
   public static final Converter<Object, FirstRechargeGiftConfigRes.RechargeGift> toRechargeGift =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
-          return new FirstRechargeGiftConfigRes.RechargeGift(
+        return new FirstRechargeGiftConfigRes.RechargeGift(
             result.getLong("id"),
             LoboUtil.toMoney(result.getBigDecimal("money")),
             result.getInteger("giftDiamonds"),
