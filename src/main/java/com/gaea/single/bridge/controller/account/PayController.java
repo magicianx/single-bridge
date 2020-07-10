@@ -139,13 +139,14 @@ public class PayController extends BaseController {
               result.getLong("id"),
               LoboUtil.toMoney(result.getBigDecimal("money")),
               result.getInteger("giftDiamonds"),
-              result.getInteger("giftVipDays"));
+              result.getInteger("giftVipDays"),
+              DictionaryProperties.get().getFirstRecharge().getDesc());
         });
   }
 
-    @GetMapping(value = "/v1/first_pay.do")
-    @ApiOperation(value = "用户是否为第一次充值(包括开通VIP)，用于支付前判断")
-    public Mono<Result<Boolean>> isFirstPay(@ApiIgnore ServerWebExchange exchange) {
-        return payService.isFirstRecharge(getUserId(exchange)).map(Result::success);
-    }
+  @GetMapping(value = "/v1/first_pay.do")
+  @ApiOperation(value = "用户是否为第一次充值(包括开通VIP)，用于支付前判断")
+  public Mono<Result<Boolean>> isFirstPay(@ApiIgnore ServerWebExchange exchange) {
+    return payService.isFirstRecharge(getUserId(exchange)).map(Result::success);
+  }
 }

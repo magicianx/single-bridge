@@ -29,4 +29,7 @@ public class RechargeGiftRes {
 
   @ApiModelProperty(value = "礼包中的vip天数", required = true)
   private Integer giftVipDays;
+
+  @ApiModelProperty(value = "礼包说明",required = true)
+  private String giftDesc;
 }
