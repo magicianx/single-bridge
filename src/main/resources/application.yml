@@ -16,6 +16,7 @@ service:
     session:
       - '* /user/position/**' # 定位相关功能
       - '* /user/greet/**' # 打招呼相关功能
+      - '* /account/pay/v1/first_pay.do' # 是否首次充值(支付前)
 ---
 spring:
   profiles: dev
