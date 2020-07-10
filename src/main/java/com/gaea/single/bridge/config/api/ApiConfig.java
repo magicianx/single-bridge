@@ -3,6 +3,7 @@ package com.gaea.single.bridge.config.api;
 import com.fasterxml.classmate.TypeResolver;
 import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class ApiConfig {
         .paths(PathSelectors.any())
         .build()
         .pathMapping("/")
-        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class)
+        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class, Result.class)
         //        .alternateTypeRules(
         //            newRule(
         //                typeResolver.resolve(

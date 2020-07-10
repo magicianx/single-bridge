@@ -33,6 +33,9 @@ public class CustomModelPropertyBuilder extends AbstractEnumTypeBuilder
         .getBeanPropertyDefinition()
         .ifPresent(
             (definition) -> {
+              if (definition.getField() == null) {
+                return;
+              }
               Class resultType = definition.getField().getType().getRawClass();
               if (!isMetadata(resultType)) {
                 return;
