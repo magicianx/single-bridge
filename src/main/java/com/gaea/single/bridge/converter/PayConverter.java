@@ -11,7 +11,7 @@ import org.springframework.core.convert.converter.Converter;
  */
 public class PayConverter {
 
-  public static final Converter<Object, RechargeGiftRes.RechargeGift> toRechargeGiftRes =
+  public static final Converter<Object, RechargeGiftRes.RechargeGift> toRechargeGift =
       (obj) -> {
         JSONObject result = (JSONObject) obj;
           return new RechargeGiftRes.RechargeGift(

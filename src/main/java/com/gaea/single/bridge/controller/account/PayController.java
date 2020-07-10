@@ -14,7 +14,6 @@ import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.OsType;
 import com.gaea.single.bridge.enums.PayWay;
 import com.gaea.single.bridge.service.PayService;
-import com.gaea.single.bridge.util.LoboUtil;
 import com.gaea.single.bridge.util.Md5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -131,7 +130,7 @@ public class PayController extends BaseController {
   public Mono<Result<RechargeGiftRes>> getRechargeGifts(@ApiIgnore ServerWebExchange exchange) {
     return loboClient
         .postFormForList(
-            exchange, LoboPathConst.GET_RECHARGE_GIFTS, null, PayConverter.toRechargeGiftRes)
+            exchange, LoboPathConst.GET_RECHARGE_GIFTS, null, PayConverter.toRechargeGift)
         .map(
             res -> {
               RechargeGiftRes rechargeGiftRes =
