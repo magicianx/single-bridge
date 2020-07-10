@@ -11,20 +11,13 @@ pipeline {
         secretToken: "${env.GITLAB_TRIGGER_TOKEN}")
     }
 
-    environment {
-        configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_S')]){
-        }
-    }
-
     stages {
         stage('Build for dev') {
             when {
                 branch 'cicd'
             }
             steps {
-                configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-                    sh 'mvn -s ${MAVEN_S} -B -DskipTests clean package'
-                }
+                zMvn()
            }
         }
 
@@ -57,4 +50,9 @@ pipeline {
         gitLabConnection('GITLAB')
     }
 
+    def zMvn() {
+        configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
+            sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
+        }
+    }
 }
