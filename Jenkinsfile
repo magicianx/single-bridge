@@ -11,6 +11,11 @@ pipeline {
         secretToken: "${env.GITLAB_TRIGGER_TOKEN}")
     }
 
+    environment {
+        configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_S')]){
+        }
+    }
+
     stages {
         stage('Build for dev') {
             when {
@@ -18,7 +23,7 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-                    sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
+                    sh 'mvn -s ${MAVEN_S} -B -DskipTests clean package'
                 }
            }
         }
