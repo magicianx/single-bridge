@@ -16,10 +16,15 @@ public class OrderRechargeDetailRepository {
 
   @Autowired private DatabaseClient databaseClient;
 
-  public Mono<Integer> buyCount(Long userId) {
+  /**
+   * 获取用户充值次数
+   *
+   * @param userId 用户id
+   * @return {@link Mono<Integer>}
+   */
+  public Mono<Integer> getRechargeTimes(Long userId) {
     return databaseClient
-        .execute("select count(*) from order_recharge_detail "
-                + "where user_id = ? and status = 2")
+        .execute("select count(*) from order_recharge_detail " + "where user_id = ? and status = 2")
         .bind(0, userId)
         .as(Integer.class)
         .fetch()
