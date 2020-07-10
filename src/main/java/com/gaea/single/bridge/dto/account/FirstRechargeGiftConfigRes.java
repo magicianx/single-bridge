@@ -1,5 +1,6 @@
 package com.gaea.single.bridge.dto.account;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,15 +10,11 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * 首值礼包配置信息
- *
- * @author cludy
- */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ApiModel("首充礼包配置信息")
 public class FirstRechargeGiftConfigRes {
 
   @ApiModelProperty(value = "首充说明", required = true)
@@ -30,6 +27,7 @@ public class FirstRechargeGiftConfigRes {
   @Setter
   @AllArgsConstructor
   @NoArgsConstructor
+  @ApiModel("礼包信息")
   public static class RechargeGift {
     @ApiModelProperty(value = "礼物id", required = true)
     private Long giftId;

@@ -127,7 +127,7 @@ public class PayController extends BaseController {
   }
 
   @GetMapping(value = "/v1/first_recharge_gift.net")
-  @ApiOperation(value = "获取首值礼包配置")
+  @ApiOperation(value = "获取首充礼包配置")
   public Mono<Result<FirstRechargeGiftConfigRes>> getFirstRechargeGiftConfig(
       @ApiIgnore ServerWebExchange exchange) {
     return loboClient
