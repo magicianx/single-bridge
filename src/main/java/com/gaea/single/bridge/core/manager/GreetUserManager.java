@@ -94,7 +94,7 @@ public class GreetUserManager extends AbstractCache {
             .toInstant()
             .toEpochMilli();
     // 移除7天前的用户
-    return newUserSet.removeRangeByScore(0, true, endScore, true).then();
+    return newUserSet.removeRangeByScore(0, true, endScore, false).then();
   }
 
   public Mono<Void> removeUncalledUser(Long userId) {
