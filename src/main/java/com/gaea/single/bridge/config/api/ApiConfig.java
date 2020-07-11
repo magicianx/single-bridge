@@ -19,11 +19,13 @@ import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.*;
+import static springfox.documentation.schema.AlternateTypeRules.*;
 
 import java.util.Arrays;
 
@@ -47,13 +49,12 @@ public class ApiConfig {
         .paths(PathSelectors.any())
         .build()
         .pathMapping("/")
-        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class, Result.class)
-        //        .alternateTypeRules(
-        //            newRule(
-        //                typeResolver.resolve(
-        //                    DeferredResult.class,
-        //                    typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
-        //                typeResolver.resolve(WildcardType.class)))
+        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class)
+        .alternateTypeRules(
+            newRule(
+                typeResolver.resolve(
+                    Mono.class, typeResolver.resolve(Result.class, WildcardType.class)),
+                typeResolver.resolve(WildcardType.class)))
         .useDefaultResponseMessages(false)
         .forCodeGeneration(true)
         //        .globalResponseMessage(
