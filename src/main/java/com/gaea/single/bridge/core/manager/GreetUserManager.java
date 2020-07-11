@@ -4,7 +4,6 @@ import com.gaea.single.bridge.config.DictionaryProperties;
 import com.gaea.single.bridge.constant.DefaultSettingConstant;
 import com.gaea.single.bridge.constant.SingleRedisConstant;
 import com.gaea.single.bridge.enums.GenderType;
-import com.gaea.single.bridge.enums.UserOnlineStatus;
 import com.gaea.single.bridge.enums.UserRealOnlineStatus;
 import com.gaea.single.bridge.repository.mysql.UserRegInfoRepository;
 import com.gaea.single.bridge.util.DateUtil;
@@ -19,7 +18,7 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 
@@ -72,25 +71,30 @@ public class GreetUserManager extends AbstractCache {
                         exist -> {
                           // 新用户队列中不存在则加入到未打呼叫用户队列
                           if (!exist) {
-                            long createTime = System.currentTimeMillis();
                             log.info("已添加用户{}到未到打招呼队列", userId);
                             return uncalledUserSet
                                 // 时间戳作为score
-                                .add(createTime, userId)
+                                .add(System.currentTimeMillis(), userId)
                                 .then();
                           }
                           return Mono.empty();
                         });
               }
               log.info("已添加用户{}到新用户打招呼队列", userId);
-              return newUserSet.add(0, userId).then();
+              return newUserSet.add(System.currentTimeMillis(), userId).then();
             });
   }
 
   public Mono<Void> removeOverDayNewUser() {
     log.info("从新用户队列中移除注册超过{}天的用户", DictionaryProperties.get().getGreetMessage().getNewUserDays());
+    long endScore =
+        LocalDate.now()
+            .minusDays(7)
+            .atStartOfDay(ZoneId.of("Asia/Shanghai"))
+            .toInstant()
+            .toEpochMilli();
     // 移除7天前的用户
-    return newUserSet.removeRangeByScore(0, true, 0, true).then();
+    return newUserSet.removeRangeByScore(0, true, endScore, true).then();
   }
 
   public Mono<Void> removeUncalledUser(Long userId) {
@@ -238,10 +242,12 @@ public class GreetUserManager extends AbstractCache {
                           }
                           return popGreetUser(currentUserId, count, maxReceiveTimes, greetUsers);
                         })
-                    .switchIfEmpty(Mono.defer(() -> {
-                        log.debug("用户{}在线状态未知，从未呼叫队列中移除", userId);
-                        return removeUserAction.apply(userId);
-                    })))
+                    .switchIfEmpty(
+                        Mono.defer(
+                            () -> {
+                              log.debug("用户{}在线状态未知，从未呼叫队列中移除", userId);
+                              return removeUserAction.apply(userId);
+                            })))
         // 使用中的列表已经弹完了
         .switchIfEmpty(
             Mono.defer(
@@ -307,19 +313,16 @@ public class GreetUserManager extends AbstractCache {
                         DateUtil.toDbDate(startDate),
                         DateUtil.toDbDate(endDate))
                     .flatMap(
-                        user -> {
-                          int score =
-                              (int) (ChronoUnit.DAYS.between(endDate, user.getCreateTime()) + 1);
-                          return newUserSet
-                              .add(score, user.getId())
-                              .flatMap(
-                                  v -> {
-                                    if (v) {
-                                      return greetUsingQueue.delete().then();
-                                    }
-                                    return Mono.empty();
-                                  });
-                        })
+                        user ->
+                            newUserSet
+                                .add(DateUtil.getMilliseconds(user.getCreateTime()), user.getId())
+                                .flatMap(
+                                    v -> {
+                                      if (v) {
+                                        return greetUsingQueue.delete().then();
+                                      }
+                                      return Mono.empty();
+                                    }))
                     .then(Mono.empty());
               } else {
                 log.info("可打招呼新用户队列不为空, 无需初始化");
