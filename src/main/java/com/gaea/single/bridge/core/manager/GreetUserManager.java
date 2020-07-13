@@ -212,6 +212,7 @@ public class GreetUserManager extends AbstractCache {
                             if (status == UserRealOnlineStatus.ONLINE) {
                               return userManager
                                   .getUserGender(userId)
+                                  .defaultIfEmpty(GenderType.MALE)
                                   .flatMap(
                                       genderType -> {
                                         if (GenderType.MALE.equals(genderType)) {

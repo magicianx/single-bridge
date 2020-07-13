@@ -10,9 +10,9 @@ import com.gaea.single.bridge.enums.UserRealOnlineStatus;
 import com.gaea.single.bridge.repository.mongodb.UserRepository;
 import com.gaea.single.bridge.repository.mysql.UserPersonalInfoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucketReactive;
 import org.redisson.api.RMapReactive;
-import org.redisson.client.codec.IntegerCodec;
 import org.redisson.client.codec.LongCodec;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +40,18 @@ public class UserManager extends AbstractCache {
    */
   public Mono<GenderType> getUserGender(Long userId) {
     return loboRedission
-        .getMap(LoboRedisConstant.USER_INFO + userId, IntegerCodec.INSTANCE)
+        .getMap(LoboRedisConstant.USER_INFO + userId, StringCodec.INSTANCE)
         .get("sex")
         .switchIfEmpty(
             Mono.defer(
                 () -> userPersonalInfoRepository.findById(userId).map(UserPersonalInfo::getSex)))
-        .map(type -> GenderType.ofCode((Integer) type));
+        .flatMap(
+            t -> {
+              String type = (String) t;
+              return StringUtils.isNotBlank(type)
+                  ? Mono.just(GenderType.ofCode(Integer.parseInt(type)))
+                  : Mono.empty();
+            });
   }
 
   /**

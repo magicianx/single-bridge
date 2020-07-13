@@ -90,7 +90,8 @@ public class AppController extends BaseController {
               if (ErrorCode.isSuccess(res.getCode()) && userId != null) {
                 return userGreetService
                     .initGreetConfig(userId)
-                    .then(Mono.defer(() -> userGreetService.addGreetUser(userId, false)))
+                    .then(Mono.defer(() -> userGreetService.
+                            addGreetUser(userId, false)))
                     .thenReturn(res);
               }
               return Mono.just(res);
