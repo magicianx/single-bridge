@@ -93,12 +93,12 @@ public class UserController extends BaseController {
                               .isEnablePosition(userItemRes.getUserId())
                               .map(
                                   enable -> {
-                                    System.out.println(userItemRes.getNickName() + enable);
                                     if (!enable) {
                                       userItemRes.setCity(DefaultSettingConstant.UNKNOWN_POSITION);
                                     }
                                     return userItemRes;
-                                  }).subscribe());
+                                  })
+                              .subscribe());
               return Mono.just(res);
             });
   }
