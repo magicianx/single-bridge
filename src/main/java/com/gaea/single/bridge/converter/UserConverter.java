@@ -110,7 +110,8 @@ public class UserConverter {
         Optional.ofNullable(result.getString("videoUrl")).ifPresent(res::setCoverVideoUrl);
         JSONArray photosArray = result.getJSONArray("photos");
         if (LoboUtil.toBoolean(result.getInteger("isHaveSmallVideo"))
-            && photosArray != null && !photosArray.isEmpty()) {
+            && photosArray != null
+            && !photosArray.isEmpty()) {
           res.setCoverVideoPhotoUrl(photosArray.getString(0));
         }
         res.setPhotos(photos);
@@ -183,7 +184,8 @@ public class UserConverter {
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
-        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
+        Optional.ofNullable(result.getInteger("isVideoAudit"))
+            .ifPresent(status -> res.setAuthStatus(AnchorAuthStatus.ofCode(status)));
         return res;
       };
 
