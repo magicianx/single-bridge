@@ -78,8 +78,29 @@ public class UserController extends BaseController {
     data.put("appId", getAppId());
     data.put("menuId", columnId);
 
-    return loboClient.postFormForPage(
-        exchange, LoboPathConst.USER_LIST, data, null, UserConverter.toUserItemRes);
+    return loboClient
+        .postFormForPage(exchange, LoboPathConst.USER_LIST, data, null, UserConverter.toUserItemRes)
+        .flatMap(
+            res -> {
+              if (!res.isSuccess()) {
+                return Mono.error(new BusinessException(res.getCode(), res.getMessage()));
+              }
+              res.getData()
+                  .getRecords()
+                  .forEach(
+                      userItemRes ->
+                          userService
+                              .isEnablePosition(userItemRes.getUserId())
+                              .map(
+                                  enable -> {
+                                    System.out.println(userItemRes.getNickName() + enable);
+                                    if (!enable) {
+                                      userItemRes.setCity(DefaultSettingConstant.UNKNOWN_POSITION);
+                                    }
+                                    return userItemRes;
+                                  }).subscribe());
+              return Mono.just(res);
+            });
   }
 
   @GetMapping(value = "/v1/profile.net")
