@@ -91,14 +91,12 @@ public class UserController extends BaseController {
                       userItemRes ->
                           userService
                               .isEnablePosition(userItemRes.getUserId())
-                              .map(
+                              .subscribe(
                                   enable -> {
                                     if (!enable) {
                                       userItemRes.setCity(DefaultSettingConstant.UNKNOWN_POSITION);
                                     }
-                                    return userItemRes;
-                                  })
-                              .subscribe());
+                                  }));
               return Mono.just(res);
             });
   }
