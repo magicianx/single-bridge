@@ -122,7 +122,7 @@ service:
     branch: PROD
     secretKey: 4e3b2dc72528435ea420dde8dff70aa7
   api.enable: false
-  reportImgPath: /data/apps/single/single-bridge/report.jpg
+  reportImgPath: /data/app/single-bridge/report.jpg
 
 logging:
   config: logback-spring.xml
