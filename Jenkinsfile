@@ -49,10 +49,10 @@ pipeline {
     options {
         gitLabConnection('GITLAB')
     }
+}
 
-    def zMvn() {
-        configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-            sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
-        }
+def zMvn() {
+    configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
+        sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
     }
 }
