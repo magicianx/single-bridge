@@ -81,7 +81,7 @@ public class UserController extends BaseController {
         .flatMap(
             res -> {
               if (!res.isSuccess()) {
-                return Mono.error(new BusinessException(res.getCode(), res.getMessage()));
+                return Mono.just(res);
               }
 
               Mono[] setCityMonos =
@@ -117,7 +117,7 @@ public class UserController extends BaseController {
             .postForm(exchange, LoboPathConst.USER_PROFILE, data, UserConverter.toUserProfileRes)
             .flatMap(
                 result -> {
-                  if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
+                  if (result.isSuccess()) {
                     return gratuityService
                         .getRecentGifts(userId)
                         .map(
