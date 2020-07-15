@@ -33,4 +33,27 @@ public class GratuityDetailDao {
         .fetch()
         .all();
   }
+
+  /**
+   * 查询最近礼物列表, 价格由礼物单价从高到低排列
+   *
+   * @param userId 主播用户id
+   * @return {@link Flux<String>}
+   */
+  public Flux<String> findRecentGifts(Long userId) {
+    return databaseClient
+        .execute(
+            "select c.picture_url gift_icon_url\n"
+                + "from gratuity_detail g\n"
+                + "         join order_gratuity_detail o on g.id = o.gratuity_detail_id\n"
+                + "         join boss.base_gratuity_config c on g.gratuity_config_id = c.id\n"
+                + "where g.to_user_id = :userId\n"
+                + "  and (o.status = 2 or o.status = 3)\n"
+                + "order by c.money desc\n"
+                + "limit 5")
+        .bind("userId", userId)
+        .as(String.class)
+        .fetch()
+        .all();
+  }
 }

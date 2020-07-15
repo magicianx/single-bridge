@@ -131,10 +131,6 @@ public class UserConverter {
                             })
                         .collect(Collectors.toList()))
             .ifPresent(res::setLabels);
-        Optional.ofNullable(result.getJSONArray("giftIcons"))
-            .map(icons -> icons.stream().map(icon -> (String) icon).collect(Collectors.toList()))
-            .ifPresent(res::setGiftIcons);
-
         return res;
       };
 

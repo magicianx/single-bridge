@@ -30,4 +30,9 @@ public class GratuityServiceImpl implements GratuityService {
                     item.getGiftNum()))
         .collectList();
   }
+
+  @Override
+  public Mono<List<String>> getRecentGifts(Long userId) {
+    return gratuityDetailDao.findRecentGifts(userId).map(LoboUtil::getImageUrl).collectList();
+  }
 }

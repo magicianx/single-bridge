@@ -19,10 +19,7 @@ import com.gaea.single.bridge.dto.user.*;
 import com.gaea.single.bridge.enums.AuditStatus;
 import com.gaea.single.bridge.enums.LoginType;
 import com.gaea.single.bridge.enums.UserType;
-import com.gaea.single.bridge.service.MessageService;
-import com.gaea.single.bridge.service.UserGreetService;
-import com.gaea.single.bridge.service.UserService;
-import com.gaea.single.bridge.service.UserSocialInfoService;
+import com.gaea.single.bridge.service.*;
 import com.gaea.single.bridge.util.DateUtil;
 import com.gaea.single.bridge.util.JsonUtils;
 import com.gaea.single.bridge.util.LoboUtil;
@@ -57,6 +54,7 @@ public class UserController extends BaseController {
   @Autowired private UserSocialInfoService userRegInfoService;
   @Autowired private UserService userService;
   @Autowired private UserGreetService userGreetService;
+  @Autowired private GratuityService gratuityService;
 
   @GetMapping(value = "/v1/columns.net")
   @ApiOperation(value = "获取用户栏目列表")
@@ -120,15 +118,26 @@ public class UserController extends BaseController {
             .flatMap(
                 result -> {
                   if (result.getCode() == ErrorCode.SUCCESS.getCode()) {
-                    return userService
-                        .isEnablePosition(result.getData().getUserId())
+                    return gratuityService
+                        .getRecentGifts(userId)
                         .map(
-                            enable -> {
-                              if (!enable) {
-                                result.getData().setCity(DefaultSettingConstant.UNKNOWN_POSITION);
-                              }
+                            giftIcons -> {
+                              result.getData().setGiftIcons(giftIcons);
                               return result;
-                            });
+                            })
+                        .flatMap(
+                            r ->
+                                userService
+                                    .isEnablePosition(result.getData().getUserId())
+                                    .map(
+                                        enable -> {
+                                          if (!enable) {
+                                            result
+                                                .getData()
+                                                .setCity(DefaultSettingConstant.UNKNOWN_POSITION);
+                                          }
+                                          return r;
+                                        }));
                   }
                   return Mono.just(result);
                 });
