@@ -36,7 +36,11 @@ public class DateUtil {
   }
 
   public static long getNowMilliseconds() {
-    return LocalDateTime.now().atZone(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
+    return getMilliseconds(LocalDateTime.now());
+  }
+
+  public static long getMilliseconds(LocalDateTime dateTime) {
+    return dateTime.atZone(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
   }
 
   public static String toDbDate(LocalDate date) {

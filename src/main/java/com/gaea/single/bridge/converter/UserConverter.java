@@ -61,6 +61,15 @@ public class UserConverter {
         res.setIsVip(
             userType == UserType.GENERAL_USER
                 && LoboUtil.toBoolean(result.getInteger("isSuperVip")));
+        res.setAge(result.getInteger("age"));
+        Optional.ofNullable(result.getInteger("sex"))
+            .ifPresent(v -> res.setGender(GenderType.ofCode(v)));
+
+        String city = result.getString("address");
+        if (StringUtils.isBlank(city)) {
+          city = DefaultSettingConstant.UNKNOWN_POSITION;
+        }
+        res.setCity(city);
         return res;
       };
 
@@ -95,11 +104,17 @@ public class UserConverter {
                 .map(FollowStatus::ofCode)
                 .orElse(FollowStatus.UNFOLLOW));
 
-        List<String> photos = new ArrayList<>();
-        Optional.ofNullable(result.getJSONArray("photos"))
-            .ifPresent(v -> v.forEach(photo -> photos.add((String) photo)));
         Optional.ofNullable(result.getString("videoUrl")).ifPresent(res::setCoverVideoUrl);
-
+        JSONArray photosArray = result.getJSONArray("photos");
+        if (LoboUtil.toBoolean(result.getInteger("isHaveSmallVideo"))
+            && photosArray != null
+            && !photosArray.isEmpty()) {
+          res.setCoverVideoPhotoUrl(photosArray.getString(0));
+          photosArray.remove(0);
+        }
+        List<String> photos = new ArrayList<>();
+        Optional.ofNullable(photosArray)
+            .ifPresent(v -> v.forEach(photo -> photos.add((String) photo)));
         res.setPhotos(photos);
 
         Optional.ofNullable(result.getJSONArray("labels"))
@@ -116,10 +131,6 @@ public class UserConverter {
                             })
                         .collect(Collectors.toList()))
             .ifPresent(res::setLabels);
-        Optional.ofNullable(result.getJSONArray("giftIcons"))
-            .map(icons -> icons.stream().map(icon -> (String) icon).collect(Collectors.toList()))
-            .ifPresent(res::setGiftIcons);
-
         return res;
       };
 
@@ -170,7 +181,8 @@ public class UserConverter {
         }
         res.setOnlineStatus(UserOnlineStatus.ofCode(result.getInteger("status")));
         res.setIsRegister(LoboUtil.toBoolean(result.getInteger("isRegist")));
-        res.setAuthStatus(AnchorAuthStatus.ofCode(result.getInteger("isVideoAudit")));
+        Optional.ofNullable(result.getInteger("isVideoAudit"))
+            .ifPresent(status -> res.setAuthStatus(AnchorAuthStatus.ofCode(status)));
         return res;
       };
 

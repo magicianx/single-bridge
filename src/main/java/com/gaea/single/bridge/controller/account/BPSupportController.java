@@ -23,13 +23,13 @@ public class BPSupportController extends BaseController {
   @Autowired private BPSupportService bpSupportService;
 
   @GetMapping(value = "/v1/first_recharge.do")
-  @ApiOperation(value = "用户是否为第一次充值")
+  @ApiOperation(value = "用户是否为第一次充值(用于支付后判断)")
   public Mono<Result<Boolean>> isFirstRecharge(@ApiIgnore ServerWebExchange exchange) {
     return bpSupportService.isFirstRecharge(getUserId(exchange)).map(Result::success);
   }
 
   @GetMapping(value = "/v1/first_open_vip.do")
-  @ApiOperation(value = "用户是否第一次开通vip")
+  @ApiOperation(value = "用户是否第一次开通vip(用于支付后判断)")
   public Mono<Result<Boolean>> isFirstOpenVip(@ApiIgnore ServerWebExchange exchange) {
     return bpSupportService.isFirstOpenVip(getUserId(exchange)).map(Result::success);
   }

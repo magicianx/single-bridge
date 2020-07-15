@@ -3,7 +3,7 @@ package com.gaea.single.bridge.entity.mysql;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class UserSocialInfo {
@@ -24,7 +24,7 @@ public class UserSocialInfo {
 
   private Integer isVideoAudit;
 
-  private Date videoAuditTime;
+  private LocalDateTime videoAuditTime;
 
   private Integer complaintCount;
 
@@ -36,9 +36,9 @@ public class UserSocialInfo {
 
   private String inviteCode;
 
-  private Date createTime;
+  private LocalDateTime createTime;
 
-  private Date lastModifyTime;
+  private LocalDateTime lastModifyTime;
 
   private Integer price; // 视频单价
 

@@ -38,6 +38,7 @@ public class DictionaryProperties implements IConfig {
   private GreetMessage greetMessage;
   private Pay pay;
   private Ranking ranking;
+  private FirstRecharge firstRecharge;
 
   public DictionaryProperties(Properties properties) {
     this.lobo = getProperty(Lobo.class, "lobo", properties);
@@ -48,6 +49,7 @@ public class DictionaryProperties implements IConfig {
     this.greetMessage = getProperty(GreetMessage.class, "greetMessage", properties);
     this.pay = getProperty(Pay.class, "pay", properties);
     this.ranking = getProperty(Ranking.class, "ranking", properties);
+    this.firstRecharge = getProperty(FirstRecharge.class, "firstRecharge", properties);
   }
 
   private <R> R getProperty(Class<R> cls, String prefix, Properties properties) {
@@ -175,6 +177,14 @@ public class DictionaryProperties implements IConfig {
     private String anchorTipText;
     /** 显示数量 */
     private Integer size;
+  }
+
+  /** 首充配置 */
+  @Getter
+  @Setter
+  public static class FirstRecharge {
+    /** 描述 */
+    private String desc;
   }
 
   public static class Set extends SingleConfigSet<DictionaryProperties> {

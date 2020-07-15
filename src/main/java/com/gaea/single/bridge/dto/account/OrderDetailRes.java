@@ -28,6 +28,9 @@ public class OrderDetailRes {
   @ApiModelProperty(value = "发生时间", required = true)
   private String time;
 
+  @ApiModelProperty(value = "交易用户id", required = true)
+  private Long tradeUserId;
+
   @ApiModelProperty(value = "交易用户的显示id", required = true)
   private String tradeUserShowId;
 

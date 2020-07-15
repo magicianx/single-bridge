@@ -249,6 +249,7 @@ public class UserGreetServiceImpl extends AbstractCache implements UserGreetServ
     } else {
       return userManager
           .getUserGender(userId)
+          .defaultIfEmpty(GenderType.MALE)
           .flatMap(
               genderType -> {
                 if (GenderType.MALE == genderType) {

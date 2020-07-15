@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum PayScene implements Metadata {
   IN_VIDEO(1, "视频内充值"),
   OUT_VIDEO(2, "视频外充值 "),
-  ACTIVE_VIP(4, "开通vip");
+  ACTIVE_VIP(4, "开通vip"),
+  BUY_GIFT(6, "购买礼包");
 
   private Integer code;
   private String desc;

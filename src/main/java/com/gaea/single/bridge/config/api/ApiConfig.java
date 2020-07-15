@@ -3,14 +3,13 @@ package com.gaea.single.bridge.config.api;
 import com.fasterxml.classmate.TypeResolver;
 import com.gaea.single.bridge.config.ServiceProperties;
 import com.gaea.single.bridge.constant.CommonHeaderConst;
+import com.gaea.single.bridge.dto.Result;
 import io.swagger.annotations.ApiOperation;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -18,6 +17,7 @@ import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
+import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
@@ -25,6 +25,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.web.*;
 
 import java.util.Arrays;
+
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 @Configuration
 @ConditionalOnProperty(value = "service.api.enable", havingValue = "true")
@@ -46,13 +48,12 @@ public class ApiConfig {
         .paths(PathSelectors.any())
         .build()
         .pathMapping("/")
-        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class)
-        //        .alternateTypeRules(
-        //            newRule(
-        //                typeResolver.resolve(
-        //                    DeferredResult.class,
-        //                    typeResolver.resolve(ResponseEntity.class, WildcardType.class)),
-        //                typeResolver.resolve(WildcardType.class)))
+        //        .genericModelSubstitutes(Mono.class, Flux.class, Publisher.class)
+        .alternateTypeRules(
+            newRule(
+                typeResolver.resolve(
+                    Mono.class, typeResolver.resolve(Result.class, WildcardType.class)),
+                typeResolver.resolve(WildcardType.class)))
         .useDefaultResponseMessages(false)
         .forCodeGeneration(true)
         //        .globalResponseMessage(

@@ -16,6 +16,9 @@ public class GratuityGiftRes {
   @ApiModelProperty(value = "礼物id", required = true)
   private Long giftId;
 
+  @ApiModelProperty(value = "礼物名称", required = true)
+  private String giftName;
+
   @ApiModelProperty(value = "礼物图标链接", required = true)
   private String giftIconUrl;
 

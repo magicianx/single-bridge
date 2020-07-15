@@ -4,6 +4,7 @@ import com.gaea.single.bridge.core.error.ErrorCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Getter
 @Setter
@@ -34,5 +35,10 @@ public class Result<T> {
 
   public static <T> Result<T> error(int code, String message) {
     return new Result<>(code, null, message);
+  }
+
+  @ApiIgnore
+  public boolean isSuccess() {
+    return this.code == ErrorCode.SUCCESS.getCode();
   }
 }

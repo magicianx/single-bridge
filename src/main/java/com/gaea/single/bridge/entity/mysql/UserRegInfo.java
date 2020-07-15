@@ -3,8 +3,7 @@ package com.gaea.single.bridge.entity.mysql;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class UserRegInfo {
@@ -20,10 +19,10 @@ public class UserRegInfo {
   private String wechatToken;
   private String wechatUnionId;
   private String yunxinId;
-  private LocalDate createTime;
-  private LocalDate lastLoginTime;
-  private LocalDate lastTradeTime;
-  private LocalDate lastModifyTime;
+  private LocalDateTime createTime;
+  private LocalDateTime lastLoginTime;
+  private LocalDateTime lastTradeTime;
+  private LocalDateTime lastModifyTime;
   private String os;
   private String deviceNo;
 }

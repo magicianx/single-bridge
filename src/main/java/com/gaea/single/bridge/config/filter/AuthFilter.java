@@ -12,6 +12,7 @@ import org.redisson.api.RedissonReactiveClient;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
+@ConditionalOnExpression("!'${spring.profiles.active}'.equals('dev')")
 public class AuthFilter extends AbstractFilter implements WebFilter {
   private static final String ALL_METHOD_MATCH = "*";
 
@@ -68,7 +70,7 @@ public class AuthFilter extends AbstractFilter implements WebFilter {
         .flatMap(
             loginSession -> {
               if (!loginSession.equals(session)) {
-                log.info("用户{}session不正确", userId);
+                log.info("用户 {} session不正确", userId);
                 return completeWithCode(exchange, ErrorCode.INVALID_SESSION);
               }
               return chain.filter(exchange);

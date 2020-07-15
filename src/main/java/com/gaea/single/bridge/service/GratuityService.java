@@ -18,4 +18,12 @@ public interface GratuityService {
    * @return {@link Mono<List<GratuityGiftRes>>}
    */
   Mono<List<GratuityGiftRes>> getGratuityGifts(Long userId);
+
+  /**
+   * 获取主播最近礼物列表，价格由高到低排序
+   *
+   * @param userId 用户id
+   * @return {@link Mono<List<String>>}
+   */
+  Mono<List<String>> getRecentGifts(Long userId);
 }

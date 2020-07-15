@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @ApiModel("支付金额选项")
 @Getter
 @Setter
@@ -20,7 +22,7 @@ public class PayAmountOptionRes {
   private Integer diamonds;
 
   @ApiModelProperty(value = "花费金额(元)", required = true)
-  private Integer money;
+  private BigDecimal money;
 
   @ApiModelProperty(value = "赠送钻石数量")
   private Integer giveDiamonds;

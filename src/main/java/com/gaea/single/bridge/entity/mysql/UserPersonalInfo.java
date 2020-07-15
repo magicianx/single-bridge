@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 用户个人信息
@@ -18,10 +18,10 @@ public class UserPersonalInfo implements Serializable {
   @Id private Long userId;
   private Integer sex;
   private String cityCode;
-  private Date birthDate;
+  private LocalDateTime birthDate;
   private String idCardNum;
   private String realName;
   private Integer isRealNameAuth;
-  private Date createTime;
-  private Date lastModifyTime;
+  private LocalDateTime createTime;
+  private LocalDateTime lastModifyTime;
 }

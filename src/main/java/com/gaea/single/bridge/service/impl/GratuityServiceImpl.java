@@ -25,8 +25,14 @@ public class GratuityServiceImpl implements GratuityService {
             item ->
                 new GratuityGiftRes(
                     item.getGiftId(),
+                    item.getGiftName(),
                     LoboUtil.getImageUrl(item.getGiftIconUrl()),
                     item.getGiftNum()))
         .collectList();
+  }
+
+  @Override
+  public Mono<List<String>> getRecentGifts(Long userId) {
+    return gratuityDetailDao.findRecentGifts(userId).map(LoboUtil::getImageUrl).collectList();
   }
 }
