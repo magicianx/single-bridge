@@ -30,6 +30,32 @@ pipeline {
                 zMvn()
             }
         }
+
+        stage('Deploy to test') {
+            when {
+                branch 'cicd'
+            }
+            steps {
+                script {
+                    sh 'pwd'
+                    sh 'find . -name *.jar'
+                    def remote = [:]
+                    remote.name = 'gnode2'
+                    remote.host = 'api1.vchat.club'
+                    remote.allowAnyHosts = true
+                    withCredentials([sshUserPrivateKey(
+                        keyFileVariable:"key",
+                        credentialsId:"gnode-key",
+                        usernameVariable:"userName")]) {
+                            remote.user = userName
+                            remote.identityFile = key
+                            sshCommand remote:  remote, command:
+
+                            sh "ssh -i ${key} ${userName}@api2.vchat.club 'echo ${PATH}'"
+                        }
+                }
+            }
+        }
     }
 
     post {
