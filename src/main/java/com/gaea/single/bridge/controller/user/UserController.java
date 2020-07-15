@@ -85,19 +85,23 @@ public class UserController extends BaseController {
               if (!res.isSuccess()) {
                 return Mono.error(new BusinessException(res.getCode(), res.getMessage()));
               }
-              res.getData()
-                  .getRecords()
-                  .forEach(
-                      userItemRes ->
-                          userService
-                              .isEnablePosition(userItemRes.getUserId())
-                              .subscribe(
-                                  enable -> {
-                                    if (!enable) {
-                                      userItemRes.setCity(DefaultSettingConstant.UNKNOWN_POSITION);
-                                    }
-                                  }));
-              return Mono.just(res);
+
+              Mono[] setCityMonos =
+                  res.getData().getRecords().stream()
+                      .map(
+                          user ->
+                              userService
+                                  .isEnablePosition(user.getUserId())
+                                  .map(
+                                      enable -> {
+                                        if (!enable) {
+                                          user.setCity(DefaultSettingConstant.UNKNOWN_POSITION);
+                                        }
+                                        return user;
+                                      }))
+                      .toArray(Mono[]::new);
+
+              return Mono.when(setCityMonos).thenReturn(res);
             });
   }
 
