@@ -50,7 +50,7 @@ pipeline {
                             remote.user = userName
                             remote.identityFile = key
                             sh "echo ${PATH}"
-                            sh "ssh -i ${key} ${userName}@api2.vchat.club 'echo ${PATH}'"
+                            sh "/usr/bin/ssh -i ${key} ${userName}@api2.vchat.club 'echo ${PATH}'"
                         }
                     sshCommand remote: remote, command: 'pwd'
                 }
