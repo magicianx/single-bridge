@@ -49,6 +49,7 @@ pipeline {
                         usernameVariable:"userName")]) {
                             remote.user = userName
                             remote.identityFile = key
+                            sh "which sh"
                             sh "ssh -i ${key} ${userName}@api2.vchat.club 'echo ${PATH}'"
                         }
                     sshCommand remote: remote, command: 'pwd'
