@@ -18,6 +18,7 @@ pipeline {
             }
             steps {
                 zMvn()
+                echo "${env.GIT_COMMIT}"
            }
         }
 
@@ -26,13 +27,9 @@ pipeline {
                 branch 'cicd2'
             }
             steps {
-                configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-                    sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
-                }
+                zMvn()
             }
         }
-
-
     }
 
     post {
@@ -42,6 +39,10 @@ pipeline {
 
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+
+        always {
+            cleanWs()
         }
     }
 
