@@ -47,7 +47,7 @@ pipeline {
                 branch 'cicd'
             }
             
-            agent label = 'master'
+            agent {label 'master'}
             
             steps {
                 script {
