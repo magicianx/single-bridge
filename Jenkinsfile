@@ -49,9 +49,9 @@ pipeline {
             
             agent {label 'master'}
             
-            sh 'ls /usr/bin'
-            
             steps {
+                sh 'ls /usr/bin'
+            
                 script {
                     def remote = [:]
                     remote.name = 'gnode2'
