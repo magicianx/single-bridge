@@ -61,7 +61,7 @@ pipeline {
                             remote.user = userName
                             remote.identityFile = key
                             sshCommand remote: remote, command: "pwd"
-                            sshPut remote: remote, from: 'target/*.jar', into: '.'
+                            sshPut remote: remote, from: 'target/single-bridge-1.7.0-SNAPSHOT.jar', into: '.'
                         }
                 }
             }
