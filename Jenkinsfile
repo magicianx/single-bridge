@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     sh 'pwd'
-                    sh 'find . -name *.jar'
+                    sh "who"
                     def remote = [:]
                     remote.name = 'gnode2'
                     remote.host = 'api1.vchat.club'
