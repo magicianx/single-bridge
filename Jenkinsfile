@@ -21,7 +21,7 @@ pipeline {
             
             steps {
                 zMvn()
-                echo "${env.GIT_COMMIT}"
+                stash name: 'dev-target', includes: 'target/'
            }
         }
 
@@ -50,7 +50,8 @@ pipeline {
             agent {label 'master'}
             
             steps {
-                sh 'ls /usr/bin'
+                unstash 'dev-target'
+                sh 'ls target'
             
                 script {
                     def remote = [:]
