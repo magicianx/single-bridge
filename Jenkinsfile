@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     sh 'pwd'
-                    sh 'who'
+                    sh 'ssh'
                     def remote = [:]
                     remote.name = 'gnode2'
                     remote.host = 'api1.vchat.club'
