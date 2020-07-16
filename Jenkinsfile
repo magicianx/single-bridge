@@ -50,7 +50,6 @@ pipeline {
             agent {label 'master'}
             
             steps {
-                unstash 'dev-target'
                 sh 'ls target'
             
                 script {
