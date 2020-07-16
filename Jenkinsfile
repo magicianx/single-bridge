@@ -49,6 +49,8 @@ pipeline {
             
             agent {label 'master'}
             
+            sh 'ls /usr/bin'
+            
             steps {
                 script {
                     def remote = [:]
@@ -62,7 +64,7 @@ pipeline {
                             remote.user = userName
                             remote.identityFile = key
                         }
-                    sshCommand remote: remote, command: "pwd"
+                    sshCommand remote: remote, command: "sudo pwd"
                     
                 }
             }
