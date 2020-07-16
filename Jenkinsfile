@@ -32,6 +32,7 @@ pipeline {
         }
 
         stage('Deploy to test') {
+            agent any
             when {
                 branch 'cicd'
             }
