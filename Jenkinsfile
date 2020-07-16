@@ -60,8 +60,8 @@ pipeline {
                         usernameVariable:"userName")]) {
                             remote.user = userName
                             remote.identityFile = key
-                            sh "ssh -i ${key} ${userName}@api2.vchat.club 'who'"
                             sshCommand remote: remote, command: "pwd"
+                            sshPut remote: remote, from: 'target/*.jar', into: '.'
                         }
                 }
             }
