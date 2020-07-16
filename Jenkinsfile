@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3-alpine'
-            args '-v /home/sa/.m2:/root/.m2'
-        }
-    }
+    agent none
 
     triggers {
         gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All',
@@ -16,6 +11,14 @@ pipeline {
             when {
                 branch 'cicd'
             }
+            
+            agent {
+                docker {
+                    image 'maven:3-alpine'
+                    args '-v /home/sa/.m2:/root/.m2'
+                }
+            }
+            
             steps {
                 zMvn()
                 echo "${env.GIT_COMMIT}"
@@ -26,16 +29,26 @@ pipeline {
             when {
                 branch 'cicd2'
             }
+            
+            agent {
+                docker {
+                    image 'maven:3-alpine'
+                    args '-v /home/sa/.m2:/root/.m2'
+                }
+            }
+            
             steps {
                 zMvn()
             }
         }
 
         stage('Deploy to test') {
-            agent none
             when {
                 branch 'cicd'
             }
+            
+            agent label = 'master'
+            
             steps {
                 script {
                     def remote = [:]
