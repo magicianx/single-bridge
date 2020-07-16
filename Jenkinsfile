@@ -62,7 +62,7 @@ pipeline {
                             remote.user = userName
                             remote.identityFile = key
                         }
-                    sshCommand remote: remote, command: "which ssh"
+                    sshCommand remote: remote, command: "pwd"
                     
                 }
             }
