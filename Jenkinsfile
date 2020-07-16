@@ -21,7 +21,6 @@ pipeline {
             
             steps {
                 zMvn()
-                stash name: 'dev-target', includes: 'target/'
            }
         }
 
@@ -50,8 +49,6 @@ pipeline {
             agent {label 'master'}
             
             steps {
-                sh 'ls target'
-            
                 script {
                     def remote = [:]
                     remote.name = 'gnode2'
