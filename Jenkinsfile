@@ -38,8 +38,6 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'pwd'
-                    sh 'ls /usr/bin'
                     def remote = [:]
                     remote.name = 'gnode2'
                     remote.host = 'api1.vchat.club'
@@ -50,9 +48,8 @@ pipeline {
                         usernameVariable:"userName")]) {
                             remote.user = userName
                             remote.identityFile = key
-                            sh "/usr/bin/ssh -i ${key} ${userName}@api2.vchat.club 'echo ${PATH}'"
                         }
-                    sshCommand remote: remote, command: 'pwd'
+                    sshCommand remote: remote, command: "which ssh"
                 }
             }
         }
