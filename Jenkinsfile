@@ -28,7 +28,8 @@ pipeline {
             
             steps {
                 script {
-                    getServer("gnode2")
+                    remote = zGetRemote("gnode2")
+                    sshCommand remote: remote, command: "pwd"
                 }
             }
         }
