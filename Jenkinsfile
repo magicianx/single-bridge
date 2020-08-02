@@ -30,8 +30,8 @@ pipeline {
                 script {
                     def remote = [:]
                     remote = zGetRemote("gnode2")
+                    sshCommand remote: remote, command: "pwd"
                 }
-                sshCommand remote: remote, command: "pwd"
             }
         }
     }
