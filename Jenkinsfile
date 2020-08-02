@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     remote = zGetRemote("gnode2")
-                    echo remote.name
+                    echo remote.host
                 }
             }
         }
