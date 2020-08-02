@@ -1,3 +1,4 @@
+@Library('my-jenkins-libs') _
 pipeline {
     agent none
 
@@ -22,23 +23,6 @@ pipeline {
             steps {
                 zMvn()
            }
-        }
-
-        stage('Build for cicd2') {
-            when {
-                branch 'cicd2'
-            }
-            
-            agent {
-                docker {
-                    image 'maven:3-alpine'
-                    args '-v /home/sa/.m2:/root/.m2'
-                }
-            }
-            
-            steps {
-                zMvn()
-            }
         }
 
         stage('Deploy to test') {
@@ -79,14 +63,7 @@ pipeline {
 
     }
 
-
     options {
         gitLabConnection('GITLAB')
-    }
-}
-
-def zMvn() {
-    configFileProvider([configFile(fileId: 'maven-global-settings', variable: 'MAVEN_GLOBAL_SETTINGS')]){
-        sh 'mvn -s ${MAVEN_GLOBAL_SETTINGS} -B -DskipTests clean package'
     }
 }
