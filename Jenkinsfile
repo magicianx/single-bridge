@@ -15,7 +15,7 @@ pipeline {
             }
             
             steps {
-                zMvn("clean package")
+                zMvn("clean")
            }
         }
 
