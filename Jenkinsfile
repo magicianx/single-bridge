@@ -28,9 +28,10 @@ pipeline {
             
             steps {
                 script {
+                    def remote = [:]
                     remote = zGetRemote("gnode2")
-                    echo remote.host
                 }
+                sshCommand remote: remote, command: "pwd"
             }
         }
     }
