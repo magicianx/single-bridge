@@ -28,7 +28,7 @@ pipeline {
             
             steps {
                 script {
-                    getServer("node1")
+                    getServer("gnode2")
                 }
             }
         }
