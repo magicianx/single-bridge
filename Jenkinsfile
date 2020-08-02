@@ -31,7 +31,7 @@ pipeline {
                     def remote = [:]
                     remote = zGetRemote("gnode2")
                     echo remote.user
-                    echo remote.key
+                    echo remote.identityFile
                 }
             }
         }
