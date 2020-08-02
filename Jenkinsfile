@@ -1,8 +1,6 @@
 @Library('my-jenkins-libs') _
 pipeline {
     agent none
-
-
     stages {
         stage('Build for dev') {
             when {
@@ -17,7 +15,7 @@ pipeline {
             }
             
             steps {
-                zMvn("clean")
+                zMvn("clean package")
            }
         }
 
