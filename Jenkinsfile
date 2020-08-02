@@ -2,10 +2,6 @@
 pipeline {
     agent none
 
-    triggers {
-        gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All',
-        secretToken: "${env.GITLAB_TRIGGER_TOKEN}")
-    }
 
     stages {
         stage('Build for dev') {
@@ -21,7 +17,7 @@ pipeline {
             }
             
             steps {
-                zMvn()
+                zMvn("clean")
            }
         }
 
@@ -50,20 +46,5 @@ pipeline {
                 }
             }
         }
-    }
-
-    post {
-        failure {
-            updateGitlabCommitStatus name: 'build', state: 'failed'
-        }
-
-        success {
-            updateGitlabCommitStatus name: 'build', state: 'success'
-        }
-
-    }
-
-    options {
-        gitLabConnection('GITLAB')
     }
 }
